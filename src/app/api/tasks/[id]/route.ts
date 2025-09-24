@@ -38,7 +38,7 @@ export async function GET(
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {
@@ -151,7 +151,7 @@ export async function PATCH(
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {
@@ -352,7 +352,7 @@ export async function DELETE(
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {

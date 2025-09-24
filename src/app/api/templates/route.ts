@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     if (userTemplates && userId) {
       // Get user from database
       const userRecord = await db.query.users.findFirst({
-        where: (users, { eq }) => eq(users.clerkId, userId)
+        where: (users: any, { eq }: any) => eq(users.clerkId, userId)
       });
       
       if (userRecord) {
@@ -104,7 +104,7 @@ export async function GET(req: NextRequest) {
     let likedTemplateIds: string[] = [];
     if (userId) {
       const userRecord = await db.query.users.findFirst({
-        where: (users, { eq }) => eq(users.clerkId, userId)
+        where: (users: any, { eq }: any) => eq(users.clerkId, userId)
       });
       
       if (userRecord) {
@@ -114,12 +114,12 @@ export async function GET(req: NextRequest) {
             templateId: true
           }
         });
-        likedTemplateIds = likes.map(l => l.templateId);
+        likedTemplateIds = likes.map((l: any) => l.templateId);
       }
     }
 
     // Format response
-    const formattedTemplates = allTemplates.map(template => ({
+    const formattedTemplates = allTemplates.map((template: any) => ({
       ...template,
       isLiked: likedTemplateIds.includes(template.id),
       author: template.creator && !Array.isArray(template.creator) ? 
@@ -168,7 +168,7 @@ export async function POST(req: NextRequest) {
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {

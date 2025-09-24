@@ -352,7 +352,7 @@ export class SlackIntegrationService {
           text: {
             type: 'mrkdwn',
             text: summary.upcomingEvents
-              .map(event => `• ${event.time} - ${event.title}`)
+              .map((event: any) => `• ${event.time} - ${event.title}`)
               .join('\n')
           }
         }
@@ -374,13 +374,13 @@ export class SlackIntegrationService {
           text: {
             type: 'mrkdwn',
             text: summary.topPriorities
-              .map(task => {
-                const emoji = {
+              .map((task: any) => {
+                const emoji = ({
                   urgent: '🔴',
                   high: '🟠',
                   medium: '🟡',
                   low: '🟢'
-                }[task.priority] || '⚪';
+                } as any)[task.priority] || '⚪';
                 return `${emoji} ${task.title}`;
               })
               .join('\n')
@@ -504,7 +504,7 @@ export class SlackIntegrationService {
     return {
       response_type: 'ephemeral',
       text: `You have ${tasks.length} tasks for today:`,
-      attachments: tasks.map(task => ({
+      attachments: tasks.map((task: any) => ({
         color: task.priority === 'high' ? 'danger' : 'good',
         text: `• ${task.title}`,
         footer: task.priority ? `Priority: ${task.priority}` : undefined

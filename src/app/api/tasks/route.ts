@@ -71,7 +71,7 @@ export async function GET(req: NextRequest) {
 
     // Get user from database to check permissions
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {
@@ -115,7 +115,7 @@ export async function GET(req: NextRequest) {
     const totalCount = await db.select({ count: sql`count(*)` })
       .from(blocks)
       .where(and(...conditions))
-      .then(result => Number(result[0]?.count || 0));
+      .then((result: any) => Number(result[0]?.count || 0));
 
     return NextResponse.json({
       tasks,
@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {
@@ -164,7 +164,7 @@ export async function POST(req: NextRequest) {
 
     // Verify user has access to workspace
     const workspace = await db.query.workspaces.findFirst({
-      where: (workspaces, { eq, and }) => 
+      where: (workspaces: any, { eq, and }: any) => 
         and(
           eq(workspaces.id, validated.workspaceId),
           eq(workspaces.ownerId, userRecord.id)
@@ -174,7 +174,7 @@ export async function POST(req: NextRequest) {
     if (!workspace) {
       // Check if user is a member of the workspace
       const membership = await db.query.workspaceMembers.findFirst({
-        where: (members, { eq, and }) =>
+        where: (members: any, { eq, and }: any) =>
           and(
             eq(members.workspaceId, validated.workspaceId),
             eq(members.userId, userRecord.id)

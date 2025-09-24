@@ -56,7 +56,7 @@ export async function GET(
     // Check if user has access to this template
     if (template.status !== 'published' && userId) {
       const userRecord = await db.query.users.findFirst({
-        where: (users, { eq }) => eq(users.clerkId, userId)
+        where: (users: any, { eq }: any) => eq(users.clerkId, userId)
       });
 
       if (!userRecord || template.creatorId !== userRecord.id) {
@@ -78,7 +78,7 @@ export async function GET(
     
     if (userId) {
       const userRecord = await db.query.users.findFirst({
-        where: (users, { eq }) => eq(users.clerkId, userId)
+        where: (users: any, { eq }: any) => eq(users.clerkId, userId)
       });
 
       if (userRecord) {
@@ -146,7 +146,7 @@ export async function PATCH(
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {
@@ -237,7 +237,7 @@ export async function DELETE(
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {
