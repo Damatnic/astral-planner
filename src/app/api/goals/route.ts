@@ -69,7 +69,7 @@ export async function GET(req: NextRequest) {
       orderBy: [desc(goals.priority), desc(goals.createdAt)],
       with: {
         progress: {
-          orderBy: (progress, { desc }) => [desc(progress.date)],
+          orderBy: (progress: any, { desc }: any) => [desc(progress.date)],
           limit: 1
         },
         parentGoal: true,

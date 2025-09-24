@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { FixedSizeList as List } from 'react-window';
+// import { FixedSizeList } from 'react-window'; // Temporarily disabled for build fix
 import { useDrop } from 'react-dnd';
 import {
   CheckSquare,
@@ -102,7 +102,7 @@ export function TaskList({
 }: TaskListProps) {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
-  const listRef = useRef<List>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Handle drop for reordering
@@ -238,16 +238,20 @@ export function TaskList({
             <p className="text-sm">Create your first task to get started</p>
           </div>
         ) : (
-          <List
+          <div
             ref={listRef}
-            height={containerRef.current?.clientHeight || 600}
-            itemCount={tasks.length}
-            itemSize={80}
-            itemData={virtualizedData}
-            overscanCount={5}
+            className="h-full overflow-y-auto"
+            style={{ height: containerRef.current?.clientHeight || 600 }}
           >
-            {VirtualizedRow}
-          </List>
+            {tasks.map((task, index) => (
+              <VirtualizedRow
+                key={task.id}
+                index={index}
+                style={{ height: 80 }}
+                data={virtualizedData}
+              />
+            ))}
+          </div>
         )}
       </div>
     );

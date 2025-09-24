@@ -67,7 +67,7 @@ export const calendars = pgTable('calendars', {
   sourceIdx: index('calendars_source_idx').on(table.source)
 }));
 
-export const events = pgTable('events', {
+export const calendarEvents = pgTable('events', {
   id: uuid('id').primaryKey().defaultRandom(),
   title: varchar('title', { length: 255 }).notNull(),
   description: text('description'),
@@ -226,32 +226,32 @@ export const calendarRelations = relations(calendars, ({ one, many }) => ({
     fields: [calendars.workspaceId],
     references: [workspaces.id]
   }),
-  events: many(events),
+  events: many(calendarEvents),
   timeBlocks: many(timeBlocks)
 }));
 
-export const eventRelations = relations(events, ({ one, many }) => ({
+export const calendarEventRelations = relations(calendarEvents, ({ one, many }) => ({
   calendar: one(calendars, {
-    fields: [events.calendarId],
+    fields: [calendarEvents.calendarId],
     references: [calendars.id]
   }),
   user: one(users, {
-    fields: [events.userId],
+    fields: [calendarEvents.userId],
     references: [users.id]
   }),
   block: one(blocks, {
-    fields: [events.blockId],
+    fields: [calendarEvents.blockId],
     references: [blocks.id]
   }),
   lastModifiedByUser: one(users, {
-    fields: [events.lastModifiedBy],
+    fields: [calendarEvents.lastModifiedBy],
     references: [users.id]
   }),
-  masterEvent: one(events, {
-    fields: [events.recurrenceId],
-    references: [events.id]
+  masterEvent: one(calendarEvents, {
+    fields: [calendarEvents.recurrenceId],
+    references: [calendarEvents.id]
   }),
-  recurringEvents: many(events)
+  recurringEvents: many(calendarEvents)
 }));
 
 export const timeBlockRelations = relations(timeBlocks, ({ one }) => ({
@@ -278,8 +278,12 @@ export const availabilityRelations = relations(availability, ({ one }) => ({
 
 export type Calendar = typeof calendars.$inferSelect;
 export type NewCalendar = typeof calendars.$inferInsert;
-export type Event = typeof events.$inferSelect;
-export type NewEvent = typeof events.$inferInsert;
+export type Event = typeof calendarEvents.$inferSelect;
+export type NewEvent = typeof calendarEvents.$inferInsert;
+
+// Alias exports for backwards compatibility
+export { calendarEvents as events };
+export { calendarEventRelations as eventRelations };
 export type TimeBlock = typeof timeBlocks.$inferSelect;
 export type NewTimeBlock = typeof timeBlocks.$inferInsert;
 export type Availability = typeof availability.$inferSelect;

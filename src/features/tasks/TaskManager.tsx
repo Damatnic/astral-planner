@@ -18,7 +18,7 @@ import {
   Calendar,
   Grid3X3,
   List,
-  Timeline,
+  Clock,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -256,7 +256,7 @@ export function TaskManager({
     list: List,
     board: Grid3X3,
     calendar: Calendar,
-    timeline: Timeline,
+    timeline: Clock,
   };
 
   const activeFiltersCount = useMemo(() => {

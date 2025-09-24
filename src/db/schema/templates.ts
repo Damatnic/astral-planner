@@ -393,3 +393,6 @@ export type TemplateFavorite = typeof templateFavorites.$inferSelect;
 export type NewTemplateFavorite = typeof templateFavorites.$inferInsert;
 export type TemplateSubmission = typeof templateSubmissions.$inferSelect;
 export type NewTemplateSubmission = typeof templateSubmissions.$inferInsert;
+
+// Alias exports for backwards compatibility
+export { templateFavorites as templateLikes };

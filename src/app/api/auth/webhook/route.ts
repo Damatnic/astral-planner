@@ -6,14 +6,14 @@ import { db } from '@/db';
 import { users, workspaces } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
+const webhookSecret = process.env.CLERK_WEBHOOK_SECRET || '';
 
 if (!webhookSecret) {
   throw new Error('Missing CLERK_WEBHOOK_SECRET environment variable');
 }
 
 export async function POST(req: NextRequest) {
-  const headerPayload = headers();
+  const headerPayload = await headers();
   const svixId = headerPayload.get('svix-id');
   const svixTimestamp = headerPayload.get('svix-timestamp');
   const svixSignature = headerPayload.get('svix-signature');
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { id } = evt.data;
+  const { id } = evt.data as any;
   const eventType = evt.type;
 
   console.log(`Webhook ${id} received: ${eventType}`);
@@ -83,9 +83,10 @@ export async function POST(req: NextRequest) {
 }
 
 async function handleUserCreated(evt: WebhookEvent) {
-  const { id, email_addresses, first_name, last_name, image_url, username } = evt.data;
+  const data = evt.data as any as any; // Type assertion for webhook data
+  const { id, email_addresses, first_name, last_name, image_url, username } = data;
 
-  const primaryEmail = email_addresses.find(email => email.id === evt.data.primary_email_address_id);
+  const primaryEmail = email_addresses?.find((email: any) => email.id === data.primary_email_address_id);
 
   if (!primaryEmail) {
     throw new Error('No primary email found');
@@ -132,9 +133,10 @@ async function handleUserCreated(evt: WebhookEvent) {
 }
 
 async function handleUserUpdated(evt: WebhookEvent) {
-  const { id, email_addresses, first_name, last_name, image_url, username } = evt.data;
+  const data = evt.data as any as any; // Type assertion for webhook data
+  const { id, email_addresses, first_name, last_name, image_url, username } = data;
 
-  const primaryEmail = email_addresses.find(email => email.id === evt.data.primary_email_address_id);
+  const primaryEmail = email_addresses?.find((email: any) => email.id === data.primary_email_address_id);
 
   if (!primaryEmail) {
     throw new Error('No primary email found');
@@ -156,7 +158,7 @@ async function handleUserUpdated(evt: WebhookEvent) {
 }
 
 async function handleUserDeleted(evt: WebhookEvent) {
-  const { id } = evt.data;
+  const { id } = evt.data as any;
 
   if (!id) {
     throw new Error('No user ID provided');
@@ -180,7 +182,8 @@ async function handleUserDeleted(evt: WebhookEvent) {
 }
 
 async function handleSessionCreated(evt: WebhookEvent) {
-  const { user_id } = evt.data;
+  const data = evt.data as any as any;
+  const { user_id } = data;
 
   if (!user_id) {
     throw new Error('No user ID provided');
@@ -198,7 +201,7 @@ async function handleSessionCreated(evt: WebhookEvent) {
 }
 
 async function handleSessionEnded(evt: WebhookEvent) {
-  const { user_id } = evt.data;
+  const { user_id } = evt.data as any;
 
   if (!user_id) {
     console.log('Session ended but no user ID provided');

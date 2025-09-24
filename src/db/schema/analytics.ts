@@ -283,7 +283,7 @@ export const reports = pgTable('reports', {
   isActiveIdx: index('reports_is_active_idx').on(table.isActive)
 }));
 
-export const events = pgTable('events', {
+export const events = pgTable('analytics_events', {
   id: uuid('id').primaryKey().defaultRandom(),
   
   // Event identification
@@ -312,12 +312,12 @@ export const events = pgTable('events', {
   
   createdAt: timestamp('created_at').defaultNow().notNull()
 }, (table) => ({
-  nameIdx: index('events_name_idx').on(table.name),
-  categoryIdx: index('events_category_idx').on(table.category),
-  userIdIdx: index('events_user_id_idx').on(table.userId),
-  workspaceIdIdx: index('events_workspace_id_idx').on(table.workspaceId),
-  timestampIdx: index('events_timestamp_idx').on(table.timestamp),
-  sessionIdIdx: index('events_session_id_idx').on(table.sessionId)
+  nameIdx: index('analytics_events_name_idx').on(table.name),
+  categoryIdx: index('analytics_events_category_idx').on(table.category),
+  userIdIdx: index('analytics_events_user_id_idx').on(table.userId),
+  workspaceIdIdx: index('analytics_events_workspace_id_idx').on(table.workspaceId),
+  timestampIdx: index('analytics_events_timestamp_idx').on(table.timestamp),
+  sessionIdIdx: index('analytics_events_session_id_idx').on(table.sessionId)
 }));
 
 export const userAnalyticsRelations = relations(userAnalytics, ({ one }) => ({
@@ -396,5 +396,10 @@ export type Insight = typeof insights.$inferSelect;
 export type NewInsight = typeof insights.$inferInsert;
 export type Report = typeof reports.$inferSelect;
 export type NewReport = typeof reports.$inferInsert;
-export type Event = typeof events.$inferSelect;
-export type NewEvent = typeof events.$inferInsert;
+export type AnalyticsEvent = typeof events.$inferSelect;
+export type NewAnalyticsEvent = typeof events.$inferInsert;
+
+// Alias exports for backwards compatibility
+export { events as analyticsEvents };
+export { eventRelations as analyticsEventRelations };
+export { userAnalytics as analytics };

@@ -7,17 +7,17 @@ import {
   goals,
   goalProgress,
   habits,
-  habitLogs,
-  calendarEvents,
+  habitEntries,
+  events,
   workspaces,
   workspaceMembers,
   templates,
   integrations,
   notifications,
-  analytics
+  userAnalytics
 } from '@/db/schema';
 import { eq, and, gte, lte } from 'drizzle-orm';
-import { format } from 'date-fns';
+import { format as formatDate } from 'date-fns';
 import JSZip from 'jszip';
 
 type ExportFormat = 'json' | 'csv' | 'markdown';
@@ -69,12 +69,12 @@ export async function GET(req: NextRequest) {
     };
 
     // Helper function to apply date filters
-    const applyDateFilter = (conditions: any[]) => {
+    const applyDateFilter = (conditions: any[], table: any) => {
       if (dateFrom) {
-        conditions.push(gte('createdAt', new Date(dateFrom)));
+        conditions.push(gte(table.createdAt, new Date(dateFrom)));
       }
       if (dateTo) {
-        conditions.push(lte('createdAt', new Date(dateTo)));
+        conditions.push(lte(table.createdAt, new Date(dateTo)));
       }
       return conditions;
     };
@@ -91,7 +91,7 @@ export async function GET(req: NextRequest) {
       }
 
       const tasks = await db.query.blocks.findMany({
-        where: and(...applyDateFilter(taskConditions))
+        where: and(...applyDateFilter(taskConditions, blocks))
       });
 
       exportData.tasks = tasks.map(task => ({
@@ -117,10 +117,10 @@ export async function GET(req: NextRequest) {
       }
 
       const userGoals = await db.query.goals.findMany({
-        where: and(...applyDateFilter(goalConditions)),
+        where: and(...applyDateFilter(goalConditions, goals)),
         with: {
           progress: {
-            orderBy: (progress, { desc }) => [desc(progress.date)]
+            orderBy: (progress: any, { desc }: any) => [desc(progress.date)]
           }
         }
       });
@@ -135,7 +135,7 @@ export async function GET(req: NextRequest) {
         currentValue: goal.currentValue,
         targetDate: goal.targetDate,
         status: goal.status,
-        progress: goal.progress.map(p => ({
+        progress: goal.progress.map((p: any) => ({
           date: p.date,
           value: p.value,
           notes: p.notes
@@ -150,14 +150,14 @@ export async function GET(req: NextRequest) {
       const habitConditions = [eq(habits.userId, userRecord.id)];
       
       if (!includeArchived) {
-        habitConditions.push(eq(habits.isActive, true));
+        habitConditions.push(eq(habits.status, 'active'));
       }
 
       const userHabits = await db.query.habits.findMany({
         where: and(...habitConditions),
         with: {
-          logs: {
-            orderBy: (logs, { desc }) => [desc(logs.date)]
+          entries: {
+            orderBy: (entries: any, { desc }: any) => [desc(entries.date)]
           }
         }
       });
@@ -168,15 +168,15 @@ export async function GET(req: NextRequest) {
         description: habit.description,
         category: habit.category,
         frequency: habit.frequency,
-        targetCount: habit.targetCount,
+        targetValue: habit.targetValue,
         currentStreak: habit.currentStreak,
-        bestStreak: habit.bestStreak,
-        totalCompletions: habit.totalCompletions,
-        logs: habit.logs.map(log => ({
-          date: log.date,
-          completed: log.completed,
-          value: log.value,
-          notes: log.notes
+        bestStreak: habit.longestStreak,
+        totalCompletions: habit.totalCompleted,
+        entries: habit.entries.map((entry: any) => ({
+          date: entry.date,
+          completed: entry.completed,
+          value: entry.value,
+          notes: entry.note
         })),
         createdAt: habit.createdAt,
         updatedAt: habit.updatedAt
@@ -185,20 +185,20 @@ export async function GET(req: NextRequest) {
 
     // Export calendar events
     if (scope === 'all' || scope === 'calendar') {
-      const eventConditions = [eq(calendarEvents.userId, userRecord.id)];
+      const eventConditions = [eq(events.userId, userRecord.id)];
       
       if (dateFrom) {
-        eventConditions.push(gte(calendarEvents.startTime, new Date(dateFrom)));
+        eventConditions.push(gte(events.startTime, new Date(dateFrom)));
       }
       if (dateTo) {
-        eventConditions.push(lte(calendarEvents.startTime, new Date(dateTo)));
+        eventConditions.push(lte(events.startTime, new Date(dateTo)));
       }
 
-      const events = await db.query.calendarEvents.findMany({
+      const calendarEvents = await db.query.events.findMany({
         where: and(...eventConditions)
       });
 
-      exportData.calendar = events.map(event => ({
+      exportData.calendar = calendarEvents.map(event => ({
         id: event.id,
         title: event.title,
         description: event.description,
@@ -206,7 +206,7 @@ export async function GET(req: NextRequest) {
         endTime: event.endTime,
         isAllDay: event.isAllDay,
         location: event.location,
-        reminder: event.reminder,
+        reminders: event.reminders,
         recurrence: event.recurrence,
         createdAt: event.createdAt,
         updatedAt: event.updatedAt
@@ -215,27 +215,27 @@ export async function GET(req: NextRequest) {
 
     // Export analytics
     if (scope === 'all' || scope === 'analytics') {
-      const analyticsConditions = [eq(analytics.userId, userRecord.id)];
+      const analyticsConditions = [eq(userAnalytics.userId, userRecord.id)];
       
       if (dateFrom) {
-        analyticsConditions.push(gte(analytics.date, new Date(dateFrom)));
+        analyticsConditions.push(gte(userAnalytics.date, new Date(dateFrom)));
       }
       if (dateTo) {
-        analyticsConditions.push(lte(analytics.date, new Date(dateTo)));
+        analyticsConditions.push(lte(userAnalytics.date, new Date(dateTo)));
       }
 
-      const userAnalytics = await db.query.analytics.findMany({
+      const analyticsData = await db.query.userAnalytics.findMany({
         where: and(...analyticsConditions)
       });
 
-      exportData.analytics = userAnalytics.map(stat => ({
+      exportData.analytics = analyticsData.map(stat => ({
         date: stat.date,
         tasksCompleted: stat.tasksCompleted,
         tasksCreated: stat.tasksCreated,
         focusTime: stat.focusTime,
-        productivityScore: stat.productivityScore,
-        activeHabits: stat.metadata?.activeHabits,
-        goalsProgress: stat.metadata?.goalsProgress
+        wellnessScore: stat.wellnessScore,
+        habitsTracked: stat.habitsTracked,
+        goalsAchieved: stat.goalsAchieved
       }));
     }
 
@@ -248,20 +248,20 @@ export async function GET(req: NextRequest) {
       case 'csv':
         responseData = await convertToCSV(exportData);
         contentType = 'text/csv';
-        filename = `planner-export-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+        filename = `planner-export-${formatDate(new Date(), 'yyyy-MM-dd')}.csv`;
         break;
 
       case 'markdown':
         responseData = await convertToMarkdown(exportData);
         contentType = 'text/markdown';
-        filename = `planner-export-${format(new Date(), 'yyyy-MM-dd')}.md`;
+        filename = `planner-export-${formatDate(new Date(), 'yyyy-MM-dd')}.md`;
         break;
 
       case 'json':
       default:
         responseData = JSON.stringify(exportData, null, 2);
         contentType = 'application/json';
-        filename = `planner-export-${format(new Date(), 'yyyy-MM-dd')}.json`;
+        filename = `planner-export-${formatDate(new Date(), 'yyyy-MM-dd')}.json`;
         break;
     }
 
@@ -283,7 +283,7 @@ export async function GET(req: NextRequest) {
       return new NextResponse(zipBuffer, {
         headers: {
           'Content-Type': 'application/zip',
-          'Content-Disposition': `attachment; filename="planner-export-${format(new Date(), 'yyyy-MM-dd')}.zip"`
+          'Content-Disposition': `attachment; filename="planner-export-${formatDate(new Date(), 'yyyy-MM-dd')}.zip"`
         }
       });
     }
@@ -331,7 +331,7 @@ async function convertToCSV(data: any): Promise<string> {
           return `"${value.replace(/"/g, '""')}"`;
         }
         if (value instanceof Date) {
-          return format(value, 'yyyy-MM-dd HH:mm:ss');
+          return formatDate(value, 'yyyy-MM-dd HH:mm:ss');
         }
         return String(value);
       });
@@ -373,7 +373,7 @@ async function convertToMarkdown(data: any): Promise<string> {
           mdLines.push(`- ${checkbox} **${task.title}**`);
           if (task.description) mdLines.push(`  - ${task.description}`);
           if (task.priority) mdLines.push(`  - Priority: ${task.priority}`);
-          if (task.dueDate) mdLines.push(`  - Due: ${format(new Date(task.dueDate), 'MMM dd, yyyy')}`);
+          if (task.dueDate) mdLines.push(`  - Due: ${formatDate(new Date(task.dueDate), 'MMM dd, yyyy')}`);
           if (task.tags?.length) mdLines.push(`  - Tags: ${task.tags.join(', ')}`);
           mdLines.push('');
         }
@@ -389,7 +389,7 @@ async function convertToMarkdown(data: any): Promise<string> {
           mdLines.push(`- Type: ${goal.type}`);
           mdLines.push(`- Category: ${goal.category}`);
           mdLines.push(`- Progress: ${progress}% (${goal.currentValue}/${goal.targetValue})`);
-          if (goal.targetDate) mdLines.push(`- Target Date: ${format(new Date(goal.targetDate), 'MMM dd, yyyy')}`);
+          if (goal.targetDate) mdLines.push(`- Target Date: ${formatDate(new Date(goal.targetDate), 'MMM dd, yyyy')}`);
           mdLines.push('');
         }
         break;
@@ -411,10 +411,10 @@ async function convertToMarkdown(data: any): Promise<string> {
         mdLines.push('| Date | Time | Event | Location |');
         mdLines.push('|------|------|-------|----------|');
         for (const event of items) {
-          const date = format(new Date(event.startTime), 'MMM dd, yyyy');
+          const date = formatDate(new Date(event.startTime), 'MMM dd, yyyy');
           const time = event.isAllDay 
             ? 'All Day' 
-            : `${format(new Date(event.startTime), 'HH:mm')} - ${format(new Date(event.endTime), 'HH:mm')}`;
+            : `${formatDate(new Date(event.startTime), 'HH:mm')} - ${formatDate(new Date(event.endTime), 'HH:mm')}`;
           const location = event.location || '-';
           mdLines.push(`| ${date} | ${time} | ${event.title} | ${location} |`);
         }

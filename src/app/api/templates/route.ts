@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db';
-import { templates, templateLikes, templateUsage } from '@/db/schema';
+import { templates, templateFavorites, templateUsage } from '@/db/schema';
 import { eq, and, desc, sql, like, or } from 'drizzle-orm';
 import { z } from 'zod';
 
@@ -108,8 +108,8 @@ export async function GET(req: NextRequest) {
       });
       
       if (userRecord) {
-        const likes = await db.query.templateLikes.findMany({
-          where: eq(templateLikes.userId, userRecord.id),
+        const likes = await db.query.templateFavorites.findMany({
+          where: eq(templateFavorites.userId, userRecord.id),
           columns: {
             templateId: true
           }

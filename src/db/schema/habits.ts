@@ -229,3 +229,6 @@ export type HabitInsight = typeof habitInsights.$inferSelect;
 export type NewHabitInsight = typeof habitInsights.$inferInsert;
 export type HabitBuddy = typeof habitBuddies.$inferSelect;
 export type NewHabitBuddy = typeof habitBuddies.$inferInsert;
+
+// Alias exports for backwards compatibility
+export { habitEntries as habitLogs };

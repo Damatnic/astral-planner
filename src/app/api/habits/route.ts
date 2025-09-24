@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db';
-import { habits, habitLogs, users } from '@/db/schema';
+import { habits, habitEntries, users } from '@/db/schema';
 import { eq, and, desc, gte, lte, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { startOfDay, endOfDay, subDays, format } from 'date-fns';
@@ -67,11 +67,11 @@ export async function GET(req: NextRequest) {
 
     const habitIds = userHabits.map(h => h.id);
     const logs = habitIds.length > 0 
-      ? await db.query.habitLogs.findMany({
+      ? await db.query.habitEntries.findMany({
           where: and(
-            sql`${habitLogs.habitId} IN ${sql.raw(`(${habitIds.map(id => `'${id}'`).join(',')})`)}`,
-            gte(habitLogs.date, startOfDay(fromDate)),
-            lte(habitLogs.date, endOfDay(toDate))
+            sql`${habitEntries.habitId} IN ${sql.raw(`(${habitIds.map(id => `'${id}'`).join(',')})`)}`,
+            gte(habitEntries.date, startOfDay(fromDate)),
+            lte(habitEntries.date, endOfDay(toDate))
           )
         })
       : [];
@@ -91,22 +91,22 @@ export async function GET(req: NextRequest) {
 
     // Calculate statistics for each habit
     const habitsWithStats = userHabits.map(habit => {
-      const habitLogs = logsByHabitAndDate[habit.id] || {};
-      const dates = Object.keys(habitLogs);
-      const completedDays = dates.filter(date => habitLogs[date].completed).length;
+      const habitEntries = logsByHabitAndDate[habit.id] || {};
+      const dates = Object.keys(habitEntries);
+      const completedDays = dates.filter(date => habitEntries[date].completed).length;
       const totalDays = Math.ceil((toDate.getTime() - fromDate.getTime()) / (1000 * 60 * 60 * 24));
       const completionRate = totalDays > 0 ? (completedDays / totalDays) * 100 : 0;
 
       // Check if completed today
       const todayKey = format(new Date(), 'yyyy-MM-dd');
-      const completedToday = habitLogs[todayKey]?.completed || false;
+      const completedToday = habitEntries[todayKey]?.completed || false;
 
       // Calculate current streak (handled by database, but we can verify)
       let currentStreak = 0;
       let date = new Date();
       while (true) {
         const dateKey = format(date, 'yyyy-MM-dd');
-        if (habitLogs[dateKey]?.completed) {
+        if (habitEntries[dateKey]?.completed) {
           currentStreak++;
           date = subDays(date, 1);
         } else {
@@ -116,7 +116,7 @@ export async function GET(req: NextRequest) {
 
       return {
         ...habit,
-        logs: habitLogs,
+        logs: habitEntries,
         stats: {
           completedDays,
           totalDays,
@@ -276,10 +276,10 @@ export async function PATCH(req: NextRequest) {
     const dateKey = format(logDate, 'yyyy-MM-dd');
 
     // Check if log exists for this date
-    const existingLog = await db.query.habitLogs.findFirst({
+    const existingLog = await db.query.habitEntries.findFirst({
       where: and(
-        eq(habitLogs.habitId, habitId),
-        sql`DATE(${habitLogs.date}) = ${dateKey}`
+        eq(habitEntries.habitId, habitId),
+        sql`DATE(${habitEntries.date}) = ${dateKey}`
       )
     });
 
@@ -287,17 +287,17 @@ export async function PATCH(req: NextRequest) {
     
     if (existingLog) {
       // Update existing log
-      [updatedLog] = await db.update(habitLogs)
+      [updatedLog] = await db.update(habitEntries)
         .set({
           completed,
           value: value || (completed ? habit.targetCount : 0),
           notes
         })
-        .where(eq(habitLogs.id, existingLog.id))
+        .where(eq(habitEntries.id, existingLog.id))
         .returning();
     } else {
       // Create new log
-      [updatedLog] = await db.insert(habitLogs).values({
+      [updatedLog] = await db.insert(habitEntries).values({
         habitId,
         date: logDate,
         completed,
@@ -313,11 +313,11 @@ export async function PATCH(req: NextRequest) {
       let checkDate = subDays(logDate, 1);
       
       for (let i = 0; i < 365; i++) {
-        const prevLog = await db.query.habitLogs.findFirst({
+        const prevLog = await db.query.habitEntries.findFirst({
           where: and(
-            eq(habitLogs.habitId, habitId),
-            sql`DATE(${habitLogs.date}) = ${format(checkDate, 'yyyy-MM-dd')}`,
-            eq(habitLogs.completed, true)
+            eq(habitEntries.habitId, habitId),
+            sql`DATE(${habitEntries.date}) = ${format(checkDate, 'yyyy-MM-dd')}`,
+            eq(habitEntries.completed, true)
           )
         });
         
