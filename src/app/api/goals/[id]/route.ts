@@ -35,7 +35,7 @@ export async function GET(
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {
@@ -48,7 +48,7 @@ export async function GET(
     // Get goal with full details
     const { id } = await params;
     const goal = await db.query.goals.findFirst({
-      where: (goals, { eq, and }) => and(
+      where: (goals: any, { eq, and }: any) => and(
         eq(goals.id, id),
         eq(goals.createdBy, userRecord.id)
       ),
@@ -111,7 +111,7 @@ export async function PATCH(
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {
@@ -124,7 +124,7 @@ export async function PATCH(
     // Check if goal exists and belongs to user
     const { id } = await params;
     const existingGoal = await db.query.goals.findFirst({
-      where: (goals, { eq, and }) => and(
+      where: (goals: any, { eq, and }: any) => and(
         eq(goals.id, id),
         eq(goals.createdBy, userRecord.id)
       )
@@ -209,7 +209,7 @@ export async function DELETE(
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {
@@ -222,7 +222,7 @@ export async function DELETE(
     // Check if goal exists and belongs to user
     const { id } = await params;
     const existingGoal = await db.query.goals.findFirst({
-      where: (goals, { eq, and }) => and(
+      where: (goals: any, { eq, and }: any) => and(
         eq(goals.id, id),
         eq(goals.createdBy, userRecord.id)
       ),

@@ -37,7 +37,7 @@ export async function GET(
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {
@@ -50,7 +50,7 @@ export async function GET(
     // Get habit
     const { id } = await params;
     const habit = await db.query.habits.findFirst({
-      where: (habits, { eq, and }) => and(
+      where: (habits: any, { eq, and }: any) => and(
         eq(habits.id, id),
         eq(habits.userId, userRecord.id)
       )
@@ -68,7 +68,7 @@ export async function GET(
     const ninetyDaysAgoString = ninetyDaysAgo.toISOString().split('T')[0];
     
     const entries = await db.query.habitEntries.findMany({
-      where: (entries, { eq, gte }) => and(
+      where: (entries: any, { eq, gte }: any) => and(
         eq(entries.habitId, id),
         gte(entries.date, ninetyDaysAgoString)
       ),
@@ -77,7 +77,7 @@ export async function GET(
 
     // Calculate comprehensive statistics
     const totalEntries = entries.length;
-    const completedEntries = entries.filter(e => e.completed).length;
+    const completedEntries = entries.filter((e: any) => e.completed).length;
     const completionRate = totalEntries > 0 ? (completedEntries / totalEntries) * 100 : 0;
 
     // Check if completed today
@@ -171,7 +171,7 @@ export async function PATCH(
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {
@@ -183,7 +183,7 @@ export async function PATCH(
 
     // Check if habit exists and belongs to user
     const existingHabit = await db.query.habits.findFirst({
-      where: (habits, { eq, and }) => and(
+      where: (habits: any, { eq, and }: any) => and(
         eq(habits.id, id),
         eq(habits.userId, userRecord.id)
       )
@@ -261,7 +261,7 @@ export async function DELETE(
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {
@@ -273,7 +273,7 @@ export async function DELETE(
 
     // Check if habit exists and belongs to user
     const existingHabit = await db.query.habits.findFirst({
-      where: (habits, { eq, and }) => and(
+      where: (habits: any, { eq, and }: any) => and(
         eq(habits.id, id),
         eq(habits.userId, userRecord.id)
       )

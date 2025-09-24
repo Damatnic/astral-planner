@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {
@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
     });
 
     // Calculate completion percentage for each goal
-    const goalsWithProgress = userGoals.map(goal => {
+    const goalsWithProgress = userGoals.map((goal: any) => {
       const currentValue = goal.currentValue;
       const completionPercentage = goal.targetValue && currentValue
         ? Math.min((Number(currentValue) / Number(goal.targetValue)) * 100, 100)
@@ -97,10 +97,10 @@ export async function GET(req: NextRequest) {
       goals: goalsWithProgress,
       stats: {
         total: goalsWithProgress.length,
-        completed: goalsWithProgress.filter(g => g.completionPercentage === 100).length,
-        inProgress: goalsWithProgress.filter(g => g.completionPercentage > 0 && g.completionPercentage < 100).length,
-        notStarted: goalsWithProgress.filter(g => g.completionPercentage === 0).length,
-        overdue: goalsWithProgress.filter(g => g.isOverdue).length
+        completed: goalsWithProgress.filter((g: any) => g.completionPercentage === 100).length,
+        inProgress: goalsWithProgress.filter((g: any) => g.completionPercentage > 0 && g.completionPercentage < 100).length,
+        notStarted: goalsWithProgress.filter((g: any) => g.completionPercentage === 0).length,
+        overdue: goalsWithProgress.filter((g: any) => g.isOverdue).length
       }
     });
   } catch (error) {
@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {
