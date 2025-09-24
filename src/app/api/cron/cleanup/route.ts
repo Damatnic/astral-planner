@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { users, workspaces, blocks } from '@/db/schema'
-import { lt, and, isNull } from 'drizzle-orm'
+import { lt, and, isNull, isNotNull, sql } from 'drizzle-orm'
 
 export async function GET(request: NextRequest) {
   // Verify the request is from Vercel Cron
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
         .where(
           and(
             lt(blocks.deletedAt, thirtyDaysAgo),
-            isNull(blocks.deletedAt) === false
+            isNotNull(blocks.deletedAt)
           )
         )
 
@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
     try {
       // Run VACUUM ANALYZE on the database (if supported)
       // This helps maintain database performance
-      await db.execute('SELECT 1') // Simple health check
+      await db.execute(sql`SELECT 1`) // Simple health check
     } catch (error) {
       cleanupResults.errors.push(`Database maintenance failed: ${error}`)
     }
