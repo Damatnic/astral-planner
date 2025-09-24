@@ -154,7 +154,7 @@ export async function POST(req: NextRequest) {
         const userStats = {
           completedTasks: completedTasks.length,
           totalTasks: allTasks.length,
-          averageCompletionTime: completedTasks.reduce((acc, task) => {
+          averageCompletionTime: completedTasks.reduce((acc: number, task: any) => {
             if (task.createdAt && task.completedAt) {
               return acc + (task.completedAt.getTime() - task.createdAt.getTime()) / (1000 * 60 * 60)
             }
