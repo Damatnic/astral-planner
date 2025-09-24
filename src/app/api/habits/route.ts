@@ -337,7 +337,7 @@ export async function PATCH(req: NextRequest) {
           currentStreak: newStreak,
           longestStreak: sql`GREATEST(${habits.longestStreak}, ${newStreak})`,
           totalCompleted: sql`${habits.totalCompleted} + 1`,
-          lastCompletedDate: logDate
+          lastCompletedAt: logDate
         })
         .where(eq(habits.id, habitId));
     } else {
