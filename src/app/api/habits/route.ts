@@ -189,14 +189,15 @@ export async function POST(req: NextRequest) {
     // Create the habit
     const [newHabit] = await db.insert(habits).values({
       userId: userRecord.id,
+      workspaceId: userRecord.id,
       name: validated.name,
       description: validated.description,
       category: validated.category,
       frequency: validated.frequency,
-      targetCount: validated.targetCount,
+      targetValue: validated.targetCount?.toString(),
       unit: validated.unit || 'times',
-      timeOfDay: validated.timeOfDay || 'anytime',
-      reminderTime: validated.reminderTime,
+      scheduledTime: validated.reminderTime,
+      startDate: new Date().toISOString().split('T')[0],
       currentStreak: 0,
       longestStreak: 0,
       totalCompleted: 0,
