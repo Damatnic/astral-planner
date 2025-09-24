@@ -292,7 +292,7 @@ export async function PATCH(req: NextRequest) {
         .set({
           completed,
           value: value || (completed ? habit.targetValue : 0),
-          notes
+          note: notes
         })
         .where(eq(habitEntries.id, existingLog.id))
         .returning();
@@ -303,7 +303,7 @@ export async function PATCH(req: NextRequest) {
         date: logDate,
         completed,
         value: value || (completed ? habit.targetValue : 0),
-        notes
+        note: notes
       }).returning();
     }
 
