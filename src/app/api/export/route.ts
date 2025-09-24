@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {
@@ -94,7 +94,7 @@ export async function GET(req: NextRequest) {
         where: and(...applyDateFilter(taskConditions, blocks))
       });
 
-      exportData.tasks = tasks.map(task => ({
+      exportData.tasks = tasks.map((task: any) => ({
         id: task.id,
         title: task.title,
         description: task.description,

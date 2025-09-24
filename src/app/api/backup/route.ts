@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
       // Blocks from user's workspaces
       workspaceIds.length > 0
         ? db.select().from(blocks).where(
-            or(...workspaceIds.map(id => eq(blocks.workspaceId, id)))
+            or(...workspaceIds.map((id: any) => eq(blocks.workspaceId, id)))
           )
         : [],
       
@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
       // Workspace memberships
       workspaceIds.length > 0
         ? db.select().from(workspaceMembers).where(
-            or(...workspaceIds.map(id => eq(workspaceMembers.workspaceId, id)))
+            or(...workspaceIds.map((id: any) => eq(workspaceMembers.workspaceId, id)))
           )
         : [],
     ])
@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Start transaction
-    const result = await db.transaction(async (tx) => {
+    const result = await db.transaction(async (tx: any) => {
       let restoredCount = {
         workspaces: 0,
         blocks: 0,
