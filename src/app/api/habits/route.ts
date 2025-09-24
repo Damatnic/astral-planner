@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {
@@ -65,14 +65,14 @@ export async function GET(req: NextRequest) {
     const fromDate = dateFrom ? new Date(dateFrom) : subDays(new Date(), 30);
     const toDate = dateTo ? new Date(dateTo) : new Date();
 
-    const habitIds = userHabits.map(h => h.id);
+    const habitIds = userHabits.map((h: any) => h.id);
     const fromDateString = format(startOfDay(fromDate), 'yyyy-MM-dd');
     const toDateString = format(endOfDay(toDate), 'yyyy-MM-dd');
     
     const logs = habitIds.length > 0 
       ? await db.query.habitEntries.findMany({
           where: and(
-            sql`${habitEntries.habitId} IN ${sql.raw(`(${habitIds.map(id => `'${id}'`).join(',')})`)}`,
+            sql`${habitEntries.habitId} IN ${sql.raw(`(${habitIds.map((id: any) => `'${id}'`).join(',')})`)}`,
             gte(habitEntries.date, fromDateString),
             lte(habitEntries.date, toDateString)
           )
@@ -80,7 +80,7 @@ export async function GET(req: NextRequest) {
       : [];
 
     // Group logs by habit and date
-    const logsByHabitAndDate = logs.reduce((acc, log) => {
+    const logsByHabitAndDate = logs.reduce((acc: any, log: any) => {
       const dateKey = typeof log.date === 'string' ? log.date : format(new Date(log.date), 'yyyy-MM-dd');
       const habitKey = log.habitId;
       
@@ -176,7 +176,7 @@ export async function POST(req: NextRequest) {
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {
@@ -250,7 +250,7 @@ export async function PATCH(req: NextRequest) {
 
     // Get user from database
     const userRecord = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.clerkId, userId)
+      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
     });
 
     if (!userRecord) {

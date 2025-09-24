@@ -82,7 +82,7 @@ export async function GET(
 
     // Check if completed today
     const todayKey = format(new Date(), 'yyyy-MM-dd');
-    const todayEntry = entries.find(e => {
+    const todayEntry = entries.find((e: any) => {
       const entryDate = typeof e.date === 'string' ? e.date : format(new Date(e.date), 'yyyy-MM-dd');
       return entryDate === todayKey;
     });
@@ -109,7 +109,7 @@ export async function GET(
     }
 
     // Calculate weekly patterns
-    const weeklyPattern = entries.reduce((acc, entry) => {
+    const weeklyPattern = entries.reduce((acc: any, entry: any) => {
       const entryDate = typeof entry.date === 'string' ? new Date(entry.date) : new Date(entry.date);
       const dayOfWeek = entryDate.getDay();
       const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayOfWeek];
