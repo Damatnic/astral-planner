@@ -1,4 +1,15 @@
 /** @type {import('next').NextConfig} */
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  disable: process.env.NODE_ENV === 'development',
+  register: true,
+  skipWaiting: true
+});
+
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true'
+});
+
 const nextConfig = {
   experimental: {
     optimizePackageImports: [
@@ -16,6 +27,15 @@ const nextConfig = {
   },
   
   serverExternalPackages: ['@neondatabase/serverless'],
+  
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js'
+      }
+    }
+  },
   
   images: {
     formats: ['image/avif', 'image/webp'],
@@ -67,6 +87,15 @@ const nextConfig = {
         ]
       },
       {
+        source: '/sw.js',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate'
+          }
+        ]
+      },
+      {
         source: '/_next/static/(.*)',
         headers: [
           {
@@ -101,4 +130,4 @@ const nextConfig = {
   }
 };
 
-module.exports = nextConfig;
+module.exports = withBundleAnalyzer(withPWA(nextConfig));
