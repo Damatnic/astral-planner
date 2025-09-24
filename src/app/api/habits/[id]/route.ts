@@ -209,16 +209,9 @@ export async function PATCH(
     if (validated.reminderTime !== undefined) updateData.reminderTime = validated.reminderTime;
     if (validated.isActive !== undefined) updateData.isActive = validated.isActive;
 
-    // Handle metadata updates
-    if (validated.color !== undefined || validated.icon !== undefined) {
-      const existingMetadata = existingHabit.metadata || {};
-      updateData.metadata = {
-        ...existingMetadata,
-        ...(validated.color !== undefined && { color: validated.color }),
-        ...(validated.icon !== undefined && { icon: validated.icon }),
-        updatedAt: new Date().toISOString()
-      };
-    }
+    // Handle color and icon updates
+    if (validated.color !== undefined) updateData.color = validated.color;
+    if (validated.icon !== undefined) updateData.icon = validated.icon;
 
     updateData.updatedAt = new Date();
 

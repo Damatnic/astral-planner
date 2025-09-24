@@ -201,11 +201,8 @@ export async function POST(req: NextRequest) {
       longestStreak: 0,
       totalCompleted: 0,
       isActive: true,
-      metadata: {
-        color: validated.color,
-        icon: validated.icon,
-        createdFrom: 'web'
-      }
+      color: validated.color,
+      icon: validated.icon
     }).returning();
 
     return NextResponse.json(newHabit);
