@@ -158,16 +158,17 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
           
           {/* Critical CSS for above-the-fold content */}
-          <style jsx>{`
-            /* Critical CSS will be inlined here */
-            .loading-spinner {
-              animation: spin 1s linear infinite;
-            }
-            @keyframes spin {
-              from { transform: rotate(0deg); }
-              to { transform: rotate(360deg); }
-            }
-          `}</style>
+          <style dangerouslySetInnerHTML={{
+            __html: `
+              .loading-spinner {
+                animation: spin 1s linear infinite;
+              }
+              @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+              }
+            `
+          }} />
         </head>
         <body className={`${inter.className} min-h-screen bg-background font-sans antialiased`}>
           <ErrorBoundary>
