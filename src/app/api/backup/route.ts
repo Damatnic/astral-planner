@@ -2,7 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { blocks, goals, habits, templates, workspaces, workspaceMembers } from '@/db/schema'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, or } from 'drizzle-orm'
 import { z } from 'zod'
 
 // Schema for backup data
@@ -43,9 +43,7 @@ export async function GET(req: NextRequest) {
       // Blocks from user's workspaces
       workspaceIds.length > 0
         ? db.select().from(blocks).where(
-            workspaceIds.map(id => eq(blocks.workspaceId, id)).reduce((acc, condition) => 
-              acc ? db.or(acc, condition) : condition
-            )
+            or(...workspaceIds.map(id => eq(blocks.workspaceId, id)))
           )
         : [],
       
@@ -55,15 +53,13 @@ export async function GET(req: NextRequest) {
       // User's habits
       db.select().from(habits).where(eq(habits.userId, userId)),
       
-      // User's templates
-      db.select().from(templates).where(eq(templates.createdBy, userId)),
+      // User's templates (TODO: fix schema - no createdBy field)
+      [], // db.select().from(templates).where(eq(templates.createdBy, userId)),
       
       // Workspace memberships
       workspaceIds.length > 0
         ? db.select().from(workspaceMembers).where(
-            workspaceIds.map(id => eq(workspaceMembers.workspaceId, id)).reduce((acc, condition) => 
-              acc ? db.or(acc, condition) : condition
-            )
+            or(...workspaceIds.map(id => eq(workspaceMembers.workspaceId, id)))
           )
         : [],
     ])

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { generateTaskSuggestions, breakdownGoal, optimizeSchedule, generateProductivityInsights } from '@/lib/ai/openai'
 import { db } from '@/db'
 import { users, blocks, goals } from '@/db/schema'
-import { eq, and, gte, desc } from 'drizzle-orm'
+import { eq, and, gte, desc, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 const SuggestionsSchema = z.object({
@@ -39,12 +39,16 @@ export async function POST(req: NextRequest) {
     }
 
     // Rate limiting check for AI requests
-    const aiRequestsToday = await db.$count(
-      and(
-        eq(blocks.createdBy, user.id),
-        gte(blocks.createdAt, new Date(new Date().setHours(0, 0, 0, 0)))
+    const aiRequestsResult = await db.select({ count: sql`count(*)` })
+      .from(blocks)
+      .where(
+        and(
+          eq(blocks.createdBy, user.id),
+          gte(blocks.createdAt, new Date(new Date().setHours(0, 0, 0, 0)))
+        )
       )
-    )
+    
+    const aiRequestsToday = Number(aiRequestsResult[0]?.count || 0)
 
     if (aiRequestsToday > 50) { // Limit AI requests per day
       return NextResponse.json(

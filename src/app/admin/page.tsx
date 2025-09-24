@@ -20,7 +20,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Input } from '@/components/ui/input'
-import { useToast } from '@/components/ui/use-toast'
+// import { useToast } from '@/components/ui/use-toast'
 
 interface DashboardStats {
   totalUsers: number
@@ -47,7 +47,7 @@ export default function AdminDashboard() {
   const [activities, setActivities] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const { toast } = useToast()
+  // const { toast } = useToast()
 
   useEffect(() => {
     fetchDashboardData()
@@ -82,11 +82,8 @@ export default function AdminDashboard() {
       setLoading(false)
     } catch (error) {
       console.error('Admin dashboard error:', error)
-      toast({
-        title: 'Error',
-        description: 'Failed to load dashboard data',
-        variant: 'destructive',
-      })
+      // TODO: Replace with proper toast implementation
+      console.error('Failed to load dashboard data')
       setLoading(false)
     }
   }
@@ -106,16 +103,9 @@ export default function AdminDashboard() {
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
       
-      toast({
-        title: 'Export successful',
-        description: 'Admin data has been exported',
-      })
+      console.log('Export successful: Admin data has been exported')
     } catch (error) {
-      toast({
-        title: 'Export failed',
-        description: 'Failed to export admin data',
-        variant: 'destructive',
-      })
+      console.error('Export failed: Failed to export admin data')
     }
   }
 
