@@ -300,7 +300,8 @@ export async function PATCH(req: NextRequest) {
       // Create new log
       [updatedLog] = await db.insert(habitEntries).values({
         habitId,
-        date: logDate,
+        userId: userRecord.id,
+        date: dateKey,
         completed,
         value: value || (completed ? habit.targetValue : 0),
         note: notes
