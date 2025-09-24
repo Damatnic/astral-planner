@@ -244,7 +244,7 @@ export async function DELETE(
     }
 
     // Check if goal has active child goals
-    const activeChildGoals = existingGoal.childGoals?.filter(child => child.status === 'active') || [];
+    const activeChildGoals = existingGoal.childGoals?.filter((child: any) => child.status === 'active') || [];
     
     if (activeChildGoals.length > 0) {
       return NextResponse.json(
