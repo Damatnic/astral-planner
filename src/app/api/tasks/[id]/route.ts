@@ -282,10 +282,12 @@ export async function PATCH(
     updateData.updatedAt = new Date();
 
     // Update task
-    const [updatedTask] = await db.update(blocks)
+    const updatedTaskResult = await db.update(blocks)
       .set(updateData)
       .where(eq(blocks.id, id))
       .returning();
+    
+    const updatedTask = Array.isArray(updatedTaskResult) ? updatedTaskResult[0] : updatedTaskResult;
 
     // Update user stats if task was completed
     if (validated.status === 'completed' && existingTask.status !== 'completed') {
