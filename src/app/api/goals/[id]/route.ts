@@ -157,10 +157,12 @@ export async function PATCH(
 
     updateData.updatedAt = new Date();
 
-    const [updatedGoal] = await db.update(goals)
+    const updatedGoalResult = await db.update(goals)
       .set(updateData)
       .where(eq(goals.id, id))
       .returning();
+    
+    const updatedGoal = Array.isArray(updatedGoalResult) ? updatedGoalResult[0] : updatedGoalResult;
 
     // If progress was updated, log it
     if (validated.progress !== undefined || validated.currentValue !== undefined) {
@@ -254,7 +256,7 @@ export async function DELETE(
     }
 
     // Soft delete by marking as cancelled
-    const [deletedGoal] = await db.update(goals)
+    const deletedGoalResult = await db.update(goals)
       .set({
         status: 'cancelled',
         deletedAt: new Date(),
@@ -262,6 +264,8 @@ export async function DELETE(
       })
       .where(eq(goals.id, id))
       .returning();
+    
+    const deletedGoal = Array.isArray(deletedGoalResult) ? deletedGoalResult[0] : deletedGoalResult;
 
     // Log the deletion in progress
     await db.insert(goalProgress).values({
