@@ -1,4 +1,4 @@
-import { lazy } from 'react'
+import React, { lazy } from 'react'
 import dynamic from 'next/dynamic'
 
 // Lazy load heavy components

@@ -7,8 +7,9 @@ import { eq, and, sql } from 'drizzle-orm';
 // POST /api/templates/[id]/like - Like a template
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const { userId } = auth();
     
@@ -33,7 +34,7 @@ export async function POST(
 
     // Check if template exists
     const template = await db.query.templates.findFirst({
-      where: eq(templates.id, params.id)
+      where: eq(templates.id, id)
     });
 
     if (!template) {
@@ -54,7 +55,7 @@ export async function POST(
     // Check if already liked
     const existingLike = await db.query.templateFavorites.findFirst({
       where: and(
-        eq(templateFavorites.templateId, params.id),
+        eq(templateFavorites.templateId, id),
         eq(templateFavorites.userId, userRecord.id)
       )
     });
@@ -68,7 +69,7 @@ export async function POST(
 
     // Create the like
     await db.insert(templateFavorites).values({
-      templateId: params.id,
+      templateId: id,
       userId: userRecord.id
     });
 
@@ -78,7 +79,7 @@ export async function POST(
         likeCount: sql`${templates.likeCount} + 1`,
         updatedAt: new Date()
       })
-      .where(eq(templates.id, params.id));
+      .where(eq(templates.id, id));
 
     return NextResponse.json({
       message: 'Template liked successfully',
@@ -96,8 +97,9 @@ export async function POST(
 // DELETE /api/templates/[id]/like - Unlike a template
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const { userId } = auth();
     
@@ -123,7 +125,7 @@ export async function DELETE(
     // Check if like exists
     const existingLike = await db.query.templateFavorites.findFirst({
       where: and(
-        eq(templateFavorites.templateId, params.id),
+        eq(templateFavorites.templateId, id),
         eq(templateFavorites.userId, userRecord.id)
       )
     });
@@ -138,7 +140,7 @@ export async function DELETE(
     // Remove the like
     await db.delete(templateFavorites)
       .where(and(
-        eq(templateFavorites.templateId, params.id),
+        eq(templateFavorites.templateId, id),
         eq(templateFavorites.userId, userRecord.id)
       ));
 
@@ -148,7 +150,7 @@ export async function DELETE(
         likeCount: sql`GREATEST(${templates.likeCount} - 1, 0)`,
         updatedAt: new Date()
       })
-      .where(eq(templates.id, params.id));
+      .where(eq(templates.id, id));
 
     return NextResponse.json({
       message: 'Template unliked successfully',

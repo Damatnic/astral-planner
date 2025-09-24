@@ -25,14 +25,15 @@ const UpdateTemplateSchema = z.object({
 // GET /api/templates/[id] - Get specific template
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const { userId } = auth();
 
     // Get template with creator details
     const template = await db.query.templates.findFirst({
-      where: eq(templates.id, params.id),
+      where: eq(templates.id, id),
       with: {
         creator: {
           columns: {
@@ -107,7 +108,7 @@ export async function GET(
         viewCount: sql`${templates.viewCount} + 1`,
         updatedAt: new Date()
       })
-      .where(eq(templates.id, params.id));
+      .where(eq(templates.id, id));
 
     return NextResponse.json({
       ...template,
@@ -132,8 +133,9 @@ export async function GET(
 // PATCH /api/templates/[id] - Update template
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const { userId } = auth();
     
@@ -161,7 +163,7 @@ export async function PATCH(
 
     // Check if template exists and user owns it
     const existingTemplate = await db.query.templates.findFirst({
-      where: eq(templates.id, params.id)
+      where: eq(templates.id, id)
     });
 
     if (!existingTemplate) {
@@ -202,7 +204,7 @@ export async function PATCH(
 
     const [updatedTemplate] = await db.update(templates)
       .set(updateData)
-      .where(eq(templates.id, params.id))
+      .where(eq(templates.id, id))
       .returning();
 
     return NextResponse.json(updatedTemplate);
@@ -226,8 +228,9 @@ export async function PATCH(
 // DELETE /api/templates/[id] - Delete template
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const { userId } = auth();
     
@@ -252,7 +255,7 @@ export async function DELETE(
 
     // Check if template exists and user owns it
     const existingTemplate = await db.query.templates.findFirst({
-      where: eq(templates.id, params.id)
+      where: eq(templates.id, id)
     });
 
     if (!existingTemplate) {
@@ -282,7 +285,7 @@ export async function DELETE(
           deletedAt: new Date().toISOString()
         }
       })
-      .where(eq(templates.id, params.id))
+      .where(eq(templates.id, id))
       .returning();
 
     return NextResponse.json({
