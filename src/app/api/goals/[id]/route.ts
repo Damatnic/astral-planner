@@ -50,13 +50,9 @@ export async function GET(
     const goal = await db.query.goals.findFirst({
       where: (goals, { eq, and }) => and(
         eq(goals.id, id),
-        eq(goals.userId, userRecord.id)
+        eq(goals.createdBy, userRecord.id)
       ),
       with: {
-        progress: {
-          orderBy: (progress: any, { desc }: any) => [desc(progress.date)],
-          limit: 10 // Get last 10 progress entries
-        },
         parentGoal: true,
         childGoals: {
           where: eq(goals.status, 'active')
@@ -71,11 +67,10 @@ export async function GET(
       );
     }
 
-    // Calculate completion percentage and additional metrics
-    const latestProgress = goal.progress[0];
-    const currentValue = latestProgress?.value || goal.currentValue;
-    const completionPercentage = goal.targetValue
-      ? Math.min((currentValue / goal.targetValue) * 100, 100)
+    // Calculate completion percentage and additional metrics  
+    const currentValue = goal.currentValue;
+    const completionPercentage = goal.targetValue && currentValue
+      ? Math.min((Number(currentValue) / Number(goal.targetValue)) * 100, 100)
       : 0;
 
     return NextResponse.json({
@@ -131,7 +126,7 @@ export async function PATCH(
     const existingGoal = await db.query.goals.findFirst({
       where: (goals, { eq, and }) => and(
         eq(goals.id, id),
-        eq(goals.userId, userRecord.id)
+        eq(goals.createdBy, userRecord.id)
       )
     });
 
@@ -167,7 +162,7 @@ export async function PATCH(
     // If progress was updated, log it
     if (validated.progress !== undefined || validated.currentValue !== undefined) {
       const progressValue = validated.progress !== undefined 
-        ? (validated.progress / 100) * (updatedGoal.targetValue || 100)
+        ? (validated.progress / 100) * Number(updatedGoal.targetValue || 100)
         : validated.currentValue;
 
       await db.insert(goalProgress).values({
@@ -229,7 +224,7 @@ export async function DELETE(
     const existingGoal = await db.query.goals.findFirst({
       where: (goals, { eq, and }) => and(
         eq(goals.id, id),
-        eq(goals.userId, userRecord.id)
+        eq(goals.createdBy, userRecord.id)
       ),
       with: {
         childGoals: true
@@ -260,7 +255,6 @@ export async function DELETE(
     const deletedGoalResult = await db.update(goals)
       .set({
         status: 'cancelled',
-        deletedAt: new Date(),
         updatedAt: new Date()
       })
       .where(eq(goals.id, id))

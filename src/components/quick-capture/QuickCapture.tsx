@@ -96,7 +96,7 @@ export function QuickCapture({
     if (input.length > 5 && !input.startsWith('/') && showSuggestions) {
       const debounceTimer = setTimeout(async () => {
         const suggestion = await parseInput(input, { preview: true });
-        if (suggestion) {
+        if (suggestion && typeof suggestion === 'string') {
           setAiSuggestion(suggestion);
         }
       }, 500);
@@ -160,7 +160,7 @@ export function QuickCapture({
       } else if (!input.startsWith('/')) {
         // Use AI to parse natural language
         const parsed = await parseInput(input);
-        if (parsed) {
+        if (parsed && typeof parsed === 'object') {
           type = parsed.type || 'task';
           processedInput = parsed.title || input;
         }

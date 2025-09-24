@@ -117,10 +117,10 @@ export function TaskForm({
   const [showAdvanced, setShowAdvanced] = useState(false);
   
   const titleInputRef = useRef<HTMLInputElement>(null);
-  const recognition = useRef<SpeechRecognition | null>(null);
+  const recognition = useRef<any>(null);
 
   const form = useForm<TaskFormValues>({
-    resolver: zodResolver(taskFormSchema),
+    resolver: zodResolver(taskFormSchema) as any,
     defaultValues: {
       title: task?.title || '',
       description: task?.description || '',
@@ -157,7 +157,7 @@ export function TaskForm({
         setIsVoiceRecording(true);
       };
 
-      recognition.current.onresult = (event: SpeechRecognitionEvent) => {
+      recognition.current.onresult = (event: any) => {
         let finalTranscript = '';
         for (let i = event.resultIndex; i < event.results.length; i++) {
           if (event.results[i].isFinal) {
@@ -169,7 +169,7 @@ export function TaskForm({
         }
       };
 
-      recognition.current.onerror = (event) => {
+      recognition.current.onerror = (event: any) => {
         console.error('Speech recognition error:', event.error);
         setIsVoiceRecording(false);
       };

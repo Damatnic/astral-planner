@@ -83,7 +83,8 @@ export default authMiddleware({
         return NextResponse.redirect(new URL('/sign-in', req.url));
       }
       
-      const userRole = auth.sessionClaims?.metadata?.role as string;
+      const metadata = auth.sessionClaims?.metadata as Record<string, any> | undefined;
+      const userRole = metadata?.role as string;
       if (userRole !== 'admin' && userRole !== 'super_admin') {
         return NextResponse.redirect(new URL('/dashboard', req.url));
       }
@@ -91,7 +92,8 @@ export default authMiddleware({
 
     // Check onboarding completion
     if (auth.userId && !req.nextUrl.pathname.startsWith('/onboarding')) {
-      const onboardingCompleted = auth.sessionClaims?.metadata?.onboardingCompleted as boolean;
+      const metadata = auth.sessionClaims?.metadata as Record<string, any> | undefined;
+      const onboardingCompleted = metadata?.onboardingCompleted as boolean;
       if (!onboardingCompleted) {
         return NextResponse.redirect(new URL('/onboarding', req.url));
       }

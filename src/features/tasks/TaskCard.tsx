@@ -1,6 +1,6 @@
 'use client'
 
-import { Task } from '@/types'
+import { Task } from './types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -74,16 +74,10 @@ export function TaskCard({ task, onEdit, onDelete, onComplete }: TaskCardProps) 
                 {new Date(task.dueDate).toLocaleDateString()}
               </div>
             )}
-            {task.estimatedHours && (
-              <div className="flex items-center gap-1">
-                <Clock className="w-4 h-4" />
-                {task.estimatedHours}h
-              </div>
-            )}
           </div>
           
           <div className="flex gap-2">
-            {task.status !== 'completed' && (
+            {task.status !== 'done' && (
               <Button
                 size="sm"
                 variant="outline"

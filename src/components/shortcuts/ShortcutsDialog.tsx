@@ -159,3 +159,5 @@ export function ShortcutsDialog({ open, onOpenChange }: ShortcutsDialogProps) {
     </Dialog>
   )
 }
+
+export default ShortcutsDialog;

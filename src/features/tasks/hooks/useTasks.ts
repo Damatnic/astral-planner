@@ -199,7 +199,7 @@ export function useTasks(options: UseTasksOptions = {}) {
                 ...task,
                 ...data,
                 updatedAt: new Date(),
-              }
+              } as Task
             : task
         )
       );
@@ -438,17 +438,16 @@ export function useTasks(options: UseTasksOptions = {}) {
     const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
 
     updateTask(id, { 
-      status: nextStatus,
-      completedAt: nextStatus === 'done' ? new Date() : undefined,
+      status: nextStatus
     });
   }, [getTaskById, updateTask]);
 
   const archiveTask = useCallback((id: string) => {
-    updateTask(id, { archived: true });
+    updateTask(id, { archived: true } as any);
   }, [updateTask]);
 
   const unarchiveTask = useCallback((id: string) => {
-    updateTask(id, { archived: false });
+    updateTask(id, { archived: false } as any);
   }, [updateTask]);
 
   return {

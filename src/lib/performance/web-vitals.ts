@@ -125,7 +125,7 @@ class WebVitalsReporter {
     if (typeof window === 'undefined' || !window.gtag) return
 
     metrics.forEach(metric => {
-      window.gtag('event', metric.name, {
+      window.gtag!('event', metric.name, {
         event_category: 'Web Vitals',
         event_label: metric.id,
         value: Math.round(metric.value),
@@ -142,7 +142,8 @@ class WebVitalsReporter {
     if (typeof window === 'undefined' || !window.va) return
 
     metrics.forEach(metric => {
-      window.va('track', 'Web Vitals', {
+      window.va?.('event', {
+        event_name: 'Web Vitals',
         metric_name: metric.name,
         metric_value: metric.value,
         metric_rating: metric.rating,

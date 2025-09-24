@@ -62,6 +62,8 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@react-email/components": "^0.5.4",
     "@sentry/nextjs": "^10.14.0",
+    "@slack/events-api": "^3.0.1",
+    "@slack/web-api": "^7.10.0",
     "@tanstack/react-query": "^5.90.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/react-window": "^1.8.8",
@@ -71,7 +73,7 @@
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
-    "cmdk": "^0.2.0",
+    "cmdk": "^0.2.1",
     "date-fns": "^2.30.0",
     "drizzle-kit": "^0.20.4",
     "drizzle-orm": "^0.29.0",
@@ -116,7 +118,9 @@
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^13.4.0",
     "@types/jest": "^29.5.8",
+    "@types/lru-cache": "^7.10.9",
     "@types/node": "^20.8.10",
+    "@types/papaparse": "^5.3.16",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@types/uuid": "^10.0.0",
@@ -128,7 +132,8 @@
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.5",
     "tsx": "^4.6.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "winston": "^3.17.0"
   },
   "keywords": [
     "planner",

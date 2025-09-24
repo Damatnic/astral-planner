@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
             }),
             db.query.goals.findMany({
               where: and(
-                eq(goals.userId, user.id),
+                eq(goals.createdBy, user.id),
                 eq(goals.status, 'active')
               ),
               limit: 5,

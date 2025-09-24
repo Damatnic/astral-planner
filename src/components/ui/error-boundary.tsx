@@ -319,5 +319,4 @@ export {
   ErrorBoundaryClass as ErrorBoundary,
   DefaultErrorFallback,
   type ErrorBoundaryProps,
-  type ErrorFallbackProps,
 }

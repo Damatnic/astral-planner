@@ -215,10 +215,12 @@ export async function PATCH(
 
     updateData.updatedAt = new Date();
 
-    const [updatedHabit] = await db.update(habits)
+    const updatedHabitResult = await db.update(habits)
       .set(updateData)
       .where(eq(habits.id, id))
       .returning();
+      
+    const updatedHabit = Array.isArray(updatedHabitResult) ? updatedHabitResult[0] : updatedHabitResult;
 
     return NextResponse.json(updatedHabit);
   } catch (error) {
@@ -300,7 +302,7 @@ export async function DELETE(
       });
     } else {
       // Soft delete: Mark as inactive
-      const [deletedHabit] = await db.update(habits)
+      const deletedHabitResult = await db.update(habits)
         .set({
           status: 'abandoned',
           isArchived: true,
@@ -309,6 +311,8 @@ export async function DELETE(
         })
         .where(eq(habits.id, id))
         .returning();
+        
+      const deletedHabit = Array.isArray(deletedHabitResult) ? deletedHabitResult[0] : deletedHabitResult;
 
       return NextResponse.json({
         message: 'Habit archived successfully',

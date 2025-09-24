@@ -13,7 +13,7 @@ export const blocks = pgTable('blocks', {
   
   // Hierarchy and organization
   workspaceId: uuid('workspace_id').references(() => workspaces.id).notNull(),
-  parentId: uuid('parent_id').references(() => blocks.id),
+  parentId: uuid('parent_id'),
   position: integer('position').notNull().default(0),
   path: text('path'), // materialized path for fast queries
   
@@ -41,7 +41,7 @@ export const blocks = pgTable('blocks', {
   // Recurrence
   isRecurring: boolean('is_recurring').default(false),
   recurrenceRule: jsonb('recurrence_rule'), // RRULE-like structure
-  recurrenceParentId: uuid('recurrence_parent_id').references(() => blocks.id),
+  recurrenceParentId: uuid('recurrence_parent_id'),
   
   // Reminders and notifications
   reminders: jsonb('reminders').default([]), // array of reminder objects
@@ -105,7 +105,7 @@ export const blockComments = pgTable('block_comments', {
   blockId: uuid('block_id').references(() => blocks.id).notNull(),
   userId: uuid('user_id').references(() => users.id).notNull(),
   content: text('content').notNull(),
-  parentId: uuid('parent_id').references(() => blockComments.id),
+  parentId: uuid('parent_id'),
   isResolved: boolean('is_resolved').default(false),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
@@ -154,11 +154,11 @@ export const blockRelations = relations(blocks, ({ one, many }) => ({
     fields: [blocks.workspaceId],
     references: [workspaces.id]
   }),
-  parent: one(blocks, {
-    fields: [blocks.parentId],
-    references: [blocks.id]
-  }),
-  children: many(blocks),
+  // parent: one(blocks, {
+  //   fields: [blocks.parentId],
+  //   references: [blocks.id]
+  // }),
+  // children: many(blocks),
   creator: one(users, {
     fields: [blocks.createdBy],
     references: [users.id]

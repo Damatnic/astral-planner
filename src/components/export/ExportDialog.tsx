@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useToast } from '@/lib/hooks/use-toast'
+import { useToast } from '@/hooks/use-toast'
 import { Download, FileText, FileSpreadsheet, Loader2 } from 'lucide-react'
 import { exportTasksToCSV, exportGoalsToCSV, exportHabitsToCSV, downloadCSV } from '@/lib/export/csv'
 import { exportTasksToPDF, exportGoalsToPDF, exportHabitsToPDF, downloadPDF } from '@/lib/export/pdf'
@@ -210,7 +210,7 @@ export function ExportDialog({ children, dataType, data = [] }: ExportDialogProp
           </div>
 
           <div className="text-sm text-muted-foreground">
-            {filteredData?.length || data.length} items will be exported
+            {data.length} items will be exported
           </div>
         </div>
 
@@ -227,3 +227,5 @@ export function ExportDialog({ children, dataType, data = [] }: ExportDialogProp
     </Dialog>
   )
 }
+
+export default ExportDialog;

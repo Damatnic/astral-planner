@@ -101,7 +101,7 @@ export const templateCategories = pgTable('template_categories', {
   slug: varchar('slug', { length: 100 }).unique().notNull(),
   
   // Hierarchy
-  parentId: uuid('parent_id').references(() => templateCategories.id),
+  parentId: uuid('parent_id'),
   level: integer('level').default(0),
   path: varchar('path', { length: 500 }), // Hierarchical path like /business/marketing
   

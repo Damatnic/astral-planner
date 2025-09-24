@@ -187,7 +187,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Create the habit
-    const [newHabit] = await db.insert(habits).values({
+    const newHabitResult = await db.insert(habits).values({
       userId: userRecord.id,
       workspaceId: userRecord.id,
       name: validated.name,
@@ -205,6 +205,8 @@ export async function POST(req: NextRequest) {
       color: validated.color,
       icon: validated.icon
     }).returning();
+
+    const newHabit = Array.isArray(newHabitResult) ? newHabitResult[0] : newHabitResult;
 
     return NextResponse.json(newHabit);
   } catch (error) {

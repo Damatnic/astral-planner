@@ -97,12 +97,12 @@ export async function GET(req: NextRequest) {
       exportData.tasks = tasks.map(task => ({
         id: task.id,
         title: task.title,
-        description: task.content?.description,
+        description: task.description,
         status: task.status,
         priority: task.priority,
         tags: task.tags,
-        dueDate: task.metadata?.dueDate,
-        completedAt: task.metadata?.completedAt,
+        dueDate: task.dueDate,
+        completedAt: task.completedAt,
         createdAt: task.createdAt,
         updatedAt: task.updatedAt
       }));
@@ -110,7 +110,7 @@ export async function GET(req: NextRequest) {
 
     // Export goals
     if (scope === 'all' || scope === 'goals') {
-      const goalConditions = [eq(goals.userId, userRecord.id)];
+      const goalConditions = [eq(goals.createdBy, userRecord.id)];
       
       if (!includeArchived) {
         goalConditions.push(eq(goals.status, 'active'));
@@ -118,11 +118,7 @@ export async function GET(req: NextRequest) {
 
       const userGoals = await db.query.goals.findMany({
         where: and(...applyDateFilter(goalConditions, goals)),
-        with: {
-          progress: {
-            orderBy: (progress: any, { desc }: any) => [desc(progress.date)]
-          }
-        }
+        with: {}
       });
 
       exportData.goals = userGoals.map(goal => ({
@@ -135,11 +131,7 @@ export async function GET(req: NextRequest) {
         currentValue: goal.currentValue,
         targetDate: goal.targetDate,
         status: goal.status,
-        progress: goal.progress.map((p: any) => ({
-          date: p.date,
-          value: p.value,
-          notes: p.notes
-        })),
+        progress: goal.progress || 0,
         createdAt: goal.createdAt,
         updatedAt: goal.updatedAt
       }));

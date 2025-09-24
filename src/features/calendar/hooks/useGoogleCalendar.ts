@@ -127,7 +127,7 @@ export function useGoogleCalendar() {
 
   // Queries
   const {
-    data: calendars = [],
+    data: calendarsData,
     isLoading: isLoadingCalendars,
     error: calendarsError,
     refetch: refetchCalendars,
@@ -137,6 +137,8 @@ export function useGoogleCalendar() {
     retry: false, // Don't retry if not authenticated
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  const calendars = calendarsData?.calendars || [];
 
   // Mutations
   const connectMutation = useMutation({

@@ -45,7 +45,7 @@ export async function POST(
     }
 
     // Check if template is public or user owns it
-    if (!template.isPublic && template.createdBy !== userRecord.id) {
+    if (template.status !== 'published' && template.creatorId !== userRecord.id) {
       return NextResponse.json(
         { error: 'Cannot like private template' },
         { status: 403 }
@@ -76,7 +76,7 @@ export async function POST(
     // Increment like count
     await db.update(templates)
       .set({
-        likeCount: sql`${templates.likeCount} + 1`,
+        favoriteCount: sql`${templates.favoriteCount} + 1`,
         updatedAt: new Date()
       })
       .where(eq(templates.id, id));
@@ -147,7 +147,7 @@ export async function DELETE(
     // Decrement like count
     await db.update(templates)
       .set({
-        likeCount: sql`GREATEST(${templates.likeCount} - 1, 0)`,
+        favoriteCount: sql`GREATEST(${templates.favoriteCount} - 1, 0)`,
         updatedAt: new Date()
       })
       .where(eq(templates.id, id));

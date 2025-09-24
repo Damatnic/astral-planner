@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '@clerk/nextjs'
 import { subscribeTo, getPusherClient } from '@/lib/pusher/client'
-import { useToast } from '@/lib/hooks/use-toast'
+import { useToast } from '@/hooks/use-toast'
 
 interface RealtimeOptions {
   userId?: string

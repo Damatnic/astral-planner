@@ -23,9 +23,9 @@ export function useAIParser() {
       if (!response.ok) throw new Error('Failed to parse input');
       return response.json();
     },
-    onError: (error) => {
+    onError: (error, variables) => {
       console.error('AI parsing error:', error);
-      if (!options?.preview) {
+      if (!variables.options?.preview) {
         toast.error('Failed to parse input. Using basic parsing.');
       }
     }

@@ -6,7 +6,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
-import { useToast } from '@/lib/hooks/use-toast'
+import { useToast } from '@/hooks/use-toast'
 import {
   Search, Home, CheckSquare, Target, Activity,
   Calendar, Settings, Plus, FileText, Users,
@@ -326,3 +326,5 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     </Dialog>
   )
 }
+
+export default CommandPalette;

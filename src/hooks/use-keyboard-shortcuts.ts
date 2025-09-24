@@ -1,6 +1,6 @@
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useRouter } from 'next/navigation'
-import { useToast } from '@/lib/hooks/use-toast'
+import { useToast } from '@/hooks/use-toast'
 import { useState, useCallback } from 'react'
 
 export interface KeyboardShortcut {

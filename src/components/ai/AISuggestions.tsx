@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useToast } from '@/lib/hooks/use-toast'
+import { useToast } from '@/hooks/use-toast'
 import { 
   Brain, Lightbulb, Target, Clock, TrendingUp, 
   Plus, Loader2, CheckCircle, Calendar,
@@ -476,3 +476,5 @@ export function AISuggestions() {
     </div>
   )
 }
+
+export default AISuggestions;

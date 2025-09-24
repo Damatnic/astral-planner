@@ -67,9 +67,11 @@ export class SlackIntegrationService {
     // Store integration in database
     await db.insert(integrations).values({
       userId,
+      name: 'Slack Integration',
+      type: 'communication',
       provider: 'slack',
-      enabled: true,
-      config: {
+      authType: 'oauth2',
+      credentials: {
         access_token: data.access_token,
         team_id: data.team.id,
         team_name: data.team.name,
@@ -79,11 +81,12 @@ export class SlackIntegrationService {
         app_id: data.app_id,
         scope: data.scope
       } as SlackConfig,
+      status: 'active',
       lastSyncAt: new Date()
     }).onConflictDoUpdate({
       target: [integrations.userId, integrations.provider],
       set: {
-        config: {
+        credentials: {
           access_token: data.access_token,
           team_id: data.team.id,
           team_name: data.team.name,
@@ -93,7 +96,7 @@ export class SlackIntegrationService {
           app_id: data.app_id,
           scope: data.scope
         },
-        enabled: true,
+        status: 'active',
         lastSyncAt: new Date()
       }
     });
@@ -125,6 +128,7 @@ export class SlackIntegrationService {
   async sendTaskNotification(
     userId: string,
     task: {
+      id?: string;
       title: string;
       description?: string;
       dueDate?: Date;
@@ -189,15 +193,15 @@ export class SlackIntegrationService {
         });
       }
       
-      blocks.push({
+      (blocks as any).push({
         type: 'section',
-        fields
+        fields: fields
       });
     }
 
     // Add action buttons
     if (task.url) {
-      blocks.push({
+      (blocks as any).push({
         type: 'actions',
         elements: [
           {
@@ -217,7 +221,7 @@ export class SlackIntegrationService {
               text: 'Mark Complete',
               emoji: true
             },
-            action_id: `complete_task_${task.id}`,
+            action_id: `complete_task_${task.id || 'unknown'}`,
             style: 'primary'
           }
         ]
@@ -245,8 +249,8 @@ export class SlackIntegrationService {
       type: 'task_created',
       title: 'Task notification sent to Slack',
       message: `Task "${task.title}" was shared to Slack`,
-      channel: 'slack',
-      status: 'sent',
+      channels: ['slack'],
+      status: 'unread',
       sentAt: new Date()
     });
   }
@@ -321,7 +325,7 @@ export class SlackIntegrationService {
 
     // Add productivity score if available
     if (summary.productivityScore !== undefined) {
-      blocks.push({
+      (blocks as any).push({
         type: 'section',
         text: {
           type: 'mrkdwn',
@@ -335,7 +339,7 @@ export class SlackIntegrationService {
 
     // Add upcoming events
     if (summary.upcomingEvents.length > 0) {
-      blocks.push(
+      (blocks as any).push(
         {
           type: 'section',
           text: {
@@ -357,7 +361,7 @@ export class SlackIntegrationService {
 
     // Add top priorities
     if (summary.topPriorities.length > 0) {
-      blocks.push(
+      (blocks as any).push(
         {
           type: 'section',
           text: {
@@ -450,7 +454,7 @@ export class SlackIntegrationService {
     }
 
     // Create task in database
-    const [task] = await db.insert(blocks).values({
+    const taskResult = await db.insert(blocks).values({
       type: 'task',
       title: text,
       workspaceId: 'default', // Would get from user's default workspace
@@ -459,6 +463,8 @@ export class SlackIntegrationService {
       priority: 'medium',
       position: 0
     }).returning();
+    
+    const task = Array.isArray(taskResult) ? taskResult[0] : taskResult;
 
     return {
       response_type: 'in_channel',

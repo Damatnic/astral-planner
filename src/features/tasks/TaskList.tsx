@@ -422,7 +422,7 @@ export function TaskList({
 
   return (
     <div 
-      ref={drop}
+      ref={drop as any}
       className={cn(
         'h-full bg-white dark:bg-gray-900 transition-colors',
         isOver && 'bg-blue-50 dark:bg-blue-900/20',

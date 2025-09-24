@@ -60,12 +60,13 @@ export async function GET(req: NextRequest) {
     }
 
     if (search) {
-      conditions.push(
-        or(
-          like(blocks.title, `%${search}%`),
-          like(blocks.description, `%${search}%`)
-        )
+      const searchCondition = or(
+        like(blocks.title, `%${search}%`),
+        like(blocks.description, `%${search}%`)
       );
+      if (searchCondition) {
+        conditions.push(searchCondition);
+      }
     }
 
     // Get user from database to check permissions
@@ -111,10 +112,10 @@ export async function GET(req: NextRequest) {
     });
 
     // Get total count for pagination
-    const totalCount = await db.$count(
-      blocks,
-      and(...conditions)
-    );
+    const totalCount = await db.select({ count: sql`count(*)` })
+      .from(blocks)
+      .where(and(...conditions))
+      .then(result => Number(result[0]?.count || 0));
 
     return NextResponse.json({
       tasks,
@@ -200,7 +201,7 @@ export async function POST(req: NextRequest) {
     const position = lastTask ? lastTask.position + 1 : 0;
 
     // Create the task
-    const [newTask] = await db.insert(blocks).values({
+    const newTaskResult = await db.insert(blocks).values({
       ...validated,
       createdBy: userRecord.id,
       position,
@@ -214,6 +215,8 @@ export async function POST(req: NextRequest) {
       dueDate: validated.dueDate ? new Date(validated.dueDate) : undefined,
       startDate: validated.startDate ? new Date(validated.startDate) : undefined,
     }).returning();
+
+    const newTask = Array.isArray(newTaskResult) ? newTaskResult[0] : newTaskResult;
 
     // Update user stats
     await db.update(users)

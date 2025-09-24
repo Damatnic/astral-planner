@@ -27,7 +27,7 @@ export class ComponentPreloader {
       })
     })
 
-    this.processPrloadQueue()
+    this.processPreloadQueue()
   }
 
   // Preload components on user interaction
@@ -123,23 +123,6 @@ export class ComponentPreloader {
 
       this.processPreloadQueue()
     }
-  }
-
-  private async processPreloadQueue() {
-    if (this.isPreloading || this.preloadQueue.length === 0) return
-
-    this.isPreloading = true
-
-    while (this.preloadQueue.length > 0) {
-      const preloadFn = this.preloadQueue.shift()
-      if (preloadFn) {
-        await preloadFn()
-        // Small delay to prevent blocking the main thread
-        await new Promise(resolve => setTimeout(resolve, 10))
-      }
-    }
-
-    this.isPreloading = false
   }
 
   private async processPreloadQueue() {
@@ -287,7 +270,7 @@ export class PreloadPerformanceMonitor {
     
     if (typeof window !== 'undefined' && window.gtag) {
       Object.entries(metrics).forEach(([key, value]) => {
-        window.gtag('event', 'preload_performance', {
+        window.gtag!('event', 'preload_performance', {
           event_category: 'Performance',
           event_label: key,
           value: Math.round(value)

@@ -9,7 +9,7 @@ export async function hasPermission(permission: Permission): Promise<boolean> {
   
   if (!userId) return false;
   
-  const userRole = (sessionClaims?.metadata?.role as Role) || 'FREE';
+  const userRole = ((sessionClaims as any)?.metadata?.role as Role) || 'FREE';
   const userPermissions = permissions[userRole] || permissions.FREE;
   
   // Admin has all permissions
@@ -36,7 +36,7 @@ export async function hasFeature(feature: keyof typeof featureFlags.FREE): Promi
   
   if (!userId) return false;
   
-  const userRole = (sessionClaims?.metadata?.role as Role) || 'FREE';
+  const userRole = ((sessionClaims as any)?.metadata?.role as Role) || 'FREE';
   const userFeatures = featureFlags[userRole] || featureFlags.FREE;
   
   return Boolean(userFeatures[feature]);
@@ -50,7 +50,7 @@ export async function getFeatureLimits() {
   
   if (!userId) return featureFlags.FREE;
   
-  const userRole = (sessionClaims?.metadata?.role as Role) || 'FREE';
+  const userRole = ((sessionClaims as any)?.metadata?.role as Role) || 'FREE';
   return featureFlags[userRole] || featureFlags.FREE;
 }
 
@@ -118,7 +118,7 @@ export async function isWorkspaceAdmin(workspaceId: string): Promise<boolean> {
  */
 export async function getUserRole(): Promise<Role> {
   const { sessionClaims } = auth();
-  return (sessionClaims?.metadata?.role as Role) || 'FREE';
+  return ((sessionClaims as any)?.metadata?.role as Role) || 'FREE';
 }
 
 /**

@@ -46,27 +46,30 @@ export class GoogleCalendarService {
     // Store tokens in database
     await db.insert(integrations).values({
       userId,
+      name: 'Google Calendar',
+      type: 'calendar',
       provider: 'google_calendar',
-      enabled: true,
-      config: {
+      authType: 'oauth2',
+      credentials: {
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token,
         expiry_date: tokens.expiry_date,
         token_type: tokens.token_type,
         scope: tokens.scope
       },
+      status: 'active',
       lastSyncAt: new Date()
     }).onConflictDoUpdate({
       target: [integrations.userId, integrations.provider],
       set: {
-        config: {
+        credentials: {
           access_token: tokens.access_token,
           refresh_token: tokens.refresh_token,
           expiry_date: tokens.expiry_date,
           token_type: tokens.token_type,
           scope: tokens.scope
         },
-        enabled: true,
+        status: 'active',
         lastSyncAt: new Date()
       }
     });
@@ -144,23 +147,27 @@ export class GoogleCalendarService {
     });
 
     // Store or update calendar in database
-    const [dbCalendar] = await db.insert(calendars).values({
+    const dbCalendarResult = await db.insert(calendars).values({
       userId,
       name: calendarResponse.data.summary || 'Google Calendar',
       description: calendarResponse.data.description,
       color: '#4285F4', // Google blue
-      provider: 'google',
+      source: 'google',
       externalId: calendarId,
-      syncEnabled: true
+      lastSyncAt: new Date(),
+      syncStatus: 'active'
     }).onConflictDoUpdate({
       target: [calendars.externalId],
       set: {
         name: calendarResponse.data.summary || 'Google Calendar',
         description: calendarResponse.data.description,
-        syncEnabled: true,
+        lastSyncAt: new Date(),
+        syncStatus: 'active',
         updatedAt: new Date()
       }
     }).returning();
+    
+    const dbCalendar = Array.isArray(dbCalendarResult) ? dbCalendarResult[0] : dbCalendarResult;
 
     // Fetch events from Google Calendar
     const now = new Date();
@@ -180,7 +187,7 @@ export class GoogleCalendarService {
 
     // Sync events to database
     for (const event of googleEvents) {
-      await this.syncEvent(dbCalendar.id, event);
+      await this.syncEvent(userId, dbCalendar.id, event);
     }
 
     // Update last sync time
@@ -198,6 +205,7 @@ export class GoogleCalendarService {
    * Sync individual event
    */
   private async syncEvent(
+    userId: string,
     calendarId: string, 
     event: calendar_v3.Schema$Event
   ): Promise<void> {
@@ -208,20 +216,18 @@ export class GoogleCalendarService {
 
     await db.insert(eventsTable).values({
       calendarId,
+      userId,
       title: event.summary || 'Untitled Event',
       description: event.description,
       startTime: new Date(startTime),
       endTime: new Date(endTime),
       isAllDay: !event.start?.dateTime,
-      location: event.location,
+      location: typeof event.location === 'string' ? { address: event.location } : {},
       externalId: event.id,
-      externalData: {
-        htmlLink: event.htmlLink,
-        status: event.status,
-        visibility: event.visibility,
-        attendees: event.attendees,
-        reminders: event.reminders
-      }
+      status: event.status || 'confirmed',
+      attendees: event.attendees || [],
+      organizer: event.organizer || {},
+      externalUrl: event.htmlLink || ''
     }).onConflictDoUpdate({
       target: [eventsTable.externalId],
       set: {
@@ -230,14 +236,11 @@ export class GoogleCalendarService {
         startTime: new Date(startTime),
         endTime: new Date(endTime),
         isAllDay: !event.start?.dateTime,
-        location: event.location,
-        externalData: {
-          htmlLink: event.htmlLink,
-          status: event.status,
-          visibility: event.visibility,
-          attendees: event.attendees,
-          reminders: event.reminders
-        },
+        location: typeof event.location === 'string' ? { address: event.location } : {},
+        status: event.status || 'confirmed',
+        attendees: event.attendees || [],
+        organizer: event.organizer || {},
+        externalUrl: event.htmlLink || '',
         updatedAt: new Date()
       }
     });

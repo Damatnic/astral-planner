@@ -182,13 +182,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
               <QueryProvider>
                 <AnalyticsProvider>
                   <PWAProvider>
-                    <div className="relative flex min-h-screen flex-col">
-                      <div className="flex-1">
-                        {children}
+                    <ToastProvider>
+                      <div className="relative flex min-h-screen flex-col">
+                        <div className="flex-1">
+                          {children}
+                        </div>
                       </div>
-                    </div>
-                    <ToastProvider />
-                    <Analytics />
+                      <Analytics />
+                    </ToastProvider>
                   </PWAProvider>
                 </AnalyticsProvider>
               </QueryProvider>

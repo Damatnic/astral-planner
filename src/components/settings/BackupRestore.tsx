@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Download, Upload, AlertCircle, CheckCircle } from 'lucide-react'
-import { useToast } from '@/lib/hooks/use-toast'
+import { useToast } from '@/hooks/use-toast'
 
 export function BackupRestore() {
   const [isBackingUp, setIsBackingUp] = useState(false)

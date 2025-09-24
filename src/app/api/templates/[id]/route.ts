@@ -54,18 +54,18 @@ export async function GET(
     }
 
     // Check if user has access to this template
-    if (!template.isPublic && userId) {
+    if (template.status !== 'published' && userId) {
       const userRecord = await db.query.users.findFirst({
         where: (users, { eq }) => eq(users.clerkId, userId)
       });
 
-      if (!userRecord || template.createdBy !== userRecord.id) {
+      if (!userRecord || template.creatorId !== userRecord.id) {
         return NextResponse.json(
           { error: 'Access denied' },
           { status: 403 }
         );
       }
-    } else if (!template.isPublic && !userId) {
+    } else if (template.status !== 'published' && !userId) {
       return NextResponse.json(
         { error: 'Template is private' },
         { status: 403 }
@@ -102,22 +102,17 @@ export async function GET(
       }
     }
 
-    // Increment view count
-    await db.update(templates)
-      .set({
-        viewCount: sql`${templates.viewCount} + 1`,
-        updatedAt: new Date()
-      })
-      .where(eq(templates.id, id));
+    // Note: View count tracking not implemented as templates table doesn't have viewCount field
+    // Could track in a separate analytics table if needed
 
     return NextResponse.json({
       ...template,
       isLiked,
       hasUsed,
-      author: template.creator ? 
+      author: template.creator && !Array.isArray(template.creator) ? 
         `${template.creator.firstName} ${template.creator.lastName}` : 
         'Anonymous',
-      isOwner: userId && template.creator ? 
+      isOwner: userId && template.creator && !Array.isArray(template.creator) ? 
         template.creator.id === userId : 
         false
     });
@@ -173,7 +168,7 @@ export async function PATCH(
       );
     }
 
-    if (existingTemplate.createdBy !== userRecord.id) {
+    if (existingTemplate.creatorId !== userRecord.id) {
       return NextResponse.json(
         { error: 'Access denied - you can only update your own templates' },
         { status: 403 }
@@ -192,20 +187,19 @@ export async function PATCH(
     if (validated.isPro !== undefined) updateData.isPro = validated.isPro;
     if (validated.previewImage !== undefined) updateData.previewImage = validated.previewImage;
 
-    // Update metadata
-    updateData.metadata = {
-      ...existingTemplate.metadata,
-      version: (existingTemplate.metadata as any)?.version ? 
-        ((existingTemplate.metadata as any).version + 1) : 2,
-      lastModified: new Date().toISOString()
-    };
+    // Update version for template changes
+    updateData.version = existingTemplate.version ? 
+      `${parseInt(existingTemplate.version.split('.')[0]) + 1}.0.0` : 
+      '2.0.0';
     
     updateData.updatedAt = new Date();
 
-    const [updatedTemplate] = await db.update(templates)
+    const updatedTemplateResult = await db.update(templates)
       .set(updateData)
       .where(eq(templates.id, id))
       .returning();
+      
+    const updatedTemplate = Array.isArray(updatedTemplateResult) ? updatedTemplateResult[0] : updatedTemplateResult;
 
     return NextResponse.json(updatedTemplate);
   } catch (error) {
@@ -265,7 +259,7 @@ export async function DELETE(
       );
     }
 
-    if (existingTemplate.createdBy !== userRecord.id) {
+    if (existingTemplate.creatorId !== userRecord.id) {
       return NextResponse.json(
         { error: 'Access denied - you can only delete your own templates' },
         { status: 403 }
@@ -274,19 +268,16 @@ export async function DELETE(
 
     // Soft delete by marking as inactive instead of hard delete
     // This preserves usage history and allows for recovery
-    const [deletedTemplate] = await db.update(templates)
+    const deletedTemplateResult = await db.update(templates)
       .set({
-        isPublic: false,
+        status: 'draft', // Change status from published to draft
         deletedAt: new Date(),
-        updatedAt: new Date(),
-        metadata: {
-          ...existingTemplate.metadata,
-          deleted: true,
-          deletedAt: new Date().toISOString()
-        }
+        updatedAt: new Date()
       })
       .where(eq(templates.id, id))
       .returning();
+      
+    const deletedTemplate = Array.isArray(deletedTemplateResult) ? deletedTemplateResult[0] : deletedTemplateResult;
 
     return NextResponse.json({
       message: 'Template deleted successfully',

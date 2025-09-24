@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
             hour: '2-digit',
             minute: '2-digit',
           }),
-          priority: task.priority,
+          priority: task.priority || undefined,
         }))
 
         emailResult = await sendEmail({

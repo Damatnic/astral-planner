@@ -13,7 +13,7 @@ export const goals = pgTable('goals', {
   
   // Goal hierarchy and type
   type: varchar('type', { length: 20 }).notNull(), // lifetime, decade, 5year, yearly, quarterly, monthly, weekly, daily
-  parentGoalId: uuid('parent_goal_id').references(() => goals.id),
+  parentGoalId: uuid('parent_goal_id'),
   workspaceId: uuid('workspace_id').references(() => workspaces.id).notNull(),
   
   // Goal details

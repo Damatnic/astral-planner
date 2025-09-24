@@ -60,7 +60,7 @@ export async function POST(
     }
 
     // Check access permissions
-    if (!template.isPublic && template.createdBy !== userRecord.id) {
+    if (template.status !== 'published' && template.creatorId !== userRecord.id) {
       return NextResponse.json(
         { error: 'Access denied - template is private' },
         { status: 403 }
@@ -92,13 +92,13 @@ export async function POST(
     };
 
     // Install template content
-    const templateContent = template.content as any;
+    const templateContent = template.structure as any;
     
     try {
       // Install workspaces
       if (installOptions.includeWorkspaces && templateContent.workspaces) {
         for (const workspace of templateContent.workspaces) {
-          const [newWorkspace] = await db.insert(workspaces).values({
+          const newWorkspaceResult = await db.insert(workspaces).values({
             ...workspace,
             id: undefined, // Let database generate new ID
             userId: userRecord.id,
@@ -106,6 +106,8 @@ export async function POST(
             createdAt: new Date(),
             updatedAt: new Date()
           }).returning();
+          
+          const newWorkspace = Array.isArray(newWorkspaceResult) ? newWorkspaceResult[0] : newWorkspaceResult;
           
           installResults.workspaces++;
         }
@@ -175,13 +177,17 @@ export async function POST(
       await db.insert(templateUsage).values({
         templateId: id,
         userId: userRecord.id,
-        installedAt: new Date()
+        action: 'used',
+        context: {
+          installOptions: validated,
+          installResults
+        }
       });
 
       // Increment usage count
       await db.update(templates)
         .set({
-          usageCount: sql`${templates.usageCount} + 1`,
+          useCount: sql`${templates.useCount} + 1`,
           updatedAt: new Date()
         })
         .where(eq(templates.id, id));

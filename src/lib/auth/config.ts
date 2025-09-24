@@ -1,6 +1,4 @@
-import { AuthConfig } from '@clerk/nextjs/server';
-
-export const authConfig: AuthConfig = {
+export const authConfig = {
   debug: process.env.NODE_ENV === 'development',
   
   // JWT configuration
@@ -13,11 +11,11 @@ export const authConfig: AuthConfig = {
   webhookSecret: process.env.CLERK_WEBHOOK_SECRET,
   
   // Custom claims
-  beforeAuth: (auth, req) => {
+  beforeAuth: (auth: any, req: any) => {
     // Add custom logic before authentication
   },
   
-  afterAuth: (auth, req, evt) => {
+  afterAuth: (auth: any, req: any, evt: any) => {
     // Add custom logic after authentication
     // Update user activity, log access, etc.
   }
@@ -139,6 +137,24 @@ export const featureFlags = {
     teamManagement: true,
     ssoIntegration: true,
     auditLogs: true
+  },
+  
+  ADMIN: {
+    maxWorkspaces: Infinity,
+    maxBlocksPerWorkspace: Infinity,
+    maxGoals: Infinity,
+    maxHabits: Infinity,
+    aiSuggestions: true,
+    collaboration: true,
+    premiumTemplates: true,
+    advancedAnalytics: true,
+    customIntegrations: true,
+    prioritySupport: true,
+    teamManagement: true,
+    ssoIntegration: true,
+    auditLogs: true,
+    systemAdmin: true,
+    allFeatures: true
   }
 };
 

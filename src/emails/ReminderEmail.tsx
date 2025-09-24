@@ -33,7 +33,7 @@ export const ReminderEmail = ({
   return (
     <Html>
       <Head />
-      <Preview>You have {tasks.length} tasks due today</Preview>
+      <Preview>{`You have ${tasks.length} tasks due today`}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>

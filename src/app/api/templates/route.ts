@@ -45,11 +45,11 @@ export async function GET(req: NextRequest) {
       });
       
       if (userRecord) {
-        conditions.push(eq(templates.createdBy, userRecord.id));
+        conditions.push(eq(templates.creatorId, userRecord.id));
       }
     } else {
-      // Only show public templates
-      conditions.push(eq(templates.isPublic, true));
+      // Only show published templates
+      conditions.push(eq(templates.status, 'published'));
     }
 
     if (category && category !== 'all') {
@@ -70,16 +70,16 @@ export async function GET(req: NextRequest) {
     let orderBy = [];
     switch (sortBy) {
       case 'popular':
-        orderBy = [desc(templates.usageCount), desc(templates.likeCount)];
+        orderBy = [desc(templates.useCount), desc(templates.favoriteCount)];
         break;
       case 'rating':
-        orderBy = [desc(templates.rating), desc(templates.likeCount)];
+        orderBy = [desc(templates.rating), desc(templates.favoriteCount)];
         break;
       case 'recent':
         orderBy = [desc(templates.createdAt)];
         break;
       default:
-        orderBy = [desc(templates.usageCount)];
+        orderBy = [desc(templates.useCount)];
     }
 
     // Query templates
@@ -122,16 +122,16 @@ export async function GET(req: NextRequest) {
     const formattedTemplates = allTemplates.map(template => ({
       ...template,
       isLiked: likedTemplateIds.includes(template.id),
-      author: template.creator ? 
+      author: template.creator && !Array.isArray(template.creator) ? 
         `${template.creator.firstName} ${template.creator.lastName}` : 
         'Anonymous'
     }));
 
     // Get total count for pagination
-    const totalCount = await db.$count(
-      templates,
-      conditions.length > 0 ? and(...conditions) : undefined
-    );
+    const totalCountResult = await db.select({ count: sql<number>`count(*)` })
+      .from(templates)
+      .where(conditions.length > 0 ? and(...conditions) : undefined);
+    const totalCount = Number(totalCountResult[0].count);
 
     return NextResponse.json({
       templates: formattedTemplates,
@@ -179,17 +179,24 @@ export async function POST(req: NextRequest) {
     }
 
     // Create the template
-    const [newTemplate] = await db.insert(templates).values({
-      ...validated,
-      createdBy: userRecord.id,
-      usageCount: 0,
-      likeCount: 0,
-      rating: 0,
-      metadata: {
-        version: 1,
-        created: new Date().toISOString()
-      }
+    const newTemplateResult = await db.insert(templates).values({
+      name: validated.name,
+      description: validated.description,
+      type: 'workspace', // Default template type
+      category: validated.category,
+      structure: validated.content, // Map content to structure
+      tags: validated.tags,
+      creatorId: userRecord.id,
+      useCount: 0,
+      favoriteCount: 0,
+      rating: '0',
+      version: '1.0.0',
+      status: validated.isPublic ? 'published' : 'draft',
+      isPremium: validated.isPro || false,
+      thumbnail: validated.previewImage
     }).returning();
+
+    const newTemplate = Array.isArray(newTemplateResult) ? newTemplateResult[0] : newTemplateResult;
 
     return NextResponse.json(newTemplate);
   } catch (error) {

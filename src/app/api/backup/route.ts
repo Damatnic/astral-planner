@@ -48,13 +48,13 @@ export async function GET(req: NextRequest) {
         : [],
       
       // User's goals
-      db.select().from(goals).where(eq(goals.userId, userId)),
+      db.select().from(goals).where(eq(goals.createdBy, userId)),
       
       // User's habits
       db.select().from(habits).where(eq(habits.userId, userId)),
       
-      // User's templates (TODO: fix schema - no createdBy field)
-      [], // db.select().from(templates).where(eq(templates.createdBy, userId)),
+      // User's templates
+      db.select().from(templates).where(eq(templates.creatorId, userId)),
       
       // Workspace memberships
       workspaceIds.length > 0
