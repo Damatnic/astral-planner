@@ -291,7 +291,7 @@ export async function PATCH(req: NextRequest) {
       [updatedLog] = await db.update(habitEntries)
         .set({
           completed,
-          value: value || (completed ? habit.targetCount : 0),
+          value: value || (completed ? habit.targetValue : 0),
           notes
         })
         .where(eq(habitEntries.id, existingLog.id))
@@ -302,7 +302,7 @@ export async function PATCH(req: NextRequest) {
         habitId,
         date: logDate,
         completed,
-        value: value || (completed ? habit.targetCount : 0),
+        value: value || (completed ? habit.targetValue : 0),
         notes
       }).returning();
     }
