@@ -86,8 +86,8 @@ export async function POST(req: NextRequest) {
             }),
           ])
 
-          context.recentTasks = recentTasks.map(t => t.title)
-          context.userGoals = userGoals.map(g => g.title)
+          context.recentTasks = recentTasks.map((t: any) => t.title)
+          context.userGoals = userGoals.map((g: any) => g.title)
         }
 
         result = await generateTaskSuggestions({
