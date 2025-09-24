@@ -1,9 +1,22 @@
 export default function HomePage() {
   return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold mb-4">Ultimate Digital Planner</h1>
+        <p className="text-gray-600">Welcome to your digital planning solution</p>
+      </div>
+    </div>
+  )
+}
+
+// Original complex version temporarily disabled
+/*
+export default function HomePage() {
+  return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-100 flex items-center justify-center p-4">
       <div className="max-w-4xl w-full text-center">
         <h1 className="text-6xl font-bold text-gray-900 mb-6">
-          🌟 Ultimate Digital Planner
+          Ultimate Digital Planner
         </h1>
         <p className="text-2xl text-gray-600 mb-8">
           The world's most advanced productivity platform
