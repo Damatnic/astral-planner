@@ -125,7 +125,7 @@ export async function GET(req: NextRequest) {
           totalDays,
           completionRate,
           completedToday,
-          currentStreak: Math.max(habit.currentStreak, currentStreak),
+          currentStreak: Math.max(habit.currentStreak || 0, currentStreak),
           longestStreak: habit.longestStreak
         }
       };
@@ -139,7 +139,7 @@ export async function GET(req: NextRequest) {
       averageCompletionRate: habitsWithStats.length > 0
         ? habitsWithStats.reduce((sum, h) => sum + h.stats.completionRate, 0) / habitsWithStats.length
         : 0,
-      longestStreak: Math.max(...habitsWithStats.map(h => h.longestStreak), 0)
+      longestStreak: Math.max(...habitsWithStats.map(h => h.longestStreak || 0), 0)
     };
 
     return NextResponse.json({
