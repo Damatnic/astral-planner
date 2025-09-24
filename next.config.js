@@ -23,14 +23,16 @@ const nextConfig = {
       '@radix-ui/react-select',
       '@radix-ui/react-tabs',
       '@radix-ui/react-toast'
-    ],
-    serverComponentsExternalPackages: ['@neon/serverless'],
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js'
-        }
+    ]
+  },
+  
+  serverExternalPackages: ['@neondatabase/serverless'],
+  
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js'
       }
     }
   },
