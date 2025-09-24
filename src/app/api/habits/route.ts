@@ -199,7 +199,7 @@ export async function POST(req: NextRequest) {
       reminderTime: validated.reminderTime,
       currentStreak: 0,
       longestStreak: 0,
-      totalCompletions: 0,
+      totalCompleted: 0,
       isActive: true,
       metadata: {
         color: validated.color,
@@ -337,7 +337,7 @@ export async function PATCH(req: NextRequest) {
         .set({
           currentStreak: newStreak,
           longestStreak: sql`GREATEST(${habits.longestStreak}, ${newStreak})`,
-          totalCompletions: sql`${habits.totalCompletions} + 1`,
+          totalCompleted: sql`${habits.totalCompleted} + 1`,
           lastCompletedDate: logDate
         })
         .where(eq(habits.id, habitId));

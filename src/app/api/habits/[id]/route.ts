@@ -136,7 +136,7 @@ export async function GET(
         completedToday,
         currentStreak: habit.currentStreak,
         longestStreak: habit.longestStreak,
-        totalCompletions: habit.totalCompletions,
+        totalCompleted: habit.totalCompleted,
         streakHistory: streakHistory.slice(-10), // Last 10 streaks
         weeklyPattern
       }

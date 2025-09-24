@@ -152,7 +152,7 @@ export async function POST(
             userId: userRecord.id,
             currentStreak: 0,
             longestStreak: 0,
-            totalCompletions: 0,
+            totalCompleted: 0,
             isActive: true,
             createdAt: new Date(),
             updatedAt: new Date()
