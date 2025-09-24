@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Create the goal
-    const [newGoal] = await db.insert(goals).values({
+    const newGoalResult = await db.insert(goals).values({
       userId: userRecord.id,
       title: validated.title,
       description: validated.description,
@@ -162,13 +162,16 @@ export async function POST(req: NextRequest) {
         createdFrom: 'web'
       }
     }).returning();
+    
+    const newGoal = Array.isArray(newGoalResult) ? newGoalResult[0] : newGoalResult;
 
     // Create initial progress entry
     await db.insert(goalProgress).values({
       goalId: newGoal.id,
-      value: 0,
-      notes: 'Goal created',
-      date: new Date()
+      userId: userRecord.id,
+      value: '0',
+      note: 'Goal created',
+      progressDate: new Date()
     });
 
     return NextResponse.json(newGoal);
