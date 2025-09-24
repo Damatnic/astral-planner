@@ -170,7 +170,7 @@ export async function GET(req: NextRequest) {
         frequency: habit.frequency,
         targetValue: habit.targetValue,
         currentStreak: habit.currentStreak,
-        bestStreak: habit.longestStreak,
+        longestStreak: habit.longestStreak,
         totalCompletions: habit.totalCompleted,
         entries: habit.entries.map((entry: any) => ({
           date: entry.date,
@@ -401,7 +401,7 @@ async function convertToMarkdown(data: any): Promise<string> {
           mdLines.push(`- Frequency: ${habit.frequency}`);
           mdLines.push(`- Target: ${habit.targetCount} ${habit.unit || 'times'}`);
           mdLines.push(`- Current Streak: ${habit.currentStreak} days`);
-          mdLines.push(`- Best Streak: ${habit.bestStreak} days`);
+          mdLines.push(`- Best Streak: ${habit.longestStreak} days`);
           mdLines.push(`- Total Completions: ${habit.totalCompletions}`);
           mdLines.push('');
         }

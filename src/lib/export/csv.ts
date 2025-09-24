@@ -35,7 +35,7 @@ export interface ExportHabit {
   frequency: string
   targetCount: number
   currentStreak: number
-  bestStreak: number
+  longestStreak: number
   completionRate: number
   createdAt: string
 }
@@ -84,7 +84,7 @@ export function exportHabitsToCSV(habits: ExportHabit[]): string {
     Frequency: habit.frequency,
     'Target Count': habit.targetCount,
     'Current Streak': habit.currentStreak,
-    'Best Streak': habit.bestStreak,
+    'Best Streak': habit.longestStreak,
     'Completion Rate (%)': Math.round(habit.completionRate * 100),
     'Created At': habit.createdAt,
   }))

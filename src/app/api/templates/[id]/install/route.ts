@@ -151,7 +151,7 @@ export async function POST(
             id: undefined, // Let database generate new ID
             userId: userRecord.id,
             currentStreak: 0,
-            bestStreak: 0,
+            longestStreak: 0,
             totalCompletions: 0,
             isActive: true,
             createdAt: new Date(),

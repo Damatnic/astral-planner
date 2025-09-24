@@ -126,7 +126,7 @@ export async function GET(req: NextRequest) {
           completionRate,
           completedToday,
           currentStreak: Math.max(habit.currentStreak, currentStreak),
-          bestStreak: habit.bestStreak
+          longestStreak: habit.longestStreak
         }
       };
     });
@@ -139,7 +139,7 @@ export async function GET(req: NextRequest) {
       averageCompletionRate: habitsWithStats.length > 0
         ? habitsWithStats.reduce((sum, h) => sum + h.stats.completionRate, 0) / habitsWithStats.length
         : 0,
-      longestStreak: Math.max(...habitsWithStats.map(h => h.bestStreak), 0)
+      longestStreak: Math.max(...habitsWithStats.map(h => h.longestStreak), 0)
     };
 
     return NextResponse.json({
@@ -198,7 +198,7 @@ export async function POST(req: NextRequest) {
       timeOfDay: validated.timeOfDay || 'anytime',
       reminderTime: validated.reminderTime,
       currentStreak: 0,
-      bestStreak: 0,
+      longestStreak: 0,
       totalCompletions: 0,
       isActive: true,
       metadata: {
@@ -336,7 +336,7 @@ export async function PATCH(req: NextRequest) {
       await db.update(habits)
         .set({
           currentStreak: newStreak,
-          bestStreak: sql`GREATEST(${habits.bestStreak}, ${newStreak})`,
+          longestStreak: sql`GREATEST(${habits.longestStreak}, ${newStreak})`,
           totalCompletions: sql`${habits.totalCompletions} + 1`,
           lastCompletedDate: logDate
         })

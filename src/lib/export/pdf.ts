@@ -202,7 +202,7 @@ export function exportHabitsToPDF(habits: ExportHabit[], title = 'Habits Report'
     habit.name,
     habit.frequency,
     habit.currentStreak.toString(),
-    habit.bestStreak.toString(),
+    habit.longestStreak.toString(),
     `${Math.round(habit.completionRate * 100)}%`,
   ])
   
