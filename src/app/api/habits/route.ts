@@ -93,7 +93,7 @@ export async function GET(req: NextRequest) {
     }, {} as Record<string, Record<string, typeof logs[0]>>);
 
     // Calculate statistics for each habit
-    const habitsWithStats = userHabits.map(habit => {
+    const habitsWithStats = userHabits.map((habit: any) => {
       const habitEntries = logsByHabitAndDate[habit.id] || {};
       const dates = Object.keys(habitEntries);
       const completedDays = dates.filter(date => habitEntries[date].completed).length;
@@ -134,12 +134,12 @@ export async function GET(req: NextRequest) {
     // Overall statistics
     const overallStats = {
       totalHabits: habitsWithStats.length,
-      activeToday: habitsWithStats.filter(h => h.stats.completedToday).length,
-      totalCompletions: habitsWithStats.reduce((sum, h) => sum + h.stats.completedDays, 0),
+      activeToday: habitsWithStats.filter((h: any) => h.stats.completedToday).length,
+      totalCompletions: habitsWithStats.reduce((sum: any, h: any) => sum + h.stats.completedDays, 0),
       averageCompletionRate: habitsWithStats.length > 0
-        ? habitsWithStats.reduce((sum, h) => sum + h.stats.completionRate, 0) / habitsWithStats.length
+        ? habitsWithStats.reduce((sum: any, h: any) => sum + h.stats.completionRate, 0) / habitsWithStats.length
         : 0,
-      longestStreak: Math.max(...habitsWithStats.map(h => h.longestStreak || 0), 0)
+      longestStreak: Math.max(...habitsWithStats.map((h: any) => h.longestStreak || 0), 0)
     };
 
     return NextResponse.json({

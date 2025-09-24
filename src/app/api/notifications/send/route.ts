@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
             )
           )
 
-        const tasks = todaysTasks.map(task => ({
+        const tasks = todaysTasks.map((task: any) => ({
           title: task.title,
           dueTime: task.dueDate?.toLocaleTimeString('en-US', {
             hour: '2-digit',
