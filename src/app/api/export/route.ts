@@ -121,7 +121,7 @@ export async function GET(req: NextRequest) {
         with: {}
       });
 
-      exportData.goals = userGoals.map(goal => ({
+      exportData.goals = userGoals.map((goal: any) => ({
         id: goal.id,
         title: goal.title,
         description: goal.description,
@@ -154,7 +154,7 @@ export async function GET(req: NextRequest) {
         }
       });
 
-      exportData.habits = userHabits.map(habit => ({
+      exportData.habits = userHabits.map((habit: any) => ({
         id: habit.id,
         name: habit.name,
         description: habit.description,
@@ -190,7 +190,7 @@ export async function GET(req: NextRequest) {
         where: and(...eventConditions)
       });
 
-      exportData.calendar = calendarEvents.map(event => ({
+      exportData.calendar = calendarEvents.map((event: any) => ({
         id: event.id,
         title: event.title,
         description: event.description,
@@ -220,7 +220,7 @@ export async function GET(req: NextRequest) {
         where: and(...analyticsConditions)
       });
 
-      exportData.analytics = analyticsData.map(stat => ({
+      exportData.analytics = analyticsData.map((stat: any) => ({
         date: stat.date,
         tasksCompleted: stat.tasksCompleted,
         tasksCreated: stat.tasksCreated,

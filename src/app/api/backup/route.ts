@@ -41,6 +41,7 @@ export async function GET(req: NextRequest) {
     // Fetch all user data
     const [userBlocks, userGoals, userHabits, userTemplates, userWorkspaceMembers] = await Promise.all([
       // Blocks from user's workspaces
+      // Fix TypeScript any type error
       workspaceIds.length > 0
         ? db.select().from(blocks).where(
             or(...workspaceIds.map((id: any) => eq(blocks.workspaceId, id)))
