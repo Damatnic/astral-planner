@@ -15,7 +15,7 @@ const UpdateHabitSchema = z.object({
   unit: z.string().optional(),
   timeOfDay: z.enum(['morning', 'afternoon', 'evening', 'anytime']).optional(),
   reminderTime: z.string().optional(),
-  isActive: z.boolean().optional(),
+  status: z.enum(['active', 'paused', 'completed', 'abandoned']).optional(),
   color: z.string().optional(),
   icon: z.string().optional()
 });
@@ -207,7 +207,7 @@ export async function PATCH(
     if (validated.unit !== undefined) updateData.unit = validated.unit;
     if (validated.timeOfDay !== undefined) updateData.timeOfDay = validated.timeOfDay;
     if (validated.reminderTime !== undefined) updateData.reminderTime = validated.reminderTime;
-    if (validated.isActive !== undefined) updateData.isActive = validated.isActive;
+    if (validated.status !== undefined) updateData.status = validated.status;
 
     // Handle color and icon updates
     if (validated.color !== undefined) updateData.color = validated.color;
@@ -302,8 +302,9 @@ export async function DELETE(
       // Soft delete: Mark as inactive
       const [deletedHabit] = await db.update(habits)
         .set({
-          isActive: false,
-          deletedAt: new Date(),
+          status: 'abandoned',
+          isArchived: true,
+          archivedAt: new Date(),
           updatedAt: new Date()
         })
         .where(eq(habits.id, id))

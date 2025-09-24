@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
     const conditions = [eq(habits.userId, userRecord.id)];
     
     if (!includeArchived) {
-      conditions.push(eq(habits.isActive, true));
+      conditions.push(eq(habits.status, 'active'));
     }
 
     // Get habits
@@ -200,7 +200,7 @@ export async function POST(req: NextRequest) {
       currentStreak: 0,
       longestStreak: 0,
       totalCompleted: 0,
-      isActive: true,
+      status: 'active',
       color: validated.color,
       icon: validated.icon
     }).returning();
