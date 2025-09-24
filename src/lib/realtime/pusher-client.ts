@@ -234,5 +234,6 @@ export function useRealtimePresence(channelName: string) {
 
 function getCurrentUserId(): string {
   // This would get the actual user ID from your auth system
+  // For now, return a placeholder - in a real app you'd get this from Clerk auth
   return 'current-user-id';
 }

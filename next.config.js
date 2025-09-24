@@ -1,3 +1,72 @@
+const { withSentryConfig } = require('@sentry/nextjs')
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development',
+  runtimeCaching: [
+    {
+      urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'google-fonts',
+        expiration: {
+          maxEntries: 4,
+          maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
+        }
+      }
+    },
+    {
+      urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'google-fonts-static',
+        expiration: {
+          maxEntries: 4,
+          maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
+        }
+      }
+    },
+    {
+      urlPattern: /\.(?:jpg|jpeg|gif|png|svg|ico|webp)$/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'images',
+        expiration: {
+          maxEntries: 64,
+          maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+        }
+      }
+    },
+    {
+      urlPattern: /\.(?:js|css)$/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'static-resources',
+        expiration: {
+          maxEntries: 32,
+          maxAgeSeconds: 24 * 60 * 60 // 24 hours
+        }
+      }
+    },
+    {
+      urlPattern: /^\/api\/.*$/i,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'api-cache',
+        networkTimeoutSeconds: 10,
+        expiration: {
+          maxEntries: 16,
+          maxAgeSeconds: 5 * 60 // 5 minutes
+        }
+      }
+    }
+  ]
+})
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
@@ -12,7 +81,7 @@ const nextConfig = {
       '@radix-ui/react-select',
       '@radix-ui/react-tabs',
       '@radix-ui/react-toast'
-    ]
+    ],
   },
   
   serverExternalPackages: ['@neondatabase/serverless'],
@@ -78,7 +147,7 @@ const nextConfig = {
     ];
   },
 
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, webpack }) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
@@ -91,7 +160,68 @@ const nextConfig = {
         ...config.resolve.alias,
         '@': './src'
       };
+      
+      // Optimize bundle splitting
+      config.optimization.splitChunks = {
+        ...config.optimization.splitChunks,
+        cacheGroups: {
+          ...config.optimization.splitChunks.cacheGroups,
+          lucide: {
+            name: 'lucide',
+            test: /[\/]node_modules[\/](lucide-react)[\/]/,
+            chunks: 'all',
+            priority: 30,
+            reuseExistingChunk: true,
+          },
+          radix: {
+            name: 'radix',
+            test: /[\/]node_modules[\/](@radix-ui)[\/]/,
+            chunks: 'all',
+            priority: 25,
+            reuseExistingChunk: true,
+          },
+          recharts: {
+            name: 'recharts',
+            test: /[\/]node_modules[\/](recharts|d3-)[\/]/,
+            chunks: 'all',
+            priority: 20,
+            reuseExistingChunk: true,
+          },
+          vendor: {
+            name: 'vendor',
+            test: /[\/]node_modules[\/](?!(lucide-react|@radix-ui|recharts|d3-))/,
+            chunks: 'all',
+            priority: 10,
+            reuseExistingChunk: true,
+            minChunks: 2,
+          },
+        },
+      };
+      
+      // Tree shaking improvements
+      config.resolve.mainFields = ['module', 'main'];
+      
+      // Compress images
+      config.module.rules.push({
+        test: /\.(png|jpe?g|gif|svg)$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            publicPath: '/_next/static/images/',
+            outputPath: 'static/images/',
+            esModule: false,
+          },
+        },
+      });
     }
+
+    // Enable webpack caching
+    config.cache = {
+      type: 'filesystem',
+      buildDependencies: {
+        config: [__filename],
+      },
+    };
 
     return config;
   },
@@ -101,4 +231,23 @@ const nextConfig = {
   }
 };
 
-module.exports = nextConfig;
+// Sentry configuration options
+const sentryWebpackPluginOptions = {
+  silent: true,
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  widenClientFileUpload: true,
+  transpileClientSDK: true,
+  tunnelRoute: '/monitoring',
+  hideSourceMaps: true,
+  disableLogger: true,
+  automaticVercelMonitors: true,
+}
+
+module.exports = withBundleAnalyzer(
+  withSentryConfig(
+    withPWA(nextConfig),
+    sentryWebpackPluginOptions
+  )
+)

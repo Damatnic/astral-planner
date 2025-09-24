@@ -20,7 +20,13 @@
       "Bash(gh repo delete:*)",
       "Bash(gh auth:*)",
       "WebFetch(domain:vercel.com)",
-      "Bash(npx next build:*)"
+      "Bash(npx next build:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npm test:*)",
+      "Bash(sed:*)",
+      "Bash(chmod:*)",
+      "Bash(npm run bundle:size:*)",
+      "Bash(npm run bundle:report:*)"
     ],
     "deny": [],
     "ask": []

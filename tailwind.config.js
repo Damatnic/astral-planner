@@ -12,10 +12,29 @@ module.exports = {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: {
+        DEFAULT: "1rem",
+        sm: "1.5rem",
+        lg: "2rem",
+        xl: "2.5rem",
+        "2xl": "3rem",
+      },
       screens: {
         "2xl": "1400px",
       },
+    },
+    screens: {
+      'xs': '475px',
+      'sm': '640px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      '2xl': '1536px',
+      'mobile': {'max': '768px'},
+      'tablet': {'min': '769px', 'max': '1024px'},
+      'desktop': {'min': '1025px'},
+      'touch': {'raw': '(hover: none) and (pointer: coarse)'},
+      'no-touch': {'raw': '(hover: hover) and (pointer: fine)'},
     },
     extend: {
       colors: {
@@ -69,6 +88,27 @@ module.exports = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      spacing: {
+        'safe-top': 'env(safe-area-inset-top)',
+        'safe-bottom': 'env(safe-area-inset-bottom)',
+        'safe-left': 'env(safe-area-inset-left)',
+        'safe-right': 'env(safe-area-inset-right)',
+      },
+      minHeight: {
+        'screen-safe': 'calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))',
+        'mobile': '568px',
+        'tablet': '768px',
+      },
+      maxHeight: {
+        'screen-safe': 'calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))',
+      },
+      fontSize: {
+        'mobile-xs': ['0.75rem', { lineHeight: '1rem' }],
+        'mobile-sm': ['0.875rem', { lineHeight: '1.25rem' }],
+        'mobile-base': ['1rem', { lineHeight: '1.5rem' }],
+        'mobile-lg': ['1.125rem', { lineHeight: '1.75rem' }],
+        'mobile-xl': ['1.25rem', { lineHeight: '1.75rem' }],
       },
       keyframes: {
         "accordion-down": {

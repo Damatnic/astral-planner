@@ -7,6 +7,7 @@ import { ToastProvider } from '@/components/providers/toast-provider';
 import { AnalyticsProvider } from '@/components/providers/analytics-provider';
 import { PWAProvider } from '@/components/providers/pwa-provider';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { Analytics } from '@/components/analytics/Analytics';
 import './globals.css';
 
 const inter = Inter({ 
@@ -187,6 +188,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
                       </div>
                     </div>
                     <ToastProvider />
+                    <Analytics />
                   </PWAProvider>
                 </AnalyticsProvider>
               </QueryProvider>

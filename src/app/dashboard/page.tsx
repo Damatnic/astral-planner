@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { motion } from 'framer-motion';
 import { 
@@ -26,45 +26,189 @@ import { TaskManager } from '@/features/tasks/TaskManager';
 import Link from 'next/link';
 import { format } from 'date-fns';
 
-// Mock data - would come from API
-const stats = {
-  tasksToday: 8,
-  tasksCompleted: 5,
-  focusTime: 3.5,
-  streakDays: 12,
-  weeklyProgress: 68,
-  productivityScore: 85
-};
-
-const upcomingTasks = [
-  { id: '1', title: 'Team meeting', time: '10:00 AM', priority: 'high' },
-  { id: '2', title: 'Review project proposal', time: '2:00 PM', priority: 'medium' },
-  { id: '3', title: 'Call with client', time: '4:00 PM', priority: 'high' }
-];
-
-const habits = [
-  { id: '1', name: 'Morning meditation', completed: true, streak: 12 },
-  { id: '2', name: 'Read for 30 mins', completed: false, streak: 5 },
-  { id: '3', name: 'Exercise', completed: true, streak: 8 },
-  { id: '4', name: 'Journaling', completed: false, streak: 3 }
-];
-
-const goals = [
-  { id: '1', title: 'Complete React course', progress: 75, dueDate: 'Dec 31' },
-  { id: '2', title: 'Launch side project', progress: 45, dueDate: 'Jan 15' },
-  { id: '3', title: 'Read 12 books', progress: 58, current: 7, target: 12 }
-];
+interface DashboardData {
+  stats: {
+    tasksToday: number;
+    tasksCompleted: number;
+    focusTime: number;
+    streakDays: number;
+    weeklyProgress: number;
+    productivityScore: number;
+  };
+  upcomingTasks: Array<{
+    id: string;
+    title: string;
+    time: string;
+    priority: string;
+    dueDate?: string;
+  }>;
+  habits: Array<{
+    id: string;
+    name: string;
+    completed: boolean;
+    streak: number;
+    category?: string;
+  }>;
+  goals: Array<{
+    id: string;
+    title: string;
+    progress: number;
+    dueDate?: string;
+    current?: number;
+    target?: number;
+    completionPercentage: number;
+  }>;
+  loading: boolean;
+  error?: string;
+}
 
 export default function DashboardPage() {
   const { user } = useUser();
   const [view, setView] = useState('overview');
+  const [data, setData] = useState<DashboardData>({
+    stats: {
+      tasksToday: 0,
+      tasksCompleted: 0,
+      focusTime: 0,
+      streakDays: 0,
+      weeklyProgress: 0,
+      productivityScore: 0
+    },
+    upcomingTasks: [],
+    habits: [],
+    goals: [],
+    loading: true
+  });
   
   const greeting = getGreeting();
   const currentDate = format(new Date(), 'EEEE, MMMM d');
 
+  // Fetch dashboard data
+  useEffect(() => {
+    async function fetchDashboardData() {
+      if (!user) return;
+
+      try {
+        setData(prev => ({ ...prev, loading: true }));
+
+        // Fetch tasks for today
+        const tasksResponse = await fetch('/api/tasks?status=todo&limit=10');
+        const tasksData = await tasksResponse.json();
+        
+        // Fetch completed tasks for today
+        const completedTasksResponse = await fetch('/api/tasks?status=completed&limit=50');
+        const completedTasksData = await completedTasksResponse.json();
+        
+        // Fetch habits
+        const habitsResponse = await fetch('/api/habits');
+        const habitsData = await habitsResponse.json();
+        
+        // Fetch goals
+        const goalsResponse = await fetch('/api/goals');
+        const goalsData = await goalsResponse.json();
+
+        // Process upcoming tasks
+        const upcomingTasks = tasksData.tasks?.slice(0, 5).map((task: any) => ({
+          id: task.id,
+          title: task.title,
+          time: task.dueDate ? format(new Date(task.dueDate), 'h:mm aa') : 'No time set',
+          priority: task.priority || 'medium',
+          dueDate: task.dueDate
+        })) || [];
+
+        // Process habits for today
+        const todayHabits = habitsData.habits?.slice(0, 4).map((habit: any) => ({
+          id: habit.id,
+          name: habit.name,
+          completed: habit.stats?.completedToday || false,
+          streak: habit.currentStreak || 0,
+          category: habit.category
+        })) || [];
+
+        // Process goals
+        const activeGoals = goalsData.goals?.slice(0, 3).map((goal: any) => ({
+          id: goal.id,
+          title: goal.title,
+          progress: Math.round(goal.completionPercentage || 0),
+          dueDate: goal.targetDate ? format(new Date(goal.targetDate), 'MMM dd') : undefined,
+          current: goal.currentValue,
+          target: goal.targetValue,
+          completionPercentage: goal.completionPercentage || 0
+        })) || [];
+
+        // Calculate stats
+        const tasksToday = tasksData.tasks?.length || 0;
+        const tasksCompletedToday = completedTasksData.tasks?.filter((task: any) => {
+          const completedDate = new Date(task.completedAt || task.updatedAt);
+          const today = new Date();
+          return completedDate.toDateString() === today.toDateString();
+        }).length || 0;
+
+        const longestStreak = habitsData.stats?.longestStreak || 
+          Math.max(...(habitsData.habits?.map((h: any) => h.bestStreak) || [0]));
+
+        const avgCompletionRate = goalsData.stats?.averageCompletionRate || 0;
+
+        setData({
+          stats: {
+            tasksToday,
+            tasksCompleted: tasksCompletedToday,
+            focusTime: 0, // Would come from time tracking
+            streakDays: longestStreak,
+            weeklyProgress: avgCompletionRate,
+            productivityScore: Math.round((avgCompletionRate + (tasksCompletedToday / Math.max(tasksToday, 1)) * 100) / 2)
+          },
+          upcomingTasks,
+          habits: todayHabits,
+          goals: activeGoals,
+          loading: false
+        });
+
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+        setData(prev => ({
+          ...prev,
+          loading: false,
+          error: 'Failed to load dashboard data'
+        }));
+      }
+    }
+
+    fetchDashboardData();
+  }, [user]);
+
   async function handleQuickAdd(input: string, type: string) {
-    // Handle quick task creation
-    console.log('Quick add:', { input, type });
+    try {
+      if (type === 'task') {
+        // Get user's first workspace or create one
+        const workspacesResponse = await fetch('/api/workspaces');
+        const workspacesData = await workspacesResponse.json();
+        const workspaceId = workspacesData.workspaces?.[0]?.id;
+        
+        if (!workspaceId) {
+          console.error('No workspace found');
+          return;
+        }
+
+        const response = await fetch('/api/tasks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: input,
+            workspaceId,
+            type: 'task',
+            status: 'todo'
+          })
+        });
+        
+        if (response.ok) {
+          // Refresh dashboard data
+          window.location.reload();
+        }
+      }
+    } catch (error) {
+      console.error('Failed to create quick task:', error);
+    }
   }
 
   return (
@@ -114,11 +258,15 @@ export default function DashboardPage() {
             <div className="flex items-center gap-4">
               <div className="text-right">
                 <p className="text-sm text-muted-foreground">Productivity Score</p>
-                <p className="text-2xl font-bold text-primary">{stats.productivityScore}%</p>
+                <p className="text-2xl font-bold text-primary">
+                  {data.loading ? '...' : `${data.stats.productivityScore}%`}
+                </p>
               </div>
               <div className="text-right">
                 <p className="text-sm text-muted-foreground">Streak</p>
-                <p className="text-2xl font-bold">🔥 {stats.streakDays}</p>
+                <p className="text-2xl font-bold">
+                  🔥 {data.loading ? '...' : data.stats.streakDays}
+                </p>
               </div>
             </div>
           </motion.div>
@@ -147,8 +295,13 @@ export default function DashboardPage() {
               <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.tasksCompleted}/{stats.tasksToday}</div>
-              <Progress value={(stats.tasksCompleted / stats.tasksToday) * 100} className="mt-2" />
+              <div className="text-2xl font-bold">
+                {data.loading ? '...' : `${data.stats.tasksCompleted}/${data.stats.tasksToday}`}
+              </div>
+              <Progress 
+                value={data.stats.tasksToday > 0 ? (data.stats.tasksCompleted / data.stats.tasksToday) * 100 : 0} 
+                className="mt-2" 
+              />
             </CardContent>
           </Card>
 
@@ -158,8 +311,10 @@ export default function DashboardPage() {
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.focusTime}h</div>
-              <p className="text-xs text-muted-foreground mt-2">+20% from yesterday</p>
+              <div className="text-2xl font-bold">
+                {data.loading ? '...' : `${data.stats.focusTime}h`}
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">Time tracking coming soon</p>
             </CardContent>
           </Card>
 
@@ -169,8 +324,10 @@ export default function DashboardPage() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.weeklyProgress}%</div>
-              <Progress value={stats.weeklyProgress} className="mt-2" />
+              <div className="text-2xl font-bold">
+                {data.loading ? '...' : `${Math.round(data.stats.weeklyProgress)}%`}
+              </div>
+              <Progress value={data.stats.weeklyProgress} className="mt-2" />
             </CardContent>
           </Card>
 
@@ -180,8 +337,12 @@ export default function DashboardPage() {
               <Target className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{goals.length}</div>
-              <p className="text-xs text-muted-foreground mt-2">2 due this month</p>
+              <div className="text-2xl font-bold">
+                {data.loading ? '...' : data.goals.length}
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                {data.goals.filter(g => g.dueDate).length} due this month
+              </p>
             </CardContent>
           </Card>
         </motion.div>
@@ -204,27 +365,43 @@ export default function DashboardPage() {
                   <CardDescription>Your tasks for today</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {upcomingTasks.map(task => (
-                      <div key={task.id} className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className={`h-2 w-2 rounded-full ${
-                            task.priority === 'high' ? 'bg-red-500' : 'bg-yellow-500'
-                          }`} />
-                          <div>
-                            <p className="text-sm font-medium">{task.title}</p>
-                            <p className="text-xs text-muted-foreground">{task.time}</p>
+                  {data.loading ? (
+                    <div className="space-y-3">
+                      {[...Array(3)].map((_, i) => (
+                        <div key={i} className="h-12 bg-muted rounded animate-pulse" />
+                      ))}
+                    </div>
+                  ) : (
+                    <>
+                      <div className="space-y-3">
+                        {data.upcomingTasks.length > 0 ? data.upcomingTasks.map(task => (
+                          <div key={task.id} className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className={`h-2 w-2 rounded-full ${
+                                task.priority === 'high' ? 'bg-red-500' : 
+                                task.priority === 'urgent' ? 'bg-red-600' :
+                                task.priority === 'medium' ? 'bg-yellow-500' : 'bg-blue-500'
+                              }`} />
+                              <div>
+                                <p className="text-sm font-medium">{task.title}</p>
+                                <p className="text-xs text-muted-foreground">{task.time}</p>
+                              </div>
+                            </div>
+                            <Button size="sm" variant="ghost" asChild>
+                              <Link href={`/tasks/${task.id}`}>
+                                <ChevronRight className="h-4 w-4" />
+                              </Link>
+                            </Button>
                           </div>
-                        </div>
-                        <Button size="sm" variant="ghost">
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
+                        )) : (
+                          <p className="text-sm text-muted-foreground">No tasks for today. Great job! 🎉</p>
+                        )}
                       </div>
-                    ))}
-                  </div>
-                  <Button className="w-full mt-4" variant="outline" size="sm">
-                    View All Tasks
-                  </Button>
+                      <Button className="w-full mt-4" variant="outline" size="sm" asChild>
+                        <Link href="/tasks">View All Tasks</Link>
+                      </Button>
+                    </>
+                  )}
                 </CardContent>
               </Card>
 
@@ -235,30 +412,42 @@ export default function DashboardPage() {
                   <CardDescription>Track your daily routines</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {habits.map(habit => (
-                      <div key={habit.id} className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="checkbox"
-                            checked={habit.completed}
-                            className="h-4 w-4 rounded"
-                            readOnly
-                          />
-                          <div>
-                            <p className="text-sm font-medium">{habit.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {habit.streak} day streak
-                            </p>
+                  {data.loading ? (
+                    <div className="space-y-3">
+                      {[...Array(4)].map((_, i) => (
+                        <div key={i} className="h-10 bg-muted rounded animate-pulse" />
+                      ))}
+                    </div>
+                  ) : (
+                    <>
+                      <div className="space-y-3">
+                        {data.habits.length > 0 ? data.habits.map(habit => (
+                          <div key={habit.id} className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="checkbox"
+                                checked={habit.completed}
+                                className="h-4 w-4 rounded"
+                                readOnly
+                              />
+                              <div>
+                                <p className="text-sm font-medium">{habit.name}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {habit.streak} day streak
+                                </p>
+                              </div>
+                            </div>
+                            {habit.streak > 5 && <span>🔥</span>}
                           </div>
-                        </div>
-                        {habit.streak > 5 && <span>🔥</span>}
+                        )) : (
+                          <p className="text-sm text-muted-foreground">No habits yet. Start building great routines! 💪</p>
+                        )}
                       </div>
-                    ))}
-                  </div>
-                  <Button className="w-full mt-4" variant="outline" size="sm">
-                    Manage Habits
-                  </Button>
+                      <Button className="w-full mt-4" variant="outline" size="sm" asChild>
+                        <Link href="/habits">Manage Habits</Link>
+                      </Button>
+                    </>
+                  )}
                 </CardContent>
               </Card>
 
@@ -269,27 +458,42 @@ export default function DashboardPage() {
                   <CardDescription>Your active goals</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {goals.map(goal => (
-                      <div key={goal.id}>
-                        <div className="flex items-center justify-between mb-1">
-                          <p className="text-sm font-medium">{goal.title}</p>
-                          <span className="text-xs text-muted-foreground">
-                            {goal.progress}%
-                          </span>
+                  {data.loading ? (
+                    <div className="space-y-4">
+                      {[...Array(3)].map((_, i) => (
+                        <div key={i}>
+                          <div className="h-4 bg-muted rounded mb-2" />
+                          <div className="h-2 bg-muted rounded" />
                         </div>
-                        <Progress value={goal.progress} className="h-2" />
-                        {goal.dueDate && (
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Due: {goal.dueDate}
-                          </p>
+                      ))}
+                    </div>
+                  ) : (
+                    <>
+                      <div className="space-y-4">
+                        {data.goals.length > 0 ? data.goals.map(goal => (
+                          <div key={goal.id}>
+                            <div className="flex items-center justify-between mb-1">
+                              <p className="text-sm font-medium">{goal.title}</p>
+                              <span className="text-xs text-muted-foreground">
+                                {goal.progress}%
+                              </span>
+                            </div>
+                            <Progress value={goal.progress} className="h-2" />
+                            {goal.dueDate && (
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Due: {goal.dueDate}
+                              </p>
+                            )}
+                          </div>
+                        )) : (
+                          <p className="text-sm text-muted-foreground">No active goals. Set some ambitious targets! 🎯</p>
                         )}
                       </div>
-                    ))}
-                  </div>
-                  <Button className="w-full mt-4" variant="outline" size="sm">
-                    View All Goals
-                  </Button>
+                      <Button className="w-full mt-4" variant="outline" size="sm" asChild>
+                        <Link href="/goals">View All Goals</Link>
+                      </Button>
+                    </>
+                  )}
                 </CardContent>
               </Card>
             </div>

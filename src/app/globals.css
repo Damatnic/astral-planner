@@ -373,4 +373,156 @@
   .pr-safe {
     padding-right: env(safe-area-inset-right);
   }
+
+  /* Performance optimization utilities */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .will-change-opacity {
+    will-change: opacity;
+  }
+
+  .will-change-scroll {
+    will-change: scroll-position;
+  }
+
+  .contain-strict {
+    contain: strict;
+  }
+
+  .contain-layout {
+    contain: layout;
+  }
+
+  .contain-style {
+    contain: style;
+  }
+
+  .contain-paint {
+    contain: paint;
+  }
+
+  .contain-size {
+    contain: size;
+  }
+
+  .contain-content {
+    contain: content;
+  }
+
+  .content-visibility-auto {
+    content-visibility: auto;
+  }
+
+  .content-visibility-hidden {
+    content-visibility: hidden;
+  }
+
+  /* Image optimization utilities */
+  .lazy-image {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  .lazy-image.loaded {
+    opacity: 1;
+  }
+
+  .image-crisp {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+
+  .image-smooth {
+    image-rendering: auto;
+  }
+
+  /* Layout containment */
+  .layout-contain {
+    contain: layout style paint;
+  }
+
+  .strict-contain {
+    contain: strict;
+  }
+
+  /* Modern CSS features */
+  .aspect-ratio-16-9 {
+    aspect-ratio: 16 / 9;
+  }
+
+  .aspect-ratio-4-3 {
+    aspect-ratio: 4 / 3;
+  }
+
+  .aspect-ratio-square {
+    aspect-ratio: 1 / 1;
+  }
+
+  .aspect-ratio-video {
+    aspect-ratio: 16 / 9;
+  }
+
+  /* Grid auto-fit utilities */
+  .grid-auto-fit {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+
+  .grid-auto-fill {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+
+  /* Font display optimizations */
+  .font-display-swap {
+    font-display: swap;
+  }
+
+  .font-display-fallback {
+    font-display: fallback;
+  }
+
+  .font-display-optional {
+    font-display: optional;
+  }
+
+  /* Scroll optimization */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+  }
+
+  .scroll-auto {
+    scroll-behavior: auto;
+  }
+
+  .overscroll-none {
+    overscroll-behavior: none;
+  }
+
+  .overscroll-auto {
+    overscroll-behavior: auto;
+  }
+
+  /* Touch action optimizations */
+  .touch-pan-x {
+    touch-action: pan-x;
+  }
+
+  .touch-pan-y {
+    touch-action: pan-y;
+  }
+
+  .touch-pinch-zoom {
+    touch-action: pinch-zoom;
+  }
+
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
 }

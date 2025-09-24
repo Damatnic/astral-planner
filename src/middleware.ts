@@ -1,5 +1,6 @@
 import { authMiddleware } from '@clerk/nextjs';
 import { NextResponse } from 'next/server';
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit';
 
 export default authMiddleware({
   // Routes that can be accessed while signed out
@@ -25,7 +26,32 @@ export default authMiddleware({
     '/sitemap.xml'
   ],
 
-  afterAuth: (auth, req) => {
+  afterAuth: async (auth, req) => {
+    // Apply rate limiting to API routes
+    if (req.nextUrl.pathname.startsWith('/api/')) {
+      let rateLimitConfig = 'default';
+      
+      // Determine rate limit config based on route
+      if (req.nextUrl.pathname.startsWith('/api/ai/')) {
+        rateLimitConfig = 'ai';
+      } else if (req.nextUrl.pathname.startsWith('/api/export/')) {
+        rateLimitConfig = 'export';
+      } else if (req.nextUrl.pathname.startsWith('/api/auth/')) {
+        rateLimitConfig = 'auth';
+      } else if (req.nextUrl.pathname.includes('/webhook')) {
+        rateLimitConfig = 'webhook';
+      }
+
+      const rateLimitResult = await checkRateLimit(req, rateLimitConfig);
+      
+      if (!rateLimitResult.success) {
+        return rateLimitResponse(
+          'Too many requests. Please try again later.',
+          rateLimitResult.reset
+        );
+      }
+    }
+    
     // Add security headers to response
     const response = NextResponse.next();
     response.headers.set('X-Frame-Options', 'DENY');

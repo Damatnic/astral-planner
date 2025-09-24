@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db';
-import { blocks } from '@/db/schema';
-import { eq, and, desc, or, like, gte, lte } from 'drizzle-orm';
+import { blocks, users, workspaces, workspaceMembers, blockActivity } from '@/db/schema';
+import { eq, and, desc, or, like, gte, lte, sql } from 'drizzle-orm';
 import { z } from 'zod';
 
 const CreateTaskSchema = z.object({

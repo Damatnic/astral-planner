@@ -31,6 +31,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/components/ui/use-toast';
+import { GoogleCalendarIntegration } from '@/components/integrations/GoogleCalendarIntegration';
 
 export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
@@ -497,37 +498,42 @@ export default function SettingsPage() {
 
           {/* Integrations */}
           <TabsContent value="integrations">
-            <Card>
-              <CardHeader>
-                <CardTitle>Connected Services</CardTitle>
-                <CardDescription>
-                  Manage your external integrations
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {settings.integrations.map((integration) => (
-                    <div key={integration.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">{integration.icon}</span>
-                        <div>
-                          <p className="font-medium">{integration.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {integration.connected ? 'Connected' : 'Not connected'}
-                          </p>
+            <div className="space-y-6">
+              <GoogleCalendarIntegration />
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle>Other Integrations</CardTitle>
+                  <CardDescription>
+                    More integrations coming soon
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {settings.integrations.filter(i => i.id !== 'google').map((integration) => (
+                      <div key={integration.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl">{integration.icon}</span>
+                          <div>
+                            <p className="font-medium">{integration.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {integration.connected ? 'Connected' : 'Coming soon'}
+                            </p>
+                          </div>
                         </div>
+                        <Button
+                          variant={integration.connected ? 'outline' : 'secondary'}
+                          size="sm"
+                          disabled={!integration.connected}
+                        >
+                          {integration.connected ? 'Disconnect' : 'Coming Soon'}
+                        </Button>
                       </div>
-                      <Button
-                        variant={integration.connected ? 'outline' : 'default'}
-                        size="sm"
-                      >
-                        {integration.connected ? 'Disconnect' : 'Connect'}
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Privacy Settings */}
