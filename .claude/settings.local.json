@@ -26,7 +26,8 @@
       "Bash(sed:*)",
       "Bash(chmod:*)",
       "Bash(npm run bundle:size:*)",
-      "Bash(npm run bundle:report:*)"
+      "Bash(npm run bundle:report:*)",
+      "WebFetch(domain:astral-planner-pro.vercel.app)"
     ],
     "deny": [],
     "ask": []

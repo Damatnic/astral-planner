@@ -16,9 +16,6 @@ Sentry.init({
     'NEXT_REDIRECT',
   ],
   
-  // Capture unhandled promise rejections
-  captureUnhandledRejections: true,
-  
   // Integration configuration
   integrations: [
     // Automatically instrument Node.js libraries and frameworks
@@ -29,7 +26,7 @@ Sentry.init({
   beforeSend(event, hint) {
     // Remove sensitive data
     if (event.request?.cookies) {
-      event.request.cookies = '[Filtered]'
+      delete event.request.cookies
     }
     if (event.request?.headers) {
       const headers = { ...event.request.headers }

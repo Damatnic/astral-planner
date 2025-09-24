@@ -33,30 +33,27 @@ export function addBreadcrumb(breadcrumb: {
   Sentry.addBreadcrumb(breadcrumb)
 }
 
-export function startTransaction(name: string, op: string) {
-  return Sentry.startTransaction({ name, op })
-}
-
 export function measurePerformance<T>(
   operation: string,
   fn: () => T | Promise<T>
 ): T | Promise<T> {
-  const transaction = startTransaction(operation, 'function')
-  
-  try {
-    const result = fn()
-    
-    if (result instanceof Promise) {
-      return result.finally(() => {
-        transaction.finish()
-      })
-    }
-    
-    transaction.finish()
-    return result
-  } catch (error) {
-    transaction.setStatus('internal_error')
-    transaction.finish()
-    throw error
-  }
+  return Sentry.withActiveSpan(null, () => {
+    return Sentry.startSpan({ name: operation, op: 'function' }, () => {
+      try {
+        const result = fn()
+        
+        if (result instanceof Promise) {
+          return result.catch((error) => {
+            Sentry.captureException(error)
+            throw error
+          })
+        }
+        
+        return result
+      } catch (error) {
+        Sentry.captureException(error)
+        throw error
+      }
+    })
+  })
 }
