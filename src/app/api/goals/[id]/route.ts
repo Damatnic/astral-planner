@@ -172,9 +172,10 @@ export async function PATCH(
 
       await db.insert(goalProgress).values({
         goalId: updatedGoal.id,
-        value: progressValue || 0,
-        notes: 'Progress updated via API',
-        date: new Date()
+        userId: userRecord.id,
+        value: String(progressValue || 0),
+        note: 'Progress updated via API',
+        progressDate: new Date()
       });
     }
 
@@ -270,9 +271,10 @@ export async function DELETE(
     // Log the deletion in progress
     await db.insert(goalProgress).values({
       goalId: deletedGoal.id,
-      value: deletedGoal.currentValue,
-      notes: 'Goal deleted/cancelled',
-      date: new Date()
+      userId: userRecord.id,
+      value: String(deletedGoal.currentValue || 0),
+      note: 'Goal deleted/cancelled',
+      progressDate: new Date()
     });
 
     return NextResponse.json({
