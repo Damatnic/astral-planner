@@ -64,10 +64,13 @@ export async function GET(
     }
 
     // Get all entries for this habit (last 90 days)
+    const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+    const ninetyDaysAgoString = ninetyDaysAgo.toISOString().split('T')[0];
+    
     const entries = await db.query.habitEntries.findMany({
       where: (entries, { eq, gte }) => and(
         eq(entries.habitId, id),
-        gte(entries.date, new Date(Date.now() - 90 * 24 * 60 * 60 * 1000))
+        gte(entries.date, ninetyDaysAgoString)
       ),
       orderBy: [desc(habitEntries.date)]
     });
@@ -79,7 +82,10 @@ export async function GET(
 
     // Check if completed today
     const todayKey = format(new Date(), 'yyyy-MM-dd');
-    const todayEntry = entries.find(e => format(e.date, 'yyyy-MM-dd') === todayKey);
+    const todayEntry = entries.find(e => {
+      const entryDate = typeof e.date === 'string' ? e.date : format(new Date(e.date), 'yyyy-MM-dd');
+      return entryDate === todayKey;
+    });
     const completedToday = todayEntry?.completed || false;
 
     // Calculate streak history
@@ -104,7 +110,8 @@ export async function GET(
 
     // Calculate weekly patterns
     const weeklyPattern = entries.reduce((acc, entry) => {
-      const dayOfWeek = entry.date.getDay();
+      const entryDate = typeof entry.date === 'string' ? new Date(entry.date) : new Date(entry.date);
+      const dayOfWeek = entryDate.getDay();
       const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayOfWeek];
       
       if (!acc[dayName]) {

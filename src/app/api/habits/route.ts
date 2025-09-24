@@ -66,19 +66,22 @@ export async function GET(req: NextRequest) {
     const toDate = dateTo ? new Date(dateTo) : new Date();
 
     const habitIds = userHabits.map(h => h.id);
+    const fromDateString = format(startOfDay(fromDate), 'yyyy-MM-dd');
+    const toDateString = format(endOfDay(toDate), 'yyyy-MM-dd');
+    
     const logs = habitIds.length > 0 
       ? await db.query.habitEntries.findMany({
           where: and(
             sql`${habitEntries.habitId} IN ${sql.raw(`(${habitIds.map(id => `'${id}'`).join(',')})`)}`,
-            gte(habitEntries.date, startOfDay(fromDate)),
-            lte(habitEntries.date, endOfDay(toDate))
+            gte(habitEntries.date, fromDateString),
+            lte(habitEntries.date, toDateString)
           )
         })
       : [];
 
     // Group logs by habit and date
     const logsByHabitAndDate = logs.reduce((acc, log) => {
-      const dateKey = format(log.date, 'yyyy-MM-dd');
+      const dateKey = typeof log.date === 'string' ? log.date : format(new Date(log.date), 'yyyy-MM-dd');
       const habitKey = log.habitId;
       
       if (!acc[habitKey]) {
