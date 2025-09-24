@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
       .from(workspaces)
       .where(eq(workspaces.ownerId, userId))
     
-    const workspaceIds = userWorkspaces.map(w => w.id)
+    const workspaceIds = userWorkspaces.map((w: any) => w.id)
     
     // Fetch all user data
     const [userBlocks, userGoals, userHabits, userTemplates, userWorkspaceMembers] = await Promise.all([
