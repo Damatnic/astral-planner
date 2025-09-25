@@ -1048,9 +1048,9 @@ export default function PhysicalPlannerView() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-100 via-yellow-50 to-orange-100 p-4">
+    <div className="relative w-full h-full bg-gradient-to-br from-amber-100 via-yellow-50 to-orange-100 p-4 overflow-auto">
       {/* Desk environment */}
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0 opacity-30 pointer-events-none">
         <div 
           className="absolute inset-0"
           style={{
@@ -1069,8 +1069,8 @@ export default function PhysicalPlannerView() {
       </div>
       
       {/* Enhanced Customization Toolbar */}
-      <div className="absolute top-4 right-4 z-30 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg border">
-        <div className="flex items-center gap-4 flex-wrap">
+      <div className="absolute top-4 right-4 z-20 bg-white/95 backdrop-blur-sm rounded-lg p-3 shadow-lg border max-w-[90vw] overflow-auto">
+        <div className="flex items-center gap-3 flex-wrap text-xs">
           {/* Voice Recording */}
           <div className="flex items-center gap-2">
             <span className="text-xs font-medium text-gray-600">Voice:</span>
@@ -1454,7 +1454,7 @@ export default function PhysicalPlannerView() {
 
       {/* Mini Calendar */}
       {showMiniCalendar && (
-        <div className="absolute top-20 right-4 z-40 bg-white rounded-lg shadow-xl border p-4 w-80">
+        <div className="absolute top-32 right-4 z-30 bg-white rounded-lg shadow-xl border p-4 w-80 max-w-[calc(100vw-2rem)]">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">{format(currentDate, 'MMMM yyyy')}</h3>
             <div className="flex gap-2">
@@ -1514,7 +1514,7 @@ export default function PhysicalPlannerView() {
 
       {/* Settings Panel */}
       {showSettings && (
-        <div className="absolute top-20 right-4 z-40 bg-white rounded-lg shadow-xl border p-6 w-96">
+        <div className="absolute top-32 right-4 z-30 bg-white rounded-lg shadow-xl border p-6 w-96 max-w-[calc(100vw-2rem)]">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Planner Settings</h3>
             <button
@@ -1610,7 +1610,7 @@ export default function PhysicalPlannerView() {
 
       {/* Weather Display */}
       {settings.showWeather && (
-        <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white/80 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg border">
+        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-white/80 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg border z-10">
           <div className="flex items-center gap-3">
             <span className="text-2xl">{weatherInfo.icon}</span>
             <div>

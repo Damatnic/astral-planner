@@ -154,6 +154,21 @@ export default function DashboardClientFixed() {
       <main className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
+          {/* Breadcrumb */}
+          <div className="mb-4">
+            <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
+              <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+              <span>/</span>
+              <span className="text-foreground font-medium">Dashboard</span>
+              {view !== 'overview' && (
+                <>
+                  <span>/</span>
+                  <span className="text-foreground font-medium capitalize">{view}</span>
+                </>
+              )}
+            </nav>
+          </div>
+          
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -252,13 +267,15 @@ export default function DashboardClientFixed() {
 
         {/* Main Content Tabs */}
         <Tabs value={view} onValueChange={setView} className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="tasks">Tasks</TabsTrigger>
-            <TabsTrigger value="schedule">Schedule</TabsTrigger>
-            <TabsTrigger value="planner">Physical Planner</TabsTrigger>
-            <TabsTrigger value="insights">Insights</TabsTrigger>
-          </TabsList>
+          <div className="sticky top-16 z-30 bg-background/95 backdrop-blur py-2 -mx-4 px-4 border-b">
+            <TabsList className="w-full justify-start">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="tasks">Tasks</TabsTrigger>
+              <TabsTrigger value="schedule">Schedule</TabsTrigger>
+              <TabsTrigger value="planner">Physical Planner</TabsTrigger>
+              <TabsTrigger value="insights">Insights</TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="overview" className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -503,8 +520,26 @@ export default function DashboardClientFixed() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="planner" className="p-0">
-            <div className="h-[80vh] rounded-lg overflow-hidden">
+          <TabsContent value="planner" className="p-0 mt-4">
+            {/* Planner Controls */}
+            <div className="flex items-center justify-between mb-4 p-4 bg-white rounded-t-lg border border-b-0 shadow-sm">
+              <div className="flex items-center gap-4">
+                <h2 className="text-xl font-semibold text-gray-800">Physical Planner</h2>
+                <div className="text-sm text-gray-500">
+                  Click and drag to interact • Use toolbar for customization
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setView('overview')}
+                  className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                >
+                  ← Back to Overview
+                </button>
+              </div>
+            </div>
+            
+            <div className="h-[55vh] max-h-[650px] min-h-[450px] rounded-b-lg overflow-hidden border border-t-0 shadow-lg bg-white">
               <PhysicalPlannerView />
             </div>
           </TabsContent>
