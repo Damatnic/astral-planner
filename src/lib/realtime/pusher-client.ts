@@ -5,15 +5,27 @@ let pusherClient: Pusher | null = null;
 
 export function getPusherClient() {
   if (!pusherClient && typeof window !== 'undefined') {
-    pusherClient = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
-      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER || 'us2',
-      authEndpoint: '/api/pusher/auth',
-      auth: {
-        headers: {
-          'Content-Type': 'application/json',
+    const pusherKey = process.env.NEXT_PUBLIC_PUSHER_KEY;
+    
+    if (!pusherKey) {
+      console.warn('Pusher key not configured - real-time features disabled');
+      return null;
+    }
+    
+    try {
+      pusherClient = new Pusher(pusherKey, {
+        cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER || 'us2',
+        authEndpoint: '/api/pusher/auth',
+        auth: {
+          headers: {
+            'Content-Type': 'application/json',
+          },
         },
-      },
-    });
+      });
+    } catch (error) {
+      console.error('Failed to initialize Pusher client:', error);
+      return null;
+    }
   }
   return pusherClient;
 }
@@ -48,7 +60,10 @@ export function useRealtimeSync(workspaceId: string) {
     if (!workspaceId) return;
 
     const pusher = getPusherClient();
-    if (!pusher) return;
+    if (!pusher) {
+      setError('Real-time features not available - Pusher not configured');
+      return;
+    }
 
     pusherRef.current = pusher;
     
@@ -179,7 +194,10 @@ export function useRealtimePresence(channelName: string) {
   
   useEffect(() => {
     const pusher = getPusherClient();
-    if (!pusher) return;
+    if (!pusher) {
+      console.warn('Pusher not available for presence channel:', channelName);
+      return;
+    }
 
     const channel = pusher.subscribe(`presence-${channelName}`);
 
