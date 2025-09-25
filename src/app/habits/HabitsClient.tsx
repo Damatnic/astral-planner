@@ -358,7 +358,7 @@ export default function HabitsPage() {
               className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium transition-all ${
                 completedToday 
                   ? 'bg-green-100 text-green-700 hover:bg-green-200' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               <CheckCircle2 className={`h-4 w-4 ${completedToday ? 'text-green-600' : 'text-gray-400'}`} />

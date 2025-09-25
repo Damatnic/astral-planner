@@ -61,14 +61,14 @@ const statusOptions: { value: TaskStatus; label: string; color: string }[] = [
   { value: 'blocked', label: 'Blocked', color: 'bg-red-100 text-red-700' },
   { value: 'review', label: 'Review', color: 'bg-yellow-100 text-yellow-700' },
   { value: 'done', label: 'Done', color: 'bg-green-100 text-green-700' },
-  { value: 'cancelled', label: 'Cancelled', color: 'bg-gray-100 text-gray-500' },
+  { value: 'cancelled', label: 'Cancelled', color: 'bg-gray-100 text-gray-700' },
 ];
 
 const priorityOptions: { value: TaskPriority; label: string; color: string }[] = [
   { value: 'urgent', label: 'Urgent', color: 'bg-red-100 text-red-700' },
   { value: 'high', label: 'High', color: 'bg-orange-100 text-orange-700' },
   { value: 'medium', label: 'Medium', color: 'bg-blue-100 text-blue-700' },
-  { value: 'low', label: 'Low', color: 'bg-gray-100 text-gray-600' },
+  { value: 'low', label: 'Low', color: 'bg-gray-100 text-gray-700' },
 ];
 
 const dateRangePresets = [

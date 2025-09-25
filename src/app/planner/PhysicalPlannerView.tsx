@@ -1162,7 +1162,7 @@ export default function PhysicalPlannerView() {
               <span className="text-xs font-medium text-gray-600">Voice:</span>
               <button
               onClick={isVoiceRecording ? stopVoiceRecording : startVoiceRecording}
-              className={`p-1 rounded hover:bg-gray-100 ${isVoiceRecording ? 'bg-red-100 text-red-600' : 'text-gray-600'}`}
+              className={`p-1 rounded hover:bg-gray-100 ${isVoiceRecording ? 'bg-red-100 text-red-600' : 'text-gray-700'}`}
               title={isVoiceRecording ? 'Stop recording' : 'Start voice note'}
             >
               {isVoiceRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
@@ -1186,7 +1186,7 @@ export default function PhysicalPlannerView() {
             <span className="text-xs font-medium text-gray-600">Template:</span>
             <button
               onClick={() => setShowTemplates(!showTemplates)}
-              className={`p-1 rounded hover:bg-gray-100 ${showTemplates ? 'bg-blue-100 text-blue-600' : 'text-gray-600'}`}
+              className={`p-1 rounded hover:bg-gray-100 ${showTemplates ? 'bg-blue-100 text-blue-600' : 'text-gray-700'}`}
               title="Load template"
             >
               <Shuffle className="w-4 h-4" />
@@ -1250,7 +1250,7 @@ export default function PhysicalPlannerView() {
             <span className="text-xs font-medium text-gray-600">Calendar:</span>
             <button
               onClick={() => setShowMiniCalendar(!showMiniCalendar)}
-              className={`p-1 rounded hover:bg-gray-100 ${showMiniCalendar ? 'bg-blue-100 text-blue-600' : 'text-gray-600'}`}
+              className={`p-1 rounded hover:bg-gray-100 ${showMiniCalendar ? 'bg-blue-100 text-blue-600' : 'text-gray-700'}`}
               title="Toggle mini calendar"
             >
               <Calendar className="w-4 h-4" />
@@ -1293,7 +1293,7 @@ export default function PhysicalPlannerView() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className={`p-1 rounded hover:bg-gray-100 ${showSettings ? 'bg-gray-100 text-gray-800' : 'text-gray-600'}`}
+              className={`p-1 rounded hover:bg-gray-100 ${showSettings ? 'bg-gray-100 text-gray-800' : 'text-gray-700'}`}
               title="Planner settings"
             >
               <Settings className="w-4 h-4" />
@@ -1317,14 +1317,14 @@ export default function PhysicalPlannerView() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowMiniCalendar(!showMiniCalendar)}
-                className={`p-1 rounded hover:bg-gray-100 ${showMiniCalendar ? 'bg-blue-100 text-blue-600' : 'text-gray-600'}`}
+                className={`p-1 rounded hover:bg-gray-100 ${showMiniCalendar ? 'bg-blue-100 text-blue-600' : 'text-gray-700'}`}
                 title="Toggle mini calendar"
               >
                 <Calendar className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setShowSettings(!showSettings)}
-                className={`p-1 rounded hover:bg-gray-100 ${showSettings ? 'bg-gray-100 text-gray-800' : 'text-gray-600'}`}
+                className={`p-1 rounded hover:bg-gray-100 ${showSettings ? 'bg-gray-100 text-gray-800' : 'text-gray-700'}`}
                 title="Planner settings"
               >
                 <Settings className="w-4 h-4" />

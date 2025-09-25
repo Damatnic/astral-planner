@@ -23,7 +23,6 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QuickCapture } from '@/components/quick-capture/QuickCapture';
 import PhysicalPlannerView from '../planner/PhysicalPlannerView';
-import CalendarView from '../calendar/CalendarView';
 import Link from 'next/link';
 import { format } from 'date-fns';
 
@@ -394,15 +393,54 @@ export default function DashboardClientFixed() {
                   <CardDescription>View your upcoming events</CardDescription>
                 </CardHeader>
                 <CardContent className="p-3">
-                  <CalendarView 
-                    compact={true}
-                    showHeader={true}
-                    maxHeight="350px"
-                    onDateSelect={(date) => {
-                      // Optional: scroll to schedule when date is selected
-                      console.log('Selected date:', date);
-                    }}
-                  />
+                  <div className="w-full max-h-[350px] overflow-hidden">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-blue-600" />
+                        <h3 className="text-base font-semibold text-gray-800">{format(new Date(), 'MMMM yyyy')}</h3>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button variant="outline" size="sm">
+                          <ChevronLeft className="w-3 h-3" />
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          <ChevronRight className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      {/* Week Headers */}
+                      <div className="grid grid-cols-7 gap-1 mb-2">
+                        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
+                          <div key={i} className="p-1 text-xs text-center font-medium text-gray-500">
+                            {day}
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* Simple placeholder calendar grid */}
+                      <div className="grid grid-cols-7 gap-1">
+                        {Array.from({ length: 35 }).map((_, i) => {
+                          const dayNum = i - 6; // Start from previous month end
+                          const isCurrentMonth = dayNum > 0 && dayNum <= 30;
+                          const isToday = dayNum === new Date().getDate() && isCurrentMonth;
+                          
+                          return (
+                            <div
+                              key={i}
+                              className={`min-h-[40px] p-1 border border-gray-200 cursor-pointer text-xs hover:bg-gray-50 ${
+                                !isCurrentMonth ? 'bg-gray-50 text-gray-400' : 'bg-white text-gray-800'
+                              } ${isToday ? 'bg-blue-100 border-blue-300 font-bold text-blue-600' : ''}`}
+                            >
+                              {isCurrentMonth ? dayNum : ''}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+
                   <Button variant="ghost" className="w-full mt-4" asChild>
                     <Link href="/calendar">
                       View full calendar
