@@ -276,6 +276,7 @@ export default function DashboardClientFixed() {
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="tasks">Tasks</TabsTrigger>
               <TabsTrigger value="schedule">Schedule</TabsTrigger>
+              <TabsTrigger value="calendar">Calendar</TabsTrigger>
               <TabsTrigger value="planner">Physical Planner</TabsTrigger>
               <TabsTrigger value="insights">Insights</TabsTrigger>
             </TabsList>
@@ -387,69 +388,6 @@ export default function DashboardClientFixed() {
                 </CardContent>
               </Card>
 
-              {/* Quick Calendar */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Quick Calendar</CardTitle>
-                  <CardDescription>View your upcoming events</CardDescription>
-                </CardHeader>
-                <CardContent className="p-3">
-                  <div className="w-full max-h-[350px] overflow-hidden">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-blue-600" />
-                        <h3 className="text-base font-semibold text-gray-800">{format(new Date(), 'MMMM yyyy')}</h3>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Button variant="outline" size="sm">
-                          <ChevronLeft className="w-3 h-3" />
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <ChevronRight className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      {/* Week Headers */}
-                      <div className="grid grid-cols-7 gap-1 mb-2">
-                        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
-                          <div key={i} className="p-1 text-xs text-center font-medium text-gray-500">
-                            {day}
-                          </div>
-                        ))}
-                      </div>
-                      
-                      {/* Simple placeholder calendar grid */}
-                      <div className="grid grid-cols-7 gap-1">
-                        {Array.from({ length: 35 }).map((_, i) => {
-                          const dayNum = i - 6; // Start from previous month end
-                          const isCurrentMonth = dayNum > 0 && dayNum <= 30;
-                          const isToday = dayNum === new Date().getDate() && isCurrentMonth;
-                          
-                          return (
-                            <div
-                              key={i}
-                              className={`min-h-[40px] p-1 border border-gray-200 cursor-pointer text-xs hover:bg-gray-50 ${
-                                !isCurrentMonth ? 'bg-gray-50 text-gray-400' : 'bg-white text-gray-800'
-                              } ${isToday ? 'bg-blue-100 border-blue-300 font-bold text-blue-600' : ''}`}
-                            >
-                              {isCurrentMonth ? dayNum : ''}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-
-                  <Button variant="ghost" className="w-full mt-4" asChild>
-                    <Link href="/calendar">
-                      View full calendar
-                      <ChevronRight className="h-4 w-4 ml-1" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
             </div>
 
             {/* AI Insights */}
@@ -586,6 +524,177 @@ export default function DashboardClientFixed() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="calendar">
+            <div className="grid gap-6 lg:grid-cols-3">
+              {/* Main Calendar */}
+              <div className="lg:col-span-2">
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <Calendar className="h-5 w-5 text-primary" />
+                          Calendar View
+                        </CardTitle>
+                        <CardDescription>Full calendar with events and scheduling</CardDescription>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm">
+                          <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <div className="text-sm font-medium min-w-[120px] text-center">
+                          {format(new Date(), 'MMMM yyyy')}
+                        </div>
+                        <Button variant="outline" size="sm">
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {/* Calendar Header */}
+                      <div className="grid grid-cols-7 gap-1">
+                        {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day) => (
+                          <div key={day} className="p-3 text-center font-semibold text-sm text-muted-foreground border-b">
+                            {day.slice(0, 3)}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Calendar Grid */}
+                      <div className="grid grid-cols-7 gap-1">
+                        {Array.from({ length: 42 }).map((_, i) => {
+                          const dayNum = i - 6; // Start from previous month end
+                          const isCurrentMonth = dayNum > 0 && dayNum <= 30;
+                          const isToday = dayNum === new Date().getDate() && isCurrentMonth;
+                          const hasEvent = isCurrentMonth && [5, 12, 18, 25].includes(dayNum);
+                          
+                          return (
+                            <div
+                              key={i}
+                              className={`min-h-[80px] p-2 border border-gray-200 cursor-pointer transition-colors hover:bg-gray-50 ${
+                                !isCurrentMonth ? 'bg-gray-50 text-gray-400' : 'bg-white text-gray-800'
+                              } ${isToday ? 'bg-blue-100 border-blue-300 font-bold text-blue-600' : ''}`}
+                            >
+                              <div className="text-sm font-medium">
+                                {isCurrentMonth ? dayNum : ''}
+                              </div>
+                              {hasEvent && isCurrentMonth && (
+                                <div className="mt-1 space-y-1">
+                                  <div className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded truncate">
+                                    Meeting
+                                  </div>
+                                  {dayNum === 12 && (
+                                    <div className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded truncate">
+                                      Lunch
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Sidebar */}
+              <div className="space-y-6">
+                {/* Mini Calendar */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Quick Navigation</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-7 gap-1 text-xs">
+                        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day) => (
+                          <div key={day} className="p-1 text-center font-medium text-muted-foreground">
+                            {day}
+                          </div>
+                        ))}
+                      </div>
+                      <div className="grid grid-cols-7 gap-1">
+                        {Array.from({ length: 35 }).map((_, i) => {
+                          const dayNum = i - 6;
+                          const isCurrentMonth = dayNum > 0 && dayNum <= 30;
+                          const isToday = dayNum === new Date().getDate() && isCurrentMonth;
+                          
+                          return (
+                            <div
+                              key={i}
+                              className={`h-6 flex items-center justify-center text-xs cursor-pointer rounded hover:bg-gray-100 ${
+                                !isCurrentMonth ? 'text-gray-400' : 'text-gray-800'
+                              } ${isToday ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}
+                            >
+                              {isCurrentMonth ? dayNum : ''}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Upcoming Events */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Upcoming Events</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {[
+                        { title: 'Team Meeting', date: 'Today, 9:00 AM', color: 'border-l-blue-500' },
+                        { title: 'Project Review', date: 'Tomorrow, 2:00 PM', color: 'border-l-green-500' },
+                        { title: 'Client Call', date: 'Friday, 10:00 AM', color: 'border-l-purple-500' },
+                        { title: 'Sprint Planning', date: 'Monday, 9:00 AM', color: 'border-l-orange-500' }
+                      ].map((event, i) => (
+                        <div key={i} className={`border-l-4 ${event.color} pl-3 py-2`}>
+                          <div className="text-sm font-medium">{event.title}</div>
+                          <div className="text-xs text-muted-foreground">{event.date}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <Button variant="ghost" className="w-full mt-4" size="sm">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Event
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Calendar Views */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">View Options</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <Button variant="outline" className="w-full justify-start" size="sm">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        Month View
+                      </Button>
+                      <Button variant="ghost" className="w-full justify-start" size="sm">
+                        <BarChart3 className="h-4 w-4 mr-2" />
+                        Week View
+                      </Button>
+                      <Button variant="ghost" className="w-full justify-start" size="sm">
+                        <Clock className="h-4 w-4 mr-2" />
+                        Day View
+                      </Button>
+                      <Button variant="ghost" className="w-full justify-start" size="sm">
+                        <Activity className="h-4 w-4 mr-2" />
+                        Agenda View
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="planner" className="p-0 mt-4">
