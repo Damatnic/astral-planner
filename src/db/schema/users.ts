@@ -78,6 +78,9 @@ export const users = pgTable('users', {
     smartScheduling: true,
     insights: true
   }),
+
+  // External integrations
+  googleCalendarTokens: jsonb('google_calendar_tokens'),
   
   // Metadata
   createdAt: timestamp('created_at').defaultNow().notNull(),

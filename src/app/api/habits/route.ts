@@ -5,6 +5,7 @@ import { habits, habitEntries, users } from '@/db/schema';
 import { eq, and, desc, gte, lte, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { startOfDay, endOfDay, subDays, format } from 'date-fns';
+import Logger from '@/lib/logger';
 
 const CreateHabitSchema = z.object({
   name: z.string().min(1).max(100),
@@ -144,7 +145,7 @@ export async function GET(req: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Failed to fetch habits:', error);
+    Logger.error('Failed to fetch habits:', error);
     return NextResponse.json(
       { error: 'Failed to fetch habits' },
       { status: 500 }
@@ -201,7 +202,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(newHabit);
   } catch (error) {
-    console.error('Failed to create habit:', error);
+    Logger.error('Failed to create habit:', error);
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -341,7 +342,7 @@ export async function PATCH(req: NextRequest) {
       message: completed ? 'Habit completed!' : 'Habit updated'
     });
   } catch (error) {
-    console.error('Failed to log habit:', error);
+    Logger.error('Failed to log habit:', error);
     return NextResponse.json(
       { error: 'Failed to log habit' },
       { status: 500 }

@@ -34,6 +34,10 @@ export function useKeyboardShortcuts() {
   // Quick actions
   useHotkeys('n', () => setQuickAddOpen(true), { preventDefault: true })
   useHotkeys('cmd+k, ctrl+k', () => setCommandPalette(true), { preventDefault: true })
+  
+  // Templates and productivity
+  useHotkeys('t', () => router.push('/templates'), { preventDefault: true })
+  useHotkeys('cmd+n, ctrl+n', () => setQuickAddOpen(true), { preventDefault: true })
   useHotkeys('/', () => {
     const searchInput = document.querySelector('[data-search-input]') as HTMLInputElement
     if (searchInput) {
@@ -71,12 +75,14 @@ export function useKeyboardShortcuts() {
         { keys: 'G → H', description: 'Go to Habits', action: () => router.push('/habits') },
         { keys: 'G → C', description: 'Go to Calendar', action: () => router.push('/calendar') },
         { keys: 'G → S', description: 'Go to Settings', action: () => router.push('/settings') },
+        { keys: 'T', description: 'Go to Templates', action: () => router.push('/templates') },
       ],
     },
     {
       title: 'Quick Actions',
       shortcuts: [
         { keys: 'N', description: 'New Task/Item', action: () => setQuickAddOpen(true) },
+        { keys: '⌘N / Ctrl+N', description: 'Quick Add', action: () => setQuickAddOpen(true) },
         { keys: '⌘K / Ctrl+K', description: 'Command Palette', action: () => setCommandPalette(true) },
         { keys: '/', description: 'Focus Search', action: () => {} },
         { keys: '?', description: 'Show Shortcuts', action: () => setShowShortcuts(true) },

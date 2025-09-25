@@ -234,6 +234,10 @@ export function useRealtimePresence(channelName: string) {
 
 function getCurrentUserId(): string {
   // This would get the actual user ID from your auth system
-  // For now, return a placeholder - in a real app you'd get this from Clerk auth
-  return 'current-user-id';
+  // Since we're in client-side code, we can't directly access Clerk auth here
+  // In a real implementation, you'd pass this through props or context
+  if (typeof window !== 'undefined' && (window as any).__USER_ID__) {
+    return (window as any).__USER_ID__;
+  }
+  return 'anonymous';
 }

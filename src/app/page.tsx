@@ -76,7 +76,7 @@ export default function HomePage() {
         <div className="container mx-auto flex h-16 items-center px-4">
           <div className="flex items-center gap-2">
             <Calendar className="h-6 w-6 text-primary" />
-            <span className="text-lg font-bold">Ultimate Digital Planner</span>
+            <span className="text-lg font-bold">Astral Chronos</span>
           </div>
           
           <div className="ml-auto flex items-center gap-4">
@@ -103,8 +103,8 @@ export default function HomePage() {
       <section className="container mx-auto px-4 py-24 text-center">
         <div className="mx-auto max-w-3xl">
           <h1 className="mb-6 text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
-            Plan Your Life with{' '}
-            <span className="gradient-text">AI-Powered Intelligence</span>
+            <span className="gradient-text">Astral Chronos</span>{' '}
+            - Plan Your Life with AI
           </h1>
           <p className="mb-8 text-xl text-muted-foreground">
             The world's most advanced digital planner that combines time blocking, 

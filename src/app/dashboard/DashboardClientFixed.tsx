@@ -27,6 +27,8 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QuickCapture } from '@/components/quick-capture/QuickCapture';
 import PhysicalPlannerView from '../planner/PhysicalPlannerView';
+import { PresenceIndicator } from '@/components/realtime/PresenceIndicator';
+import { ActivityFeed } from '@/components/realtime/ActivityFeed';
 import Link from 'next/link';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, isSameMonth, isToday } from 'date-fns';
 
@@ -262,7 +264,7 @@ export default function DashboardClientFixed() {
           <div className="flex items-center gap-4">
             <Link href="/dashboard" className="flex items-center gap-2">
               <Calendar className="h-6 w-6 text-primary" />
-              <span className="text-lg font-bold">Ultimate Planner</span>
+              <span className="text-lg font-bold">Astral Chronos</span>
             </Link>
           </div>
           
@@ -285,6 +287,7 @@ export default function DashboardClientFixed() {
             <Button variant="ghost" size="sm" asChild>
               <Link href="/analytics">Analytics</Link>
             </Button>
+            <PresenceIndicator className="ml-4" />
           </nav>
         </div>
       </header>
@@ -417,7 +420,7 @@ export default function DashboardClientFixed() {
           </div>
 
           <TabsContent value="overview" className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               {/* Upcoming Tasks */}
               <Card>
                 <CardHeader>
@@ -521,6 +524,15 @@ export default function DashboardClientFixed() {
                   </Button>
                 </CardContent>
               </Card>
+
+              {/* Activity Feed */}
+              <ActivityFeed 
+                workspaceId="default-workspace"
+                limit={10}
+                compact={true}
+                showHeader={true}
+                className="h-fit"
+              />
 
             </div>
 

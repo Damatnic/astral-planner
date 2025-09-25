@@ -325,22 +325,37 @@ export async function POST(req: NextRequest) {
       throw new AppError('User not found', 404);
     }
 
-    // Create the goal with mock data for now
-    const newGoal = {
-      id: `goal-${Date.now()}`,
-      userId: userRecord.id,
+    // Create the goal in the database
+    const goalData = {
       title: validated.title,
       description: validated.description,
-      priority: validated.priority,
-      status: validated.status,
-      dueDate: validated.dueDate,
-      parentId: validated.parentId,
-      tags: validated.tags,
-      isPublic: validated.isPublic,
-      progress: 0,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    } as Goal;
+      type: validated.type || 'monthly',
+      category: validated.category,
+      priority: validated.priority || 'medium',
+      status: validated.status || 'not_started',
+      targetValue: validated.targetValue?.toString() || '100',
+      currentValue: validated.currentValue?.toString() || '0',
+      targetDate: validated.dueDate ? new Date(validated.dueDate) : undefined,
+      parentGoalId: validated.parentId || undefined,
+      workspaceId: userRecord.id, // Use user ID as workspace ID for now
+      createdBy: userRecord.id,
+      isPublic: validated.isPublic || false
+    };
+
+    const [newGoal] = await db.insert(goals).values(goalData).returning();
+
+    // Add milestones if provided
+    if (validated.milestones && validated.milestones.length > 0) {
+      await Promise.all(validated.milestones.map(async (milestone, index) => {
+        await db.insert(goalMilestones).values({
+          goalId: newGoal.id,
+          title: milestone.title,
+          targetValue: milestone.targetValue.toString(),
+          targetDate: new Date(milestone.targetDate),
+          position: index + 1
+        });
+      }));
+    }
 
     const responseTime = Date.now() - startTime;
     Logger.info(`POST /api/goals - Success`, { 

@@ -1,7 +1,7 @@
 {
-  "name": "Ultimate Digital Planner",
-  "short_name": "Planner",
-  "description": "The world's most advanced digital planning system with AI-powered insights",
+  "name": "Astral Chronos",
+  "short_name": "Chronos",
+  "description": "Astral Chronos - The world's most advanced digital planning system with AI-powered insights",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",

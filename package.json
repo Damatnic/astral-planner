@@ -1,7 +1,7 @@
 {
-  "name": "ultimate-digital-planner",
+  "name": "astral-chronos",
   "version": "1.0.0",
-  "description": "The world's most advanced digital planner with AI-powered productivity features",
+  "description": "Astral Chronos - The world's most advanced digital planner with AI-powered productivity features",
   "private": true,
   "scripts": {
     "dev": "next dev",

@@ -1,6 +1,45 @@
 import { getUserFromRequest } from '@/lib/auth';
 import { NextRequest } from 'next/server';
 import { permissions, featureFlags, type Permission, type Role } from './config';
+import { db } from '@/db';
+import { eq, and } from 'drizzle-orm';
+import { users } from '@/db/schema/users';
+import { workspaces, workspaceMembers } from '@/db/schema/workspaces';
+import { goals } from '@/db/schema/goals';
+import { habits } from '@/db/schema/habits';
+import { blocks } from '@/db/schema/blocks';
+
+/**
+ * Get user's role from database
+ */
+async function getUserRoleFromDB(userId: string): Promise<Role> {
+  try {
+    const userRecord = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+    const user = userRecord[0];
+    
+    if (!user?.subscription) {
+      return 'FREE';
+    }
+    
+    const subscription = user.subscription as { plan?: string };
+    const plan = subscription.plan?.toLowerCase();
+    
+    // Map subscription plan to role
+    switch (plan) {
+      case 'pro':
+        return 'PRO';
+      case 'team':
+        return 'TEAM';
+      case 'admin':
+        return 'ADMIN';
+      default:
+        return 'FREE';
+    }
+  } catch (error) {
+    console.error('Error fetching user role:', error);
+    return 'FREE'; // Default fallback
+  }
+}
 
 /**
  * Check if the current user has a specific permission
@@ -10,9 +49,8 @@ export async function hasPermission(req: NextRequest, permission: Permission): P
   
   if (!user?.id) return false;
   
-  // For now, assume all authenticated users have basic permissions
-  // In a real implementation, you'd check user role from the database
-  const userRole = 'FREE' as Role; // Default role
+  // Get user role from database
+  const userRole = await getUserRoleFromDB(user.id);
   const userPermissions = permissions[userRole] || permissions.FREE;
   
   // Admin has all permissions
@@ -39,8 +77,8 @@ export async function hasFeature(req: NextRequest, feature: keyof typeof feature
   
   if (!user?.id) return false;
   
-  // For now, assume all authenticated users have FREE tier features
-  const userRole = 'FREE' as Role; // Default role
+  // Get user role from database
+  const userRole = await getUserRoleFromDB(user.id);
   const userFeatures = featureFlags[userRole] || featureFlags.FREE;
   
   return Boolean(userFeatures[feature]);
@@ -54,8 +92,8 @@ export async function getFeatureLimits(req: NextRequest) {
   
   if (!user?.id) return featureFlags.FREE;
   
-  // For now, assume all authenticated users have FREE tier limits
-  const userRole = 'FREE' as Role; // Default role
+  // Get user role from database
+  const userRole = await getUserRoleFromDB(user.id);
   return featureFlags[userRole] || featureFlags.FREE;
 }
 
@@ -100,10 +138,30 @@ export async function isWorkspaceMember(req: NextRequest, workspaceId: string): 
   
   if (!user?.id) return false;
   
-  // This would query the database to check workspace membership
-  // Implementation depends on your database setup
-  // For now, return true as placeholder
-  return true;
+  try {
+    // Check if user is workspace owner
+    const workspace = await db.select().from(workspaces).where(
+      and(
+        eq(workspaces.id, workspaceId),
+        eq(workspaces.ownerId, user.id)
+      )
+    ).limit(1);
+    
+    if (workspace.length > 0) return true;
+    
+    // Check if user is a workspace member
+    const membership = await db.select().from(workspaceMembers).where(
+      and(
+        eq(workspaceMembers.workspaceId, workspaceId),
+        eq(workspaceMembers.userId, user.id)
+      )
+    ).limit(1);
+    
+    return membership.length > 0;
+  } catch (error) {
+    console.error('Error checking workspace membership:', error);
+    return false;
+  }
 }
 
 /**
@@ -114,9 +172,31 @@ export async function isWorkspaceAdmin(req: NextRequest, workspaceId: string): P
   
   if (!user?.id) return false;
   
-  // This would query the database to check workspace admin status
-  // Implementation depends on your database setup
-  return true;
+  try {
+    // Check if user is workspace owner
+    const workspace = await db.select().from(workspaces).where(
+      and(
+        eq(workspaces.id, workspaceId),
+        eq(workspaces.ownerId, user.id)
+      )
+    ).limit(1);
+    
+    if (workspace.length > 0) return true;
+    
+    // Check if user is workspace admin
+    const membership = await db.select().from(workspaceMembers).where(
+      and(
+        eq(workspaceMembers.workspaceId, workspaceId),
+        eq(workspaceMembers.userId, user.id),
+        eq(workspaceMembers.role, 'admin')
+      )
+    ).limit(1);
+    
+    return membership.length > 0;
+  } catch (error) {
+    console.error('Error checking workspace admin status:', error);
+    return false;
+  }
 }
 
 /**
@@ -127,9 +207,7 @@ export async function getUserRole(req: NextRequest): Promise<Role> {
   
   if (!user?.id) return 'FREE';
   
-  // For now, return default role
-  // In a real implementation, you'd get this from the database
-  return 'FREE';
+  return await getUserRoleFromDB(user.id);
 }
 
 /**
@@ -149,41 +227,53 @@ export async function checkUsageLimits(req: NextRequest, resource: string): Prom
   
   const limits = await getFeatureLimits(req);
   
-  // This would query the database to get current usage
-  // For now, return mock data
-  const mockCurrentUsage = {
-    workspaces: 1,
-    goals: 5,
-    habits: 2,
-    blocks: 50
-  };
-  
-  let limit = 0;
+  // Get current usage from database
   let current = 0;
+  let limit = 0;
   
-  switch (resource) {
-    case 'workspaces':
-      limit = limits.maxWorkspaces;
-      current = mockCurrentUsage.workspaces;
-      break;
-    case 'goals':
-      limit = limits.maxGoals;
-      current = mockCurrentUsage.goals;
-      break;
-    case 'habits':
-      limit = limits.maxHabits;
-      current = mockCurrentUsage.habits;
-      break;
-    case 'blocks':
-      limit = limits.maxBlocksPerWorkspace;
-      current = mockCurrentUsage.blocks;
-      break;
-    default:
-      return { allowed: true, limit: Infinity, current: 0, remaining: Infinity };
+  try {
+    switch (resource) {
+      case 'workspaces':
+        const workspaceCount = await db.select().from(workspaces).where(eq(workspaces.ownerId, user.id));
+        current = workspaceCount.length;
+        limit = limits.maxWorkspaces;
+        break;
+        
+      case 'goals':
+        // Goals belong to workspaces, which belong to users
+        const goalCount = await db.select().from(goals)
+          .innerJoin(workspaces, eq(goals.workspaceId, workspaces.id))
+          .where(eq(workspaces.ownerId, user.id));
+        current = goalCount.length;
+        limit = limits.maxGoals;
+        break;
+        
+      case 'habits':
+        const habitCount = await db.select().from(habits).where(eq(habits.userId, user.id));
+        current = habitCount.length;
+        limit = limits.maxHabits;
+        break;
+        
+      case 'blocks':
+        // Blocks belong to workspaces, which belong to users
+        const blockCount = await db.select().from(blocks)
+          .innerJoin(workspaces, eq(blocks.workspaceId, workspaces.id))
+          .where(eq(workspaces.ownerId, user.id));
+        current = blockCount.length;
+        limit = limits.maxBlocksPerWorkspace;
+        break;
+        
+      default:
+        return { allowed: true, limit: Infinity, current: 0, remaining: Infinity };
+    }
+  } catch (error) {
+    console.error('Error checking usage limits:', error);
+    // Return conservative limits on error
+    return { allowed: false, limit: 0, current: 0, remaining: 0 };
   }
   
   const remaining = Math.max(0, limit - current);
-  const allowed = remaining > 0;
+  const allowed = remaining > 0 || limit === Infinity;
   
   return { allowed, limit, current, remaining };
 }

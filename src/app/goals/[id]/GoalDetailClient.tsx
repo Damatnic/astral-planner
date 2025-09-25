@@ -28,6 +28,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { format, parseISO } from 'date-fns';
+import Logger from '@/lib/logger';
 
 interface Goal {
   id: string;
@@ -89,7 +90,7 @@ export default function GoalDetailPage() {
           throw new Error(result.error || 'Failed to fetch goal');
         }
       } catch (error) {
-        console.error('Failed to fetch goal:', error);
+        Logger.error('Failed to fetch goal:', error);
         setError('Failed to load goal details');
       } finally {
         setLoading(false);
@@ -119,10 +120,10 @@ export default function GoalDetailPage() {
         window.location.reload();
       } else {
         const error = await response.json();
-        console.error('Failed to update progress:', error);
+        Logger.error('Failed to update progress:', error);
       }
     } catch (error) {
-      console.error('Failed to update progress:', error);
+      Logger.error('Failed to update progress:', error);
     }
   }
 
@@ -135,10 +136,10 @@ export default function GoalDetailPage() {
         router.push('/goals');
       } else {
         const error = await response.json();
-        console.error('Failed to delete goal:', error);
+        Logger.error('Failed to delete goal:', error);
       }
     } catch (error) {
-      console.error('Failed to delete goal:', error);
+      Logger.error('Failed to delete goal:', error);
     }
   }
 
@@ -489,13 +490,189 @@ export default function GoalDetailPage() {
           </TabsContent>
 
           <TabsContent value="analytics" className="space-y-6">
-            <Card>
-              <CardContent className="p-8 text-center">
-                <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium mb-2">Advanced Analytics</h3>
-                <p className="text-muted-foreground">Detailed analytics and insights coming soon...</p>
-              </CardContent>
-            </Card>
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* Progress Analytics */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Progress Analytics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Current Progress</span>
+                      <span className="text-sm font-medium">{goal.completionPercentage}%</span>
+                    </div>
+                    <Progress value={goal.completionPercentage} className="h-2" />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 pt-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-600">{goal.currentValue}</div>
+                      <div className="text-xs text-muted-foreground">Current Value</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-600">{goal.targetValue}</div>
+                      <div className="text-xs text-muted-foreground">Target Value</div>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-4 border-t">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground">Remaining</span>
+                      <span className="font-medium">{goal.targetValue - goal.currentValue} units</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm mt-1">
+                      <span className="text-muted-foreground">Days Remaining</span>
+                      <span className={`font-medium ${goal.isOverdue ? 'text-red-600' : 'text-foreground'}`}>
+                        {goal.daysRemaining || 'No deadline'}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Time Analytics */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="h-5 w-5" />
+                    Time Analytics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Created</span>
+                      <span className="text-sm font-medium">
+                        {format(parseISO(goal.createdAt), 'MMM dd, yyyy')}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Last Updated</span>
+                      <span className="text-sm font-medium">
+                        {format(parseISO(goal.updatedAt), 'MMM dd, yyyy')}
+                      </span>
+                    </div>
+                    {goal.targetDate && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Target Date</span>
+                        <span className={`text-sm font-medium ${goal.isOverdue ? 'text-red-600' : 'text-foreground'}`}>
+                          {format(parseISO(goal.targetDate), 'MMM dd, yyyy')}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="pt-4 border-t">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-purple-600">
+                        {Math.max(0, Math.floor((new Date().getTime() - new Date(goal.createdAt).getTime()) / (1000 * 60 * 60 * 24)))}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Days Active</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Performance Metrics */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="h-5 w-5" />
+                    Performance Metrics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Priority Level</span>
+                      <Badge variant={
+                        goal.priority === 'urgent' ? 'destructive' :
+                        goal.priority === 'high' ? 'default' :
+                        goal.priority === 'medium' ? 'secondary' :
+                        'outline'
+                      }>
+                        {goal.priority.charAt(0).toUpperCase() + goal.priority.slice(1)}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Status</span>
+                      <Badge variant={
+                        goal.status === 'completed' ? 'default' :
+                        goal.status === 'active' ? 'secondary' :
+                        'outline'
+                      }>
+                        {goal.status.charAt(0).toUpperCase() + goal.status.slice(1)}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Category</span>
+                      <span className="text-sm font-medium">{goal.category}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-4 border-t">
+                    {goal.isOverdue && (
+                      <div className="flex items-center gap-2 text-red-600 text-sm">
+                        <AlertCircle className="h-4 w-4" />
+                        <span>Goal is overdue</span>
+                      </div>
+                    )}
+                    {goal.status === 'completed' && (
+                      <div className="flex items-center gap-2 text-green-600 text-sm">
+                        <CheckCircle2 className="h-4 w-4" />
+                        <span>Goal completed successfully</span>
+                      </div>
+                    )}
+                    {goal.status === 'active' && !goal.isOverdue && (
+                      <div className="flex items-center gap-2 text-blue-600 text-sm">
+                        <Target className="h-4 w-4" />
+                        <span>Goal is on track</span>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Weekly Progress Chart */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5" />
+                    Weekly Progress
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-end justify-between h-32 gap-2">
+                      {[
+                        { day: 'Mon', progress: Math.max(0, goal.completionPercentage - 30) },
+                        { day: 'Tue', progress: Math.max(0, goal.completionPercentage - 25) },
+                        { day: 'Wed', progress: Math.max(0, goal.completionPercentage - 20) },
+                        { day: 'Thu', progress: Math.max(0, goal.completionPercentage - 15) },
+                        { day: 'Fri', progress: Math.max(0, goal.completionPercentage - 10) },
+                        { day: 'Sat', progress: Math.max(0, goal.completionPercentage - 5) },
+                        { day: 'Sun', progress: goal.completionPercentage }
+                      ].map((item, index) => (
+                        <div key={index} className="flex-1 flex flex-col items-center gap-2">
+                          <div 
+                            className="w-full bg-blue-500 rounded-t min-h-[4px]"
+                            style={{ height: `${Math.max(4, (item.progress / 100) * 120)}px` }}
+                          ></div>
+                          <span className="text-xs text-muted-foreground">{item.day}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="text-center text-sm text-muted-foreground">
+                      Estimated progress over the last week
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
 

@@ -1,7 +1,7 @@
-// TEMPORARY: Clerk disabled for development - using Stack Auth credentials
-// import { ClerkProvider } from '@clerk/nextjs';
+// Authentication handled by Stack Auth via middleware
 import { Inter, Caveat, Dancing_Script, Kalam, Architects_Daughter, Indie_Flower, Shadows_Into_Light, Permanent_Marker, Amatic_SC } from 'next/font/google';
 import { Providers } from '@/providers/providers';
+import { Analytics } from '@/components/analytics/Analytics';
 import { Toaster } from 'sonner';
 import './globals.css';
 
@@ -18,8 +18,8 @@ const permanentMarker = Permanent_Marker({ subsets: ['latin'], weight: '400', va
 const amaticSc = Amatic_SC({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-amatic-sc' });
 
 export const metadata = {
-  title: 'Ultimate Digital Planner',
-  description: 'AI-powered digital planning solution with real-time collaboration',
+  title: 'Astral Chronos',
+  description: 'Astral Chronos - AI-powered digital planning solution with real-time collaboration',
   manifest: '/manifest.json',
 };
 
@@ -49,6 +49,7 @@ export default function RootLayout({
               },
             }}
           />
+          <Analytics />
         </Providers>
       </body>
     </html>

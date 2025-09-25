@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   User, 
   Bell, 
@@ -35,6 +35,7 @@ import { GoogleCalendarIntegration } from '@/components/integrations/GoogleCalen
 
 export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   
   // Settings state
@@ -83,11 +84,66 @@ export default function SettingsPage() {
     ]
   });
 
-  const handleSave = async (section: string) => {
+  // Load settings on mount
+  useEffect(() => {
+    loadSettings();
+  }, []);
+
+  const loadSettings = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/user/settings');
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Map API response to local settings structure
+        setSettings(prevSettings => ({
+          ...prevSettings,
+          appearance: {
+            theme: data.settings?.theme || 'system',
+            accentColor: data.settings?.accentColor || 'blue',
+            fontSize: data.settings?.fontSize || 'medium',
+            reducedMotion: data.settings?.reducedMotion || false
+          },
+          notifications: {
+            ...prevSettings.notifications,
+            ...data.settings?.notifications
+          },
+          privacy: {
+            ...prevSettings.privacy,
+            ...data.settings?.privacy
+          }
+        }));
+      }
+    } catch (error) {
+      toast({
+        title: "Error loading settings",
+        description: "Failed to load your settings. Please refresh the page.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSave = async (section: string, sectionData: any) => {
     setIsSaving(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch('/api/user/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          settings: {
+            [section]: sectionData
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save settings');
+      }
       
       toast({
         title: "Settings saved",
@@ -103,6 +159,17 @@ export default function SettingsPage() {
       setIsSaving(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading settings...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
@@ -233,7 +300,7 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="flex justify-end">
-                  <Button onClick={() => handleSave('profile')} disabled={isSaving}>
+                  <Button onClick={() => handleSave('profile', settings.profile)} disabled={isSaving}>
                     {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                     Save Changes
                   </Button>
@@ -380,7 +447,7 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="flex justify-end">
-                  <Button onClick={() => handleSave('notifications')} disabled={isSaving}>
+                  <Button onClick={() => handleSave('notifications', settings.notifications)} disabled={isSaving}>
                     {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                     Save Changes
                   </Button>
@@ -487,7 +554,7 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="flex justify-end">
-                  <Button onClick={() => handleSave('appearance')} disabled={isSaving}>
+                  <Button onClick={() => handleSave('appearance', settings.appearance)} disabled={isSaving}>
                     {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                     Save Changes
                   </Button>
@@ -619,7 +686,7 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="flex justify-end">
-                  <Button onClick={() => handleSave('privacy')} disabled={isSaving}>
+                  <Button onClick={() => handleSave('privacy', settings.privacy)} disabled={isSaving}>
                     {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                     Save Changes
                   </Button>

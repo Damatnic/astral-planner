@@ -3,6 +3,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ThemeProvider } from './theme-provider';
+import { AuthProvider } from '@/components/providers/auth-provider';
+import { PWAProvider } from '@/components/providers/pwa-provider';
+import { ShortcutsProvider } from './shortcuts-provider';
+import { CollaborationProvider } from '@/components/collaboration/CollaborationProvider';
+import { UserPreferencesProvider } from '@/hooks/use-user-preferences';
 import { useState } from 'react';
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -26,7 +31,17 @@ export function Providers({ children }: { children: React.ReactNode }) {
         enableSystem
         disableTransitionOnChange
       >
-        {children}
+        <AuthProvider>
+          <UserPreferencesProvider>
+            <PWAProvider>
+              <CollaborationProvider workspaceId="default-workspace">
+                <ShortcutsProvider>
+                  {children}
+                </ShortcutsProvider>
+              </CollaborationProvider>
+            </PWAProvider>
+          </UserPreferencesProvider>
+        </AuthProvider>
       </ThemeProvider>
       {process.env.NODE_ENV === 'development' && (
         <ReactQueryDevtools initialIsOpen={false} />

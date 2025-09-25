@@ -13,6 +13,7 @@ import {
   Edit,
   Trash2,
   CheckCircle2,
+  Circle,
   Clock,
   Target,
   Flame,
@@ -24,6 +25,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -33,6 +35,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { format, startOfWeek, addDays, isSameDay, parseISO } from 'date-fns';
+import Logger from '@/lib/logger';
 
 interface Habit {
   id: string;
@@ -130,6 +133,7 @@ export default function HabitsPage() {
 
   // Week view state
   const [currentWeek, setCurrentWeek] = useState(new Date());
+  const [sortBy, setSortBy] = useState('name');
 
   // Fetch habits data
   useEffect(() => {
@@ -152,7 +156,7 @@ export default function HabitsPage() {
           throw new Error(result.error || 'Failed to fetch habits');
         }
       } catch (error) {
-        console.error('Failed to fetch habits:', error);
+        Logger.error('Failed to fetch habits:', error);
         setData(prev => ({
           ...prev,
           loading: false,
@@ -198,10 +202,10 @@ export default function HabitsPage() {
         window.location.reload();
       } else {
         const error = await response.json();
-        console.error('Failed to save habit:', error);
+        Logger.error('Failed to save habit:', error);
       }
     } catch (error) {
-      console.error('Failed to save habit:', error);
+      Logger.error('Failed to save habit:', error);
     }
   }
 
@@ -233,7 +237,7 @@ export default function HabitsPage() {
         }));
       }
     } catch (error) {
-      console.error('Failed to toggle habit:', error);
+      Logger.error('Failed to toggle habit:', error);
     }
   }
 
@@ -247,7 +251,7 @@ export default function HabitsPage() {
         window.location.reload();
       }
     } catch (error) {
-      console.error('Failed to delete habit:', error);
+      Logger.error('Failed to delete habit:', error);
     }
   }
 
@@ -673,10 +677,187 @@ export default function HabitsPage() {
 
           <TabsContent value="list" className="space-y-4">
             <Card>
-              <CardContent className="p-8 text-center">
-                <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium mb-2">List View</h3>
-                <p className="text-muted-foreground">Detailed list view coming soon...</p>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>All Habits</CardTitle>
+                    <CardDescription>Detailed view of all your habits with progress and statistics</CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                      <SelectTrigger className="w-40">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="name">Name</SelectItem>
+                        <SelectItem value="streak">Current Streak</SelectItem>
+                        <SelectItem value="completionRate">Completion Rate</SelectItem>
+                        <SelectItem value="category">Category</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {filteredHabits.map((habit) => {
+                    const completionRate = habit.stats?.completionRate || 0;
+                    const todaysEntry = habit.entries?.find(entry => 
+                      isSameDay(parseISO(entry.date), new Date())
+                    );
+                    const completedToday = todaysEntry?.completed || false;
+                    
+                    return (
+                      <div key={habit.id} className="border rounded-lg p-4 hover:shadow-sm transition-shadow">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2">
+                                  {habit.icon && (
+                                    <span className="text-lg">{habit.icon}</span>
+                                  )}
+                                  <h4 className="text-lg font-medium">{habit.name}</h4>
+                                  <Badge variant="outline" className="text-xs">
+                                    {habit.category}
+                                  </Badge>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  variant={completedToday ? "default" : "outline"}
+                                  size="sm"
+                                  onClick={() => handleToggleHabit(habit.id, !completedToday)}
+                                  className={completedToday ? 
+                                    'bg-green-600 hover:bg-green-700' : 
+                                    'hover:bg-green-50 hover:border-green-300'
+                                  }
+                                >
+                                  {completedToday ? (
+                                    <><CheckCircle2 className="h-4 w-4 mr-1" />Complete</>
+                                  ) : (
+                                    <><Circle className="h-4 w-4 mr-1" />Mark Done</>
+                                  )}
+                                </Button>
+                                
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="sm">
+                                      <MoreVertical className="h-4 w-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => setEditingHabit(habit)}>
+                                      <Edit className="h-4 w-4 mr-2" />
+                                      Edit Habit
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleDeleteHabit(habit.id)} className="text-red-600">
+                                      <Trash2 className="h-4 w-4 mr-2" />
+                                      Delete Habit
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </div>
+                            </div>
+                            
+                            {habit.description && (
+                              <p className="text-sm text-muted-foreground mb-3">{habit.description}</p>
+                            )}
+                            
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                              <div className="text-center">
+                                <div className="text-2xl font-bold text-blue-600">{habit.currentStreak}</div>
+                                <div className="text-xs text-muted-foreground">Current Streak</div>
+                              </div>
+                              <div className="text-center">
+                                <div className="text-2xl font-bold text-green-600">{habit.bestStreak}</div>
+                                <div className="text-xs text-muted-foreground">Best Streak</div>
+                              </div>
+                              <div className="text-center">
+                                <div className="text-2xl font-bold text-purple-600">{Math.round(completionRate)}%</div>
+                                <div className="text-xs text-muted-foreground">Success Rate</div>
+                              </div>
+                              <div className="text-center">
+                                <div className="text-2xl font-bold text-orange-600">{habit.totalCompletions}</div>
+                                <div className="text-xs text-muted-foreground">Total Completions</div>
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-muted-foreground">Overall Progress</span>
+                                <span className="font-medium">{Math.round(completionRate)}%</span>
+                              </div>
+                              <Progress value={completionRate} className="h-2" />
+                            </div>
+                            
+                            <div className="flex items-center justify-between text-xs text-muted-foreground mt-3">
+                              <div className="flex items-center gap-4">
+                                <span>Frequency: {habit.frequency}</span>
+                                {habit.timeOfDay && (
+                                  <span>Time: {habit.timeOfDay}</span>
+                                )}
+                                {habit.unit && (
+                                  <span>Target: {habit.targetCount} {habit.unit}</span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {habit.isActive ? (
+                                  <Badge variant="outline" className="text-green-600 border-green-300">Active</Badge>
+                                ) : (
+                                  <Badge variant="outline" className="text-gray-600 border-gray-300">Inactive</Badge>
+                                )}
+                              </div>
+                            </div>
+                            
+                            {/* Week Progress Indicators */}
+                            <div className="mt-3 pt-3 border-t">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm text-muted-foreground">This Week</span>
+                                <div className="flex items-center gap-1">
+                                  {[...Array(7)].map((_, index) => {
+                                    const date = addDays(startOfWeek(new Date()), index);
+                                    const dayEntry = habit.entries?.find(entry => 
+                                      isSameDay(parseISO(entry.date), date)
+                                    );
+                                    const isCompleted = dayEntry?.completed || false;
+                                    const isToday = isSameDay(date, new Date());
+                                    
+                                    return (
+                                      <div 
+                                        key={index} 
+                                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs ${
+                                          isCompleted ? 'bg-green-500 border-green-500 text-white' :
+                                          isToday ? 'border-blue-500 text-blue-500' :
+                                          'border-gray-300 text-gray-400'
+                                        }`}
+                                      >
+                                        {isCompleted && <CheckCircle2 className="w-3 h-3" />}
+                                        {!isCompleted && isToday && <Circle className="w-3 h-3" />}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  
+                  {filteredHabits.length === 0 && (
+                    <div className="text-center py-8">
+                      <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground">No habits found matching your filters.</p>
+                      <Button onClick={() => setShowCreateDialog(true)} className="mt-4">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Create Your First Habit
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

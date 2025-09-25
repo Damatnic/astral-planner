@@ -20,7 +20,8 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Input } from '@/components/ui/input'
-// import { useToast } from '@/components/ui/use-toast'
+import { toast } from 'sonner'
+import Logger from '@/lib/logger'
 
 interface DashboardStats {
   totalUsers: number
@@ -81,9 +82,10 @@ export default function AdminDashboard() {
       setActivities(activitiesData.activities)
       setLoading(false)
     } catch (error) {
-      console.error('Admin dashboard error:', error)
-      // TODO: Replace with proper toast implementation
-      console.error('Failed to load dashboard data')
+      Logger.error('Admin dashboard error:', error)
+      toast('Failed to load dashboard data', {
+        description: 'Could not fetch admin dashboard data',
+      })
       setLoading(false)
     }
   }
@@ -103,9 +105,14 @@ export default function AdminDashboard() {
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
       
-      console.log('Export successful: Admin data has been exported')
+      toast('Export successful', {
+        description: 'Admin data has been exported',
+      })
     } catch (error) {
-      console.error('Export failed: Failed to export admin data')
+      Logger.error('Export failed:', error)
+      toast('Export failed', {
+        description: 'Failed to export admin data',
+      })
     }
   }
 

@@ -4,6 +4,7 @@ import { db } from '@/db';
 import { goals, goalProgress, users } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { z } from 'zod';
+import Logger from '@/lib/logger';
 
 const UpdateGoalSchema = z.object({
   title: z.string().min(1).max(200).optional(),
@@ -83,7 +84,7 @@ export async function GET(
         : null
     });
   } catch (error) {
-    console.error('Failed to fetch goal:', error);
+    Logger.error('Failed to fetch goal:', error);
     return NextResponse.json(
       { error: 'Failed to fetch goal' },
       { status: 500 }
@@ -169,7 +170,7 @@ export async function PATCH(
 
     return NextResponse.json(updatedGoal);
   } catch (error) {
-    console.error('Failed to update goal:', error);
+    Logger.error('Failed to update goal:', error);
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -266,7 +267,7 @@ export async function DELETE(
       goal: deletedGoal
     });
   } catch (error) {
-    console.error('Failed to delete goal:', error);
+    Logger.error('Failed to delete goal:', error);
     return NextResponse.json(
       { error: 'Failed to delete goal' },
       { status: 500 }

@@ -33,6 +33,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
 import { format, parseISO, isAfter, isBefore } from 'date-fns';
+import Logger from '@/lib/logger';
 
 interface Goal {
   id: string;
@@ -129,7 +130,7 @@ export default function GoalsPage() {
           throw new Error(result.error || 'Failed to fetch goals');
         }
       } catch (error) {
-        console.error('Failed to fetch goals:', error);
+        Logger.error('Failed to fetch goals:', error);
         setData(prev => ({
           ...prev,
           loading: false,
@@ -174,10 +175,10 @@ export default function GoalsPage() {
         window.location.reload();
       } else {
         const error = await response.json();
-        console.error('Failed to save goal:', error);
+        Logger.error('Failed to save goal:', error);
       }
     } catch (error) {
-      console.error('Failed to save goal:', error);
+      Logger.error('Failed to save goal:', error);
     }
   }
 
@@ -191,7 +192,7 @@ export default function GoalsPage() {
         window.location.reload();
       }
     } catch (error) {
-      console.error('Failed to delete goal:', error);
+      Logger.error('Failed to delete goal:', error);
     }
   }
 
@@ -519,22 +520,274 @@ export default function GoalsPage() {
 
           <TabsContent value="timeline" className="space-y-4">
             <Card>
-              <CardContent className="p-8 text-center">
-                <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium mb-2">Timeline View</h3>
-                <p className="text-muted-foreground">Timeline visualization coming soon...</p>
+              <CardHeader>
+                <CardTitle>Goals Timeline</CardTitle>
+                <CardDescription>View your goals organized by target dates and deadlines</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="relative">
+                  {/* Timeline Line */}
+                  <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-border"></div>
+                  
+                  {/* Timeline Items */}
+                  <div className="space-y-8">
+                    {filteredGoals
+                      .filter(goal => goal.targetDate)
+                      .sort((a, b) => new Date(a.targetDate!).getTime() - new Date(b.targetDate!).getTime())
+                      .map((goal, index) => {
+                        const isOverdue = goal.isOverdue;
+                        const isCompleted = goal.status === 'completed';
+                        
+                        return (
+                          <div key={goal.id} className="relative flex items-start space-x-4">
+                            {/* Timeline Node */}
+                            <div className={`relative z-10 flex h-6 w-6 items-center justify-center rounded-full border-2 ${
+                              isCompleted ? 'bg-green-500 border-green-500' :
+                              isOverdue ? 'bg-red-500 border-red-500' :
+                              'bg-blue-500 border-blue-500'
+                            }`}>
+                              {isCompleted && <CheckCircle2 className="h-3 w-3 text-white" />}
+                              {isOverdue && !isCompleted && <AlertCircle className="h-3 w-3 text-white" />}
+                              {!isCompleted && !isOverdue && <Clock className="h-3 w-3 text-white" />}
+                            </div>
+                            
+                            {/* Timeline Content */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  <h4 className="text-sm font-medium text-foreground">{goal.title}</h4>
+                                  <p className="text-sm text-muted-foreground mt-1">
+                                    Target: {goal.targetDate && format(parseISO(goal.targetDate), 'MMM dd, yyyy')}
+                                  </p>
+                                  <div className="flex items-center gap-2 mt-2">
+                                    <Badge variant="outline" className={`text-xs ${
+                                      goalTypes.find(t => t.value === goal.type)?.color === 'blue' ? 'border-blue-200 bg-blue-50' :
+                                      goalTypes.find(t => t.value === goal.type)?.color === 'green' ? 'border-green-200 bg-green-50' :
+                                      goalTypes.find(t => t.value === goal.type)?.color === 'orange' ? 'border-orange-200 bg-orange-50' :
+                                      'border-gray-200 bg-gray-50'
+                                    }`}>
+                                      {goalTypes.find(t => t.value === goal.type)?.label}
+                                    </Badge>
+                                    <span className="text-xs text-muted-foreground">
+                                      {goal.completionPercentage}% complete
+                                    </span>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-center gap-2">
+                                  <div className="text-right">
+                                    <div className="text-sm font-medium">
+                                      {goal.currentValue}/{goal.targetValue}
+                                    </div>
+                                    <Progress value={goal.completionPercentage} className="w-20 h-2" />
+                                  </div>
+                                  <Button variant="ghost" size="sm" asChild>
+                                    <Link href={`/goals/${goal.id}`}>
+                                      <ChevronRight className="h-4 w-4" />
+                                    </Link>
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                  
+                  {filteredGoals.filter(goal => goal.targetDate).length === 0 && (
+                    <div className="text-center py-8">
+                      <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground">No goals with target dates found.</p>
+                      <p className="text-sm text-muted-foreground mt-2">Add target dates to your goals to see them in the timeline.</p>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="kanban" className="space-y-4">
-            <Card>
-              <CardContent className="p-8 text-center">
-                <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium mb-2">Kanban Board</h3>
-                <p className="text-muted-foreground">Kanban board view coming soon...</p>
-              </CardContent>
-            </Card>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {/* Not Started Column */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-gray-400"></div>
+                    Not Started ({filteredGoals.filter(g => g.status === 'active' && g.completionPercentage === 0).length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {filteredGoals
+                    .filter(goal => goal.status === 'active' && goal.completionPercentage === 0)
+                    .map((goal) => (
+                      <div key={goal.id} className="p-3 bg-gray-50 rounded-lg border hover:shadow-sm transition-shadow cursor-pointer">
+                        <div className="flex items-start justify-between mb-2">
+                          <h4 className="text-sm font-medium line-clamp-2">{goal.title}</h4>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                                <MoreVertical className="h-3 w-3" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem asChild>
+                                <Link href={`/goals/${goal.id}`}>View Details</Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => setEditingGoal(goal)}>
+                                Edit Goal
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Badge variant="outline" className="text-xs">
+                            {goalTypes.find(t => t.value === goal.type)?.label}
+                          </Badge>
+                          {goal.targetDate && (
+                            <span>{format(parseISO(goal.targetDate), 'MMM dd')}</span>
+                          )}
+                        </div>
+                        <div className="mt-2">
+                          <div className="flex items-center justify-between text-xs mb-1">
+                            <span>{goal.currentValue}/{goal.targetValue}</span>
+                            <span>{goal.completionPercentage}%</span>
+                          </div>
+                          <Progress value={goal.completionPercentage} className="h-1" />
+                        </div>
+                      </div>
+                    ))}
+                </CardContent>
+              </Card>
+
+              {/* In Progress Column */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                    In Progress ({filteredGoals.filter(g => g.status === 'active' && g.completionPercentage > 0 && g.completionPercentage < 100).length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {filteredGoals
+                    .filter(goal => goal.status === 'active' && goal.completionPercentage > 0 && goal.completionPercentage < 100)
+                    .map((goal) => (
+                      <div key={goal.id} className="p-3 bg-blue-50 rounded-lg border hover:shadow-sm transition-shadow cursor-pointer">
+                        <div className="flex items-start justify-between mb-2">
+                          <h4 className="text-sm font-medium line-clamp-2">{goal.title}</h4>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                                <MoreVertical className="h-3 w-3" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem asChild>
+                                <Link href={`/goals/${goal.id}`}>View Details</Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => setEditingGoal(goal)}>
+                                Edit Goal
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Badge variant="outline" className="text-xs">
+                            {goalTypes.find(t => t.value === goal.type)?.label}
+                          </Badge>
+                          {goal.targetDate && (
+                            <span>{format(parseISO(goal.targetDate), 'MMM dd')}</span>
+                          )}
+                        </div>
+                        <div className="mt-2">
+                          <div className="flex items-center justify-between text-xs mb-1">
+                            <span>{goal.currentValue}/{goal.targetValue}</span>
+                            <span>{goal.completionPercentage}%</span>
+                          </div>
+                          <Progress value={goal.completionPercentage} className="h-1" />
+                        </div>
+                      </div>
+                    ))}
+                </CardContent>
+              </Card>
+
+              {/* Completed Column */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    Completed ({filteredGoals.filter(g => g.status === 'completed').length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {filteredGoals
+                    .filter(goal => goal.status === 'completed')
+                    .map((goal) => (
+                      <div key={goal.id} className="p-3 bg-green-50 rounded-lg border hover:shadow-sm transition-shadow cursor-pointer">
+                        <div className="flex items-start justify-between mb-2">
+                          <h4 className="text-sm font-medium line-clamp-2">{goal.title}</h4>
+                          <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Badge variant="outline" className="text-xs">
+                            {goalTypes.find(t => t.value === goal.type)?.label}
+                          </Badge>
+                          {goal.targetDate && (
+                            <span>{format(parseISO(goal.targetDate), 'MMM dd')}</span>
+                          )}
+                        </div>
+                        <div className="mt-2">
+                          <div className="flex items-center justify-between text-xs mb-1">
+                            <span>{goal.currentValue}/{goal.targetValue}</span>
+                            <span>100%</span>
+                          </div>
+                          <Progress value={100} className="h-1" />
+                        </div>
+                      </div>
+                    ))}
+                </CardContent>
+              </Card>
+
+              {/* Paused/Cancelled Column */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                    On Hold ({filteredGoals.filter(g => g.status === 'paused' || g.status === 'cancelled').length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {filteredGoals
+                    .filter(goal => goal.status === 'paused' || goal.status === 'cancelled')
+                    .map((goal) => (
+                      <div key={goal.id} className="p-3 bg-orange-50 rounded-lg border hover:shadow-sm transition-shadow cursor-pointer">
+                        <div className="flex items-start justify-between mb-2">
+                          <h4 className="text-sm font-medium line-clamp-2">{goal.title}</h4>
+                          <Badge variant="outline" className={`text-xs ${
+                            goal.status === 'paused' ? 'border-orange-300 text-orange-700' : 'border-red-300 text-red-700'
+                          }`}>
+                            {goal.status === 'paused' ? 'Paused' : 'Cancelled'}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Badge variant="outline" className="text-xs">
+                            {goalTypes.find(t => t.value === goal.type)?.label}
+                          </Badge>
+                          {goal.targetDate && (
+                            <span>{format(parseISO(goal.targetDate), 'MMM dd')}</span>
+                          )}
+                        </div>
+                        <div className="mt-2">
+                          <div className="flex items-center justify-between text-xs mb-1">
+                            <span>{goal.currentValue}/{goal.targetValue}</span>
+                            <span>{goal.completionPercentage}%</span>
+                          </div>
+                          <Progress value={goal.completionPercentage} className="h-1" />
+                        </div>
+                      </div>
+                    ))}
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
 
