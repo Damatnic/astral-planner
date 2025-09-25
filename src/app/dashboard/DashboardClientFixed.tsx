@@ -12,6 +12,7 @@ import {
   BarChart3,
   Plus,
   ChevronRight,
+  ChevronLeft,
   Sparkles,
   Sun,
   Cloud,
