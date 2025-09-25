@@ -1,0 +1,90 @@
+index-DF-DRPbn.js:2 [SECURITY] SECURITY_SERVICE_INITIALIZED: Security service started
+overrideMethod @ hook.js:608
+console.<computed> @ index-DF-DRPbn.js:2
+logSecurityEvent @ index-DF-DRPbn.js:2
+initialize @ index-DF-DRPbn.js:2
+await in initialize
+(anonymous) @ index-DF-DRPbn.js:2
+(anonymous) @ index-DF-DRPbn.js:2
+al @ index-DF-DRPbn.js:2
+Ou @ index-DF-DRPbn.js:2
+(anonymous) @ index-DF-DRPbn.js:2
+x @ index-DF-DRPbn.js:2
+A @ index-DF-DRPbn.js:2
+index-DF-DRPbn.js:2 ReferenceError: index is not defined
+    at RevolutionaryDashboard-CQvnBqUD.js:2:7475
+    at Array.map (<anonymous>)
+    at F (RevolutionaryDashboard-CQvnBqUD.js:2:7357)
+    at ws (index-DF-DRPbn.js:2:71949)
+    at Ta (index-DF-DRPbn.js:2:85844)
+    at Cl (index-DF-DRPbn.js:2:131147)
+    at Su (index-DF-DRPbn.js:2:119875)
+    at xu (index-DF-DRPbn.js:2:119803)
+    at wu (index-DF-DRPbn.js:2:119666)
+    at uu (index-DF-DRPbn.js:2:116507)
+overrideMethod @ hook.js:608
+console.<computed> @ index-DF-DRPbn.js:2
+va @ index-DF-DRPbn.js:2
+o.componentDidCatch.n.callback @ index-DF-DRPbn.js:2
+Go @ index-DF-DRPbn.js:2
+El @ index-DF-DRPbn.js:2
+Sl @ index-DF-DRPbn.js:2
+kl @ index-DF-DRPbn.js:2
+(anonymous) @ index-DF-DRPbn.js:2
+ju @ index-DF-DRPbn.js:2
+lu @ index-DF-DRPbn.js:2
+x @ index-DF-DRPbn.js:2
+A @ index-DF-DRPbn.js:2
+index-DF-DRPbn.js:2 [SECURITY] DEVTOOLS_OPENED: Developer tools opened
+overrideMethod @ hook.js:608
+console.<computed> @ index-DF-DRPbn.js:2
+logSecurityEvent @ index-DF-DRPbn.js:2
+(anonymous) @ index-DF-DRPbn.js:2
+setInterval
+monitorDevTools @ index-DF-DRPbn.js:2
+setupSecurityMonitoring @ index-DF-DRPbn.js:2
+initialize @ index-DF-DRPbn.js:2
+await in initialize
+(anonymous) @ index-DF-DRPbn.js:2
+(anonymous) @ index-DF-DRPbn.js:2
+al @ index-DF-DRPbn.js:2
+Ou @ index-DF-DRPbn.js:2
+(anonymous) @ index-DF-DRPbn.js:2
+x @ index-DF-DRPbn.js:2
+A @ index-DF-DRPbn.js:2
+renderer.js:711 Uncaught TypeError: Cannot read properties of undefined (reading 'displayName')
+    at getDisplayNameForFiber (renderer.js:711:39)
+    at renderer.js:2170:27
+    at mountFiberRecursively (renderer.js:2619:21)
+    at mountVirtualChildrenRecursively (renderer.js:2584:9)
+    at mountChildrenRecursively (renderer.js:2604:5)
+    at mountFiberRecursively (renderer.js:2736:11)
+    at mountVirtualChildrenRecursively (renderer.js:2584:9)
+    at mountChildrenRecursively (renderer.js:2604:5)
+    at mountFiberRecursively (renderer.js:2736:11)
+    at mountVirtualChildrenRecursively (renderer.js:2584:9)
+getDisplayNameForFiber @ renderer.js:711
+(anonymous) @ renderer.js:2170
+mountFiberRecursively @ renderer.js:2619
+mountVirtualChildrenRecursively @ renderer.js:2584
+mountChildrenRecursively @ renderer.js:2604
+mountFiberRecursively @ renderer.js:2736
+mountVirtualChildrenRecursively @ renderer.js:2584
+mountChildrenRecursively @ renderer.js:2604
+mountFiberRecursively @ renderer.js:2736
+mountVirtualChildrenRecursively @ renderer.js:2584
+mountChildrenRecursively @ renderer.js:2604
+mountFiberRecursively @ renderer.js:2736
+(anonymous) @ renderer.js:3606
+flushInitialOperations @ renderer.js:3582
+registerRendererInterface @ index.js:35
+(anonymous) @ index.js:70
+initBackend @ index.js:69
+activateBackend @ backendManager.js:1
+(anonymous) @ backendManager.js:1
+(anonymous) @ hook.js:268
+emit @ hook.js:268
+setup @ backend.js:33
+(anonymous) @ backend.js:19
+(anonymous) @ react_devtools_backend_compact.js:6004
+(anonymous) @ react_devtools_backend_compact.js:6006
