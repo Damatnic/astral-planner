@@ -100,57 +100,44 @@ const nextConfig = {
       };
       
       // Optimize bundle splitting
-      config.optimization.splitChunks = {
-        ...config.optimization.splitChunks,
-        cacheGroups: {
-          ...config.optimization.splitChunks.cacheGroups,
+      if (config.optimization && config.optimization.splitChunks) {
+        config.optimization.splitChunks.cacheGroups = {
+          default: false,
+          vendors: false,
           lucide: {
             name: 'lucide',
-            test: /[\/]node_modules[\/](lucide-react)[\/]/,
+            test: /[\\/]node_modules[\\/](lucide-react)[\\/]/,
             chunks: 'all',
             priority: 30,
             reuseExistingChunk: true,
           },
           radix: {
             name: 'radix',
-            test: /[\/]node_modules[\/](@radix-ui)[\/]/,
+            test: /[\\/]node_modules[\\/](@radix-ui)[\\/]/,
             chunks: 'all',
             priority: 25,
             reuseExistingChunk: true,
           },
           recharts: {
             name: 'recharts',
-            test: /[\/]node_modules[\/](recharts|d3-)[\/]/,
+            test: /[\\/]node_modules[\\/](recharts|d3-)[\\/]/,
             chunks: 'all',
             priority: 20,
             reuseExistingChunk: true,
           },
           vendor: {
             name: 'vendor',
-            test: /[\/]node_modules[\/](?!(lucide-react|@radix-ui|recharts|d3-))/,
+            test: /[\\/]node_modules[\\/]/,
             chunks: 'all',
             priority: 10,
             reuseExistingChunk: true,
             minChunks: 2,
           },
-        },
-      };
+        };
+      }
       
       // Tree shaking improvements
       config.resolve.mainFields = ['module', 'main'];
-      
-      // Compress images
-      config.module.rules.push({
-        test: /\.(png|jpe?g|gif|svg)$/,
-        use: {
-          loader: 'file-loader',
-          options: {
-            publicPath: '/_next/static/images/',
-            outputPath: 'static/images/',
-            esModule: false,
-          },
-        },
-      });
     }
 
     // Enable webpack caching
