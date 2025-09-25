@@ -41,7 +41,9 @@
       "Bash(PORT=3070 npm run dev)",
       "Bash(npx drizzle-kit:*)",
       "Bash(PORT=3080 npm run dev)",
-      "Bash(PORT=3090 npm run dev)"
+      "Bash(PORT=3090 npm run dev)",
+      "WebFetch(domain:astral-planner-pro-damatnic.vercel.app)",
+      "WebFetch(domain:astral-planner-pro-git-master-damatnic.vercel.app)"
     ],
     "deny": [],
     "ask": []
