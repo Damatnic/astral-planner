@@ -1068,13 +1068,99 @@ export default function PhysicalPlannerView() {
         <Bookmark className="w-8 h-8 text-red-600" />
       </div>
       
-      {/* Enhanced Customization Toolbar */}
-      <div className="absolute top-4 right-4 z-20 bg-white/95 backdrop-blur-sm rounded-lg p-3 shadow-lg border max-w-[90vw] overflow-auto">
-        <div className="flex items-center gap-3 flex-wrap text-xs">
-          {/* Voice Recording */}
+      {/* Integrated Control Bar */}
+      <div className="absolute top-4 left-4 right-4 z-20 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border max-w-full">
+        {/* Top Row - Main Navigation and Weather */}
+        <div className="flex items-center justify-between p-3 border-b border-gray-200 flex-wrap gap-3">
+          {/* Date Navigation */}
+          <div className="flex items-center gap-3">
+            <motion.button
+              onClick={() => handlePageTurn('prev')}
+              className="flex items-center gap-2 px-3 py-2 bg-amber-100 hover:bg-amber-200 rounded-lg shadow-sm transition-all font-medium text-amber-800"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Prev
+            </motion.button>
+            
+            <div className="text-center">
+              <div className="text-lg font-semibold text-gray-800">
+                {format(currentDate, 'MMMM d, yyyy')}
+              </div>
+              <div className="text-xs text-gray-500">
+                {format(currentDate, 'EEEE')}
+              </div>
+            </div>
+            
+            <motion.button
+              onClick={() => handlePageTurn('next')}
+              className="flex items-center gap-2 px-3 py-2 bg-amber-100 hover:bg-amber-200 rounded-lg shadow-sm transition-all font-medium text-amber-800"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Next
+              <ChevronRight className="w-4 h-4" />
+            </motion.button>
+          </div>
+
+          {/* Weather Display */}
+          {settings.showWeather && (
+            <div className="flex items-center gap-3 bg-blue-50 px-3 py-2 rounded-lg">
+              <span className="text-2xl">{weatherInfo.icon}</span>
+              <div>
+                <div className="text-sm font-semibold text-gray-800">{weatherInfo.temp}</div>
+                <div className="text-xs text-gray-600">{weatherInfo.condition}</div>
+              </div>
+            </div>
+          )}
+
+          {/* View Toggles */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-gray-600">Voice:</span>
-            <button
+            {['daily', 'weekly', 'monthly'].map((view) => (
+              <motion.button
+                key={view}
+                onClick={() => setCurrentView(view as any)}
+                className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                  currentView === view
+                    ? 'bg-amber-600 text-white shadow-md'
+                    : 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {view.charAt(0).toUpperCase() + view.slice(1)}
+              </motion.button>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom Row - Tools and Settings */}
+        <div className="flex items-center justify-between gap-4 p-3 flex-wrap text-xs">
+          {/* Left Group - Creative Tools */}
+          <div className="flex items-center gap-6 flex-wrap">
+            {/* Pen Color Selector */}
+            <div className="flex items-center gap-2">
+              <Feather className="w-4 h-4 text-gray-600" />
+              <span className="text-xs font-medium text-gray-600">Pen:</span>
+              <div className="flex gap-1">
+                {inkColors.slice(0, 4).map((color, index) => (
+                  <button
+                    key={color}
+                    onClick={() => setSelectedPen(color)}
+                    className={`w-5 h-5 rounded-full border-2 transition-all ${
+                      selectedPen === color ? 'border-gray-600 scale-110 shadow-sm' : 'border-gray-300'
+                    }`}
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Voice Recording */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-gray-600">Voice:</span>
+              <button
               onClick={isVoiceRecording ? stopVoiceRecording : startVoiceRecording}
               className={`p-1 rounded hover:bg-gray-100 ${isVoiceRecording ? 'bg-red-100 text-red-600' : 'text-gray-600'}`}
               title={isVoiceRecording ? 'Stop recording' : 'Start voice note'}
@@ -1212,20 +1298,37 @@ export default function PhysicalPlannerView() {
             >
               <Settings className="w-4 h-4" />
             </button>
+            </div>
           </div>
 
-          {/* Pen color selector */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-gray-600">Pen:</span>
-            <div className="flex gap-1">
-              {inkColors.slice(0, 5).map((color, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedPen(color)}
-                  className={`w-4 h-4 rounded-full border-2 ${selectedPen === color ? 'border-gray-600' : 'border-gray-300'}`}
-                  style={{ backgroundColor: color }}
-                />
-              ))}
+          {/* Right Group - Status and Settings */}
+          <div className="flex items-center gap-4 flex-wrap">
+            {/* Sync Status */}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                {syncStatus === 'synced' && <Wifi className="w-4 h-4 text-green-500" />}
+                {syncStatus === 'syncing' && <Save className="w-4 h-4 text-blue-500 animate-pulse" />}
+                {syncStatus === 'offline' && <WifiOff className="w-4 h-4 text-red-500" />}
+                <span className="text-xs text-gray-500 capitalize">{syncStatus}</span>
+              </div>
+            </div>
+
+            {/* Quick Settings */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowMiniCalendar(!showMiniCalendar)}
+                className={`p-1 rounded hover:bg-gray-100 ${showMiniCalendar ? 'bg-blue-100 text-blue-600' : 'text-gray-600'}`}
+                title="Toggle mini calendar"
+              >
+                <Calendar className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setShowSettings(!showSettings)}
+                className={`p-1 rounded hover:bg-gray-100 ${showSettings ? 'bg-gray-100 text-gray-800' : 'text-gray-600'}`}
+                title="Planner settings"
+              >
+                <Settings className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>
@@ -1261,7 +1364,7 @@ export default function PhysicalPlannerView() {
       )}
 
       {/* Main planner */}
-      <div className="relative w-full h-[calc(100vh-2rem)]">
+      <div className="relative w-full h-[calc(100vh-10rem)] mt-32">
         {/* Planner shadow */}
         <div className="absolute -inset-6 bg-black/20 rounded-xl blur-2xl transform rotate-1 -z-10" />
         
@@ -1330,68 +1433,6 @@ export default function PhysicalPlannerView() {
             ))}
           </motion.div>
           
-          {/* Page navigation */}
-          <div className="flex items-center justify-between mt-6 px-4">
-            <motion.button
-              onClick={() => handlePageTurn('prev')}
-              className="flex items-center gap-2 px-6 py-3 bg-amber-100 hover:bg-amber-200 rounded-lg shadow-md transition-all font-medium text-amber-800"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <ChevronLeft className="w-5 h-5" />
-              Previous
-            </motion.button>
-            
-            <div className="flex items-center gap-4">
-              {/* View toggles */}
-              {['daily', 'weekly', 'monthly'].map((view) => (
-                <motion.button
-                  key={view}
-                  onClick={() => setCurrentView(view as any)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    currentView === view
-                      ? 'bg-amber-600 text-white shadow-md'
-                      : 'bg-amber-100 text-amber-800 hover:bg-amber-200'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  style={{
-                    fontFamily: 'Caveat',
-                    fontSize: '18px'
-                  }}
-                >
-                  {view.charAt(0).toUpperCase() + view.slice(1)}
-                </motion.button>
-              ))}
-              
-              {/* Pen color selector */}
-              <div className="flex items-center gap-2">
-                <Feather className="w-4 h-4 text-amber-700" />
-                <div className="flex gap-1">
-                  {inkColors.slice(0, 4).map((color, index) => (
-                    <button
-                      key={color}
-                      onClick={() => setSelectedPen(color)}
-                      className={`w-6 h-6 rounded-full border-2 transition-all ${
-                        selectedPen === color ? 'border-white scale-110 shadow-lg' : 'border-gray-300'
-                      }`}
-                      style={{ backgroundColor: color }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-            
-            <motion.button
-              onClick={() => handlePageTurn('next')}
-              className="flex items-center gap-2 px-6 py-3 bg-amber-100 hover:bg-amber-200 rounded-lg shadow-md transition-all font-medium text-amber-800"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Next
-              <ChevronRight className="w-5 h-5" />
-            </motion.button>
-          </div>
         </div>
         
         {/* Page number indicator */}
@@ -1454,7 +1495,7 @@ export default function PhysicalPlannerView() {
 
       {/* Mini Calendar */}
       {showMiniCalendar && (
-        <div className="absolute top-32 right-4 z-30 bg-white rounded-lg shadow-xl border p-4 w-80 max-w-[calc(100vw-2rem)]">
+        <div className="absolute top-36 right-4 z-30 bg-white rounded-lg shadow-xl border p-4 w-80 max-w-[calc(100vw-2rem)]">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">{format(currentDate, 'MMMM yyyy')}</h3>
             <div className="flex gap-2">
@@ -1514,7 +1555,7 @@ export default function PhysicalPlannerView() {
 
       {/* Settings Panel */}
       {showSettings && (
-        <div className="absolute top-32 right-4 z-30 bg-white rounded-lg shadow-xl border p-6 w-96 max-w-[calc(100vw-2rem)]">
+        <div className="absolute top-36 right-4 z-30 bg-white rounded-lg shadow-xl border p-6 w-96 max-w-[calc(100vw-2rem)]">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Planner Settings</h3>
             <button
@@ -1608,21 +1649,6 @@ export default function PhysicalPlannerView() {
         </div>
       )}
 
-      {/* Weather Display */}
-      {settings.showWeather && (
-        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-white/80 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg border z-10">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">{weatherInfo.icon}</span>
-            <div>
-              <div className="text-lg font-semibold">{weatherInfo.temp}</div>
-              <div className="text-xs text-gray-600">{weatherInfo.condition}</div>
-            </div>
-            <div className="text-xs text-gray-500">
-              {format(currentDate, 'EEEE, MMM d')}
-            </div>
-          </div>
-        </div>
-      )}
       
       {/* Paper texture filter */}
       <svg width="0" height="0">
