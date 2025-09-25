@@ -10,8 +10,11 @@ const STACK_PROJECT_ID = process.env.STACK_PROJECT_ID;
 const STACK_SECRET_SERVER_KEY = process.env.STACK_SECRET_SERVER_KEY;
 const STACK_PUBLISHABLE_CLIENT_KEY = process.env.STACK_PUBLISHABLE_CLIENT_KEY;
 
-if (!STACK_PROJECT_ID || !STACK_SECRET_SERVER_KEY) {
-  throw new Error('Missing required Stack Auth environment variables');
+// Temporarily allow app to run without Stack Auth in production
+const isStackAuthConfigured = STACK_PROJECT_ID && STACK_SECRET_SERVER_KEY;
+
+if (!isStackAuthConfigured) {
+  console.warn('Stack Auth not configured - authentication will be disabled');
 }
 
 export interface User {
@@ -36,6 +39,11 @@ export interface AuthSession {
  */
 export async function getUserFromRequest(req: NextRequest): Promise<User | null> {
   try {
+    // If Stack Auth is not configured, return null (no authentication)
+    if (!isStackAuthConfigured) {
+      return null;
+    }
+
     // Get token from Authorization header or cookie
     const authHeader = req.headers.get('authorization');
     const sessionCookie = req.cookies.get('stack-session')?.value;

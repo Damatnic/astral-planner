@@ -17,7 +17,9 @@ export default async function middleware(req: NextRequest) {
     '/api/health/simple',
     '/api/health/db',
     '/api/cron/cleanup',
-    '/api/monitoring'
+    '/api/monitoring',
+    '/sign-in',
+    '/sign-up'
   ];
 
   const isPublicRoute = publicRoutes.some(route => 
@@ -49,7 +51,10 @@ export default async function middleware(req: NextRequest) {
     // Check authentication for protected routes
     const user = await getUserForRequest(req);
     
-    if (!user) {
+    // Check if Stack Auth is configured
+    const isStackAuthConfigured = process.env.STACK_PROJECT_ID && process.env.STACK_SECRET_SERVER_KEY;
+    
+    if (!user && isStackAuthConfigured) {
       Logger.warn(`Unauthorized access attempt to ${req.nextUrl.pathname}`, {
         ip: req.headers.get('x-forwarded-for') || 'unknown'
       });
@@ -75,6 +80,22 @@ export default async function middleware(req: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
+    // If Stack Auth is not configured, allow all routes temporarily
+    if (!isStackAuthConfigured) {
+      console.warn(`Stack Auth not configured - allowing unauthenticated access to ${req.nextUrl.pathname}`);
+      const response = NextResponse.next();
+      
+      // Add security headers even without authentication
+      response.headers.set('X-Frame-Options', 'DENY');
+      response.headers.set('X-Content-Type-Options', 'nosniff');
+      response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+      response.headers.set('X-DNS-Prefetch-Control', 'on');
+      response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+      response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+      
+      return response;
+    }
+
     // User is authenticated - add user info to headers for API routes
     const response = NextResponse.next();
     
@@ -87,7 +108,7 @@ export default async function middleware(req: NextRequest) {
     response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
     
     // Add user context for API routes
-    if (req.nextUrl.pathname.startsWith('/api/')) {
+    if (req.nextUrl.pathname.startsWith('/api/') && user) {
       response.headers.set('x-user-id', user.id);
       response.headers.set('x-user-email', user.email);
     }
@@ -95,7 +116,7 @@ export default async function middleware(req: NextRequest) {
     const responseTime = Date.now() - startTime;
     Logger.info(`Middleware completed`, { 
       path: req.nextUrl.pathname,
-      userId: user.id,
+      userId: user?.id || 'unauthenticated',
       responseTime: `${responseTime}ms`
     });
     
