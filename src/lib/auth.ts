@@ -10,11 +10,12 @@ const STACK_PROJECT_ID = process.env.STACK_PROJECT_ID;
 const STACK_SECRET_SERVER_KEY = process.env.STACK_SECRET_SERVER_KEY;
 const STACK_PUBLISHABLE_CLIENT_KEY = process.env.STACK_PUBLISHABLE_CLIENT_KEY;
 
-// Temporarily allow app to run without Stack Auth in production
-const isStackAuthConfigured = STACK_PROJECT_ID && STACK_SECRET_SERVER_KEY;
+// Temporarily disable Stack Auth for production deployment
+// TODO: Re-enable once Stack Auth is properly configured in Vercel
+const isStackAuthConfigured = false;
 
 if (!isStackAuthConfigured) {
-  console.warn('Stack Auth not configured - authentication will be disabled');
+  console.warn('Stack Auth temporarily disabled for production deployment');
 }
 
 export interface User {
