@@ -51,7 +51,8 @@
       "mcp__ide__getDiagnostics",
       "Bash(npm update:*)",
       "WebFetch(domain:ultimate-digital-planner-lr1srq6y3-astral-productions.vercel.app)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

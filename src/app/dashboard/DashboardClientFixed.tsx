@@ -399,7 +399,50 @@ export default function DashboardClientFixed() {
                 <CardDescription>All your tasks in one place</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Task management view coming soon...</p>
+                <div className="space-y-4">
+                  {/* Quick Add Task */}
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Add a new task..."
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                          // Add to static data
+                          e.currentTarget.value = '';
+                        }
+                      }}
+                    />
+                    <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                      Add Task
+                    </button>
+                  </div>
+
+                  {/* Task List */}
+                  <div className="space-y-2">
+                    {[
+                      { id: '1', text: 'Complete project proposal', done: true },
+                      { id: '2', text: 'Review team feedback', done: false },
+                      { id: '3', text: 'Update website content', done: false },
+                      { id: '4', text: 'Plan next quarter goals', done: false }
+                    ].map(task => (
+                      <div key={task.id} className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg">
+                        <input
+                          type="checkbox"
+                          checked={task.done}
+                          onChange={() => {}}
+                          className="w-4 h-4 text-blue-600"
+                        />
+                        <span className={`flex-1 ${task.done ? 'line-through text-gray-400' : ''}`}>
+                          {task.text}
+                        </span>
+                        <button className="text-red-500 hover:text-red-700">
+                          <span className="text-sm">Delete</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -411,7 +454,46 @@ export default function DashboardClientFixed() {
                 <CardDescription>Your calendar and timeline</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Schedule view coming soon...</p>
+                <div className="space-y-6">
+                  {/* Time Slots */}
+                  <div className="space-y-3">
+                    {[
+                      { time: '9:00 AM', event: 'Team meeting - Project review', color: 'bg-blue-100 border-blue-300' },
+                      { time: '11:00 AM', event: '', color: 'bg-gray-50 border-gray-200' },
+                      { time: '1:00 PM', event: 'Lunch with Sarah', color: 'bg-green-100 border-green-300' },
+                      { time: '3:00 PM', event: '', color: 'bg-gray-50 border-gray-200' },
+                      { time: '5:00 PM', event: '', color: 'bg-gray-50 border-gray-200' }
+                    ].map((slot, index) => (
+                      <div key={index} className={`flex items-center gap-4 p-3 border-2 rounded-lg ${slot.color}`}>
+                        <span className="text-sm font-medium text-gray-600 w-20">{slot.time}</span>
+                        <div className="flex-1">
+                          {slot.event ? (
+                            <span className="text-sm font-medium">{slot.event}</span>
+                          ) : (
+                            <input
+                              type="text"
+                              placeholder="Add event..."
+                              className="w-full bg-transparent border-none outline-none placeholder:text-gray-400"
+                            />
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Quick Actions */}
+                  <div className="flex gap-2">
+                    <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
+                      Add Meeting
+                    </button>
+                    <button className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-sm">
+                      Block Time
+                    </button>
+                    <button className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-sm">
+                      Set Reminder
+                    </button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -423,7 +505,66 @@ export default function DashboardClientFixed() {
                 <CardDescription>Deep dive into your productivity</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Insights view coming soon...</p>
+                <div className="space-y-6">
+                  {/* Productivity Metrics */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 border border-gray-200 rounded-lg">
+                      <div className="text-2xl font-bold text-green-600">87%</div>
+                      <div className="text-sm text-gray-600">Task Completion Rate</div>
+                    </div>
+                    <div className="p-4 border border-gray-200 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-600">6.2h</div>
+                      <div className="text-sm text-gray-600">Daily Focus Time</div>
+                    </div>
+                    <div className="p-4 border border-gray-200 rounded-lg">
+                      <div className="text-2xl font-bold text-purple-600">23</div>
+                      <div className="text-sm text-gray-600">Days Streak</div>
+                    </div>
+                    <div className="p-4 border border-gray-200 rounded-lg">
+                      <div className="text-2xl font-bold text-orange-600">4.8</div>
+                      <div className="text-sm text-gray-600">Productivity Score</div>
+                    </div>
+                  </div>
+
+                  {/* Weekly Progress Chart */}
+                  <div className="p-4 border border-gray-200 rounded-lg">
+                    <h4 className="font-medium mb-3">Weekly Progress</h4>
+                    <div className="flex items-end gap-2 h-32">
+                      {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => {
+                        const heights = [60, 80, 45, 90, 70, 40, 55];
+                        return (
+                          <div key={day} className="flex-1 flex flex-col items-center gap-2">
+                            <div 
+                              className="w-full bg-blue-500 rounded-t"
+                              style={{ height: `${heights[i]}%` }}
+                            ></div>
+                            <span className="text-xs text-gray-600">{day}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Recent Achievements */}
+                  <div className="space-y-3">
+                    <h4 className="font-medium">Recent Achievements</h4>
+                    <div className="space-y-2">
+                      {[
+                        { icon: '🏆', text: 'Completed 10 tasks in a day', date: '2 days ago' },
+                        { icon: '🔥', text: '7-day productivity streak', date: '1 week ago' },
+                        { icon: '⭐', text: 'Finished major project ahead of schedule', date: '2 weeks ago' }
+                      ].map((achievement, i) => (
+                        <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                          <span className="text-2xl">{achievement.icon}</span>
+                          <div className="flex-1">
+                            <div className="font-medium text-sm">{achievement.text}</div>
+                            <div className="text-xs text-gray-500">{achievement.date}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

@@ -1,5 +1,5 @@
-import PlannerBook from './PlannerBook';
+import EnhancedCalendarView from './EnhancedCalendarView';
 
 export default function CalendarPage() {
-  return <PlannerBook />;
+  return <EnhancedCalendarView />;
 }
