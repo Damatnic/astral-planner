@@ -49,7 +49,8 @@
       "Bash(NODE_ENV=production node scripts/verify-production.js)",
       "Bash(npm audit:*)",
       "mcp__ide__getDiagnostics",
-      "Bash(npm update:*)"
+      "Bash(npm update:*)",
+      "WebFetch(domain:ultimate-digital-planner-lr1srq6y3-astral-productions.vercel.app)"
     ],
     "deny": [],
     "ask": []

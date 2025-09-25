@@ -1,71 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { healthChecker } from '@/lib/monitoring';
-import { corsHeaders, securityHeaders } from '@/lib/security';
-import Logger from '@/lib/logger';
+import { healthCheck as dbHealthCheck } from '@/db';
 
 export async function GET(req: NextRequest) {
   const startTime = Date.now();
   
   try {
-    // Get comprehensive system health
-    const healthResult = await healthChecker.checkSystemHealth();
-    const metrics = healthChecker.getSystemMetrics();
-    const alertCheck = healthChecker.checkAlertThresholds(metrics);
-    
+    // Simple health checks
+    const dbResult = await dbHealthCheck();
     const responseTime = Date.now() - startTime;
     
-    // Record this request
-    healthChecker.recordRequest(responseTime);
-    
     const response = {
-      status: healthResult.status,
+      status: dbResult.ok ? 'healthy' : 'unhealthy',
       timestamp: new Date().toISOString(),
       responseTime,
-      environment: process.env.NODE_ENV,
+      environment: process.env.NODE_ENV || 'unknown',
       version: process.env.npm_package_version || '1.0.0',
-      uptime: Math.floor(metrics.uptime / 1000), // Convert to seconds
-      system: {
-        memory: {
-          used: Math.round(metrics.memoryUsage.used / 1024 / 1024), // MB
-          total: Math.round(metrics.memoryUsage.total / 1024 / 1024), // MB
-          percentage: Math.round(metrics.memoryUsage.percentage * 100) / 100
+      services: {
+        database: {
+          status: dbResult.ok ? 'healthy' : 'unhealthy',
+          responseTime: dbResult.responseTime || responseTime,
+          mock: dbResult.mock || false
         },
-        requests: {
-          perMinute: metrics.requestsPerMinute,
-          errorRate: Math.round(metrics.errorRate * 100) / 100
+        api: {
+          status: 'healthy',
+          responseTime: 1
         }
       },
-      services: healthResult.checks.reduce((acc, check) => {
-        acc[check.service] = {
-          status: check.status,
-          responseTime: check.responseTime,
-          details: check.details
-        };
-        return acc;
-      }, {} as Record<string, any>),
-      summary: healthResult.summary,
-      alerts: alertCheck.alerts
+      hasStackAuth: !!process.env.STACK_PROJECT_ID,
+      hasDatabase: !!process.env.DATABASE_URL
     };
     
-    // Determine HTTP status code based on health
-    let statusCode = 200;
-    if (healthResult.status === 'degraded') {
-      statusCode = 207; // Multi-Status
-    } else if (healthResult.status === 'unhealthy') {
-      statusCode = 503; // Service Unavailable
-    }
-    
-    Logger.info('Health check completed', {
-      status: healthResult.status,
-      responseTime,
-      alertCount: alertCheck.alerts.length
-    });
+    const statusCode = dbResult.ok ? 200 : 503;
     
     return NextResponse.json(response, {
       status: statusCode,
       headers: {
-        ...corsHeaders(req),
-        ...securityHeaders(),
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',
         'Expires': '0'
@@ -75,26 +44,17 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     const responseTime = Date.now() - startTime;
     
-    // Record error
-    healthChecker.recordError();
-    healthChecker.recordRequest(responseTime);
-    
-    Logger.error('Health check failed', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      responseTime
-    });
-    
     return NextResponse.json({
       status: 'unhealthy',
       timestamp: new Date().toISOString(),
       responseTime,
-      error: 'Health check failed',
-      environment: process.env.NODE_ENV
+      error: error instanceof Error ? error.message : 'Health check failed',
+      environment: process.env.NODE_ENV || 'unknown',
+      hasStackAuth: !!process.env.STACK_PROJECT_ID,
+      hasDatabase: !!process.env.DATABASE_URL
     }, {
       status: 503,
       headers: {
-        ...corsHeaders(req),
-        ...securityHeaders(),
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',
         'Expires': '0'
@@ -106,16 +66,12 @@ export async function GET(req: NextRequest) {
 // Lightweight health check for load balancers
 export async function HEAD(req: NextRequest) {
   try {
-    // Quick database ping
-    const { healthCheck } = await import('@/db');
-    const dbResult = await healthCheck();
-    
+    const dbResult = await dbHealthCheck();
     const statusCode = dbResult.ok ? 200 : 503;
     
     return new NextResponse(null, {
       status: statusCode,
       headers: {
-        ...corsHeaders(req),
         'Cache-Control': 'no-cache, no-store, must-revalidate'
       }
     });
@@ -123,7 +79,6 @@ export async function HEAD(req: NextRequest) {
     return new NextResponse(null, {
       status: 503,
       headers: {
-        ...corsHeaders(req),
         'Cache-Control': 'no-cache, no-store, must-revalidate'
       }
     });
