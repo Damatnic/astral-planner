@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
 import { motion } from 'framer-motion';
 import { 
   Calendar,
@@ -63,7 +62,8 @@ interface DashboardData {
 }
 
 export default function DashboardPage() {
-  const { user } = useUser();
+  // Mock user for development without authentication
+  const user = { id: 'test-user', firstName: 'Test', lastName: 'User' };
   const [view, setView] = useState('overview');
   const [data, setData] = useState<DashboardData>({
     stats: {

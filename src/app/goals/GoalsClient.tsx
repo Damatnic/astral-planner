@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
 import { motion } from 'framer-motion';
 import { 
   Target,
@@ -82,7 +81,8 @@ const goalCategories = [
 ];
 
 export default function GoalsPage() {
-  const { user } = useUser();
+  // Mock user for development without authentication
+  const user = { id: 'test-user', firstName: 'Test', lastName: 'User' };
   const [data, setData] = useState<GoalsData>({
     goals: [],
     stats: { total: 0, completed: 0, inProgress: 0, notStarted: 0, overdue: 0 },

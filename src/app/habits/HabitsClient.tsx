@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
 import { motion } from 'framer-motion';
 import { 
   Activity,
@@ -101,7 +100,8 @@ const frequencyOptions = [
 ];
 
 export default function HabitsPage() {
-  const { user } = useUser();
+  // Mock user for development without authentication
+  const user = { id: 'test-user', firstName: 'Test', lastName: 'User' };
   const [data, setData] = useState<HabitsData>({
     habits: [],
     stats: { totalHabits: 0, activeToday: 0, totalCompletions: 0, averageCompletionRate: 0, longestStreak: 0 },

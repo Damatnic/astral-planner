@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { 
@@ -64,7 +63,8 @@ interface Goal {
 }
 
 export default function GoalDetailPage() {
-  const { user } = useUser();
+  // Mock user for development without authentication
+  const user = { id: 'test-user', firstName: 'Test', lastName: 'User' };
   const params = useParams();
   const router = useRouter();
   const [goal, setGoal] = useState<Goal | null>(null);

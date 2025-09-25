@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
 import { motion } from 'framer-motion';
 import { 
   Package,
@@ -101,7 +100,8 @@ const sortOptions = [
 ];
 
 export default function TemplatesPage() {
-  const { user } = useUser();
+  // Mock user for development without authentication
+  const user = { id: 'test-user', firstName: 'Test', lastName: 'User' };
   const [data, setData] = useState<TemplatesData>({
     templates: [],
     pagination: { total: 0, limit: 20, offset: 0, hasMore: false },
