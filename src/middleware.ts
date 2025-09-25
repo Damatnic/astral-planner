@@ -51,8 +51,9 @@ export default async function middleware(req: NextRequest) {
     // Check authentication for protected routes
     const user = await getUserForRequest(req);
     
-    // Check if Stack Auth is configured
-    const isStackAuthConfigured = process.env.STACK_PROJECT_ID && process.env.STACK_SECRET_SERVER_KEY;
+    // Temporarily disable authentication for production deployment
+    // TODO: Re-enable once Stack Auth is properly configured in Vercel
+    const isStackAuthConfigured = false; // process.env.STACK_PROJECT_ID && process.env.STACK_SECRET_SERVER_KEY;
     
     if (!user && isStackAuthConfigured) {
       Logger.warn(`Unauthorized access attempt to ${req.nextUrl.pathname}`, {
