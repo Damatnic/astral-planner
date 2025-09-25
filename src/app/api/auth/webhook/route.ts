@@ -13,6 +13,9 @@ if (!webhookSecret) {
 }
 
 export async function POST(req: NextRequest) {
+  // TEMPORARY: Clerk webhooks disabled during Stack Auth migration
+  return NextResponse.json({ message: 'Webhook temporarily disabled' }, { status: 200 });
+  
   const headerPayload = await headers();
   const svixId = headerPayload.get('svix-id');
   const svixTimestamp = headerPayload.get('svix-timestamp');
@@ -34,9 +37,9 @@ export async function POST(req: NextRequest) {
 
   try {
     evt = wh.verify(payload, {
-      'svix-id': svixId,
-      'svix-timestamp': svixTimestamp,
-      'svix-signature': svixSignature,
+      'svix-id': svixId!,
+      'svix-timestamp': svixTimestamp!,
+      'svix-signature': svixSignature!,
     }) as WebhookEvent;
   } catch (err) {
     console.error('Webhook verification failed:', err);

@@ -1,5 +1,5 @@
-// @ts-ignore - LRU Cache types issue
-import { LRUCache } from 'lru-cache'
+// @ts-ignore - lru-cache types not available
+import LRUCache from 'lru-cache'
 import { NextRequest } from 'next/server'
 
 type Options = {

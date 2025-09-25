@@ -29,7 +29,19 @@
       "Bash(npm run bundle:report:*)",
       "WebFetch(domain:astral-planner-pro.vercel.app)",
       "Bash(find:*)",
-      "Bash(npx next:*)"
+      "Bash(npx next:*)",
+      "WebFetch(domain:localhost)",
+      "Bash(curl:*)",
+      "Bash(PORT=3020 npm run dev)",
+      "Bash(timeout 10 curl -s http://localhost:3020/api/health/db)",
+      "Bash(wget:*)",
+      "Bash(pkill:*)",
+      "Bash(PORT=3050 npm run dev)",
+      "Bash(PORT=3060 npm run dev)",
+      "Bash(PORT=3070 npm run dev)",
+      "Bash(npx drizzle-kit:*)",
+      "Bash(PORT=3080 npm run dev)",
+      "Bash(PORT=3090 npm run dev)"
     ],
     "deny": [],
     "ask": []

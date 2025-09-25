@@ -141,9 +141,12 @@ export const goalRelations = relations(goals, ({ one, many }) => ({
   }),
   parentGoal: one(goals, {
     fields: [goals.parentGoalId],
-    references: [goals.id]
+    references: [goals.id],
+    relationName: 'goalHierarchy'
   }),
-  childGoals: many(goals),
+  childGoals: many(goals, {
+    relationName: 'goalHierarchy'
+  }),
   milestones: many(goalMilestones),
   progressEntries: many(goalProgress),
   reviews: many(goalReviews)

@@ -65,6 +65,7 @@
     "@slack/events-api": "^3.0.1",
     "@slack/web-api": "^7.10.0",
     "@tanstack/react-query": "^5.90.2",
+    "@tanstack/react-query-devtools": "^5.90.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/react-window": "^1.8.8",
     "@upstash/redis": "^1.35.4",
