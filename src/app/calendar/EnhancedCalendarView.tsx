@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { format, startOfWeek, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay, addMonths, subMonths, addWeeks, subWeeks, startOfDay, addMinutes, parseISO } from 'date-fns';
-import { ChevronLeft, ChevronRight, Calendar, Clock, Target, Plus, Edit3, Trash2, Filter, Search, Zap, Brain, Timer, TrendingUp, CheckCircle, AlertCircle, Star, Focus, BookOpen } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Clock, Target, Plus, Edit3, Trash2, Filter, Search, Zap, Brain, Timer, TrendingUp, CheckCircle, AlertCircle, Star, Focus, BookOpen, ArrowLeft, Home } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -532,12 +532,29 @@ export default function EnhancedCalendarView() {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-7xl mx-auto">
         {/* Enhanced Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-6 h-6 text-blue-600" />
-                <h1 className="text-2xl font-bold">Smart Calendar</h1>
+        <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-6">
+          <div className="flex flex-col gap-4">
+            {/* Top Row: Title and Date Navigation */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Link href="/dashboard">
+                    <Button variant="ghost" size="sm">
+                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Link href="/">
+                    <Button variant="ghost" size="sm">
+                      <Home className="w-4 h-4 mr-1" />
+                      Home
+                    </Button>
+                  </Link>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-6 h-6 text-blue-600" />
+                  <h1 className="text-2xl font-bold text-gray-800">Smart Calendar</h1>
+                </div>
               </div>
               
               <div className="flex items-center gap-2">
@@ -549,7 +566,7 @@ export default function EnhancedCalendarView() {
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
                 
-                <div className="text-lg font-semibold min-w-[200px] text-center">
+                <div className="text-lg font-semibold min-w-[180px] text-center text-gray-800">
                   {currentView === 'month' && format(currentDate, 'MMMM yyyy')}
                   {currentView === 'week' && `Week of ${format(startOfWeek(currentDate), 'MMM d')}`}
                   {currentView === 'day' && format(currentDate, 'MMMM d, yyyy')}
@@ -565,23 +582,23 @@ export default function EnhancedCalendarView() {
                 </Button>
               </div>
             </div>
-            
-            {/* Enhanced Controls */}
-            <div className="flex flex-col sm:flex-row items-center gap-3">
+
+            {/* Bottom Row: Search, Filters, and Controls */}
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
               {/* Search and Filter */}
-              <div className="flex items-center gap-2">
-                <div className="relative">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full lg:w-auto">
+                <div className="relative w-full sm:w-auto">
                   <Search className="w-4 h-4 absolute left-2 top-2.5 text-gray-400" />
                   <Input
                     placeholder="Search events..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-8 w-40"
+                    className="pl-8 w-full sm:w-40"
                   />
                 </div>
                 
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                  <SelectTrigger className="w-28">
+                  <SelectTrigger className="w-full sm:w-32">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -596,57 +613,61 @@ export default function EnhancedCalendarView() {
                 </Select>
               </div>
               
-              {/* View Controls */}
-              <div className="flex items-center gap-2">
-                <Button
-                  variant={showAIInsights ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setShowAIInsights(!showAIInsights)}
-                >
-                  <Brain className="w-4 h-4 mr-1" />
-                  AI
-                </Button>
-                
-                <Button
-                  variant={currentView === 'day' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setCurrentView('day')}
-                >
-                  Day
-                </Button>
-                <Button
-                  variant={currentView === 'week' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setCurrentView('week')}
-                >
-                  Week
-                </Button>
-                <Button
-                  variant={currentView === 'month' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setCurrentView('month')}
-                >
-                  Month
-                </Button>
-                <Button
-                  variant={currentView === 'agenda' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setCurrentView('agenda')}
-                >
-                  Agenda
-                </Button>
-                
-                <Link href="/planner">
-                  <Button variant="outline">
-                    <BookOpen className="w-4 h-4 mr-2" />
-                    Physical Planner
+              {/* View Controls - Scrollable on mobile */}
+              <div className="flex items-center gap-2 overflow-x-auto w-full lg:w-auto pb-2 lg:pb-0">
+                <div className="flex items-center gap-2 min-w-max">
+                  <Button
+                    variant={showAIInsights ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setShowAIInsights(!showAIInsights)}
+                  >
+                    <Brain className="w-4 h-4 mr-1" />
+                    AI
                   </Button>
-                </Link>
-                
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  New Event
-                </Button>
+                  
+                  <Button
+                    variant={currentView === 'day' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setCurrentView('day')}
+                  >
+                    Day
+                  </Button>
+                  <Button
+                    variant={currentView === 'week' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setCurrentView('week')}
+                  >
+                    Week
+                  </Button>
+                  <Button
+                    variant={currentView === 'month' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setCurrentView('month')}
+                  >
+                    Month
+                  </Button>
+                  <Button
+                    variant={currentView === 'agenda' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setCurrentView('agenda')}
+                  >
+                    Agenda
+                  </Button>
+                  
+                  <Link href="/planner">
+                    <Button variant="outline" size="sm">
+                      <BookOpen className="w-4 h-4 mr-1" />
+                      <span className="hidden sm:inline">Physical Planner</span>
+                      <span className="sm:hidden">Planner</span>
+                    </Button>
+                  </Link>
+                  
+                  <Button size="sm">
+                    <Plus className="w-4 h-4 mr-1" />
+                    <span className="hidden sm:inline">New Event</span>
+                    <span className="sm:hidden">New</span>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

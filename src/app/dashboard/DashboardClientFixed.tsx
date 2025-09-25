@@ -23,6 +23,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QuickCapture } from '@/components/quick-capture/QuickCapture';
 import PhysicalPlannerView from '../planner/PhysicalPlannerView';
+import CalendarView from '../calendar/CalendarView';
 import Link from 'next/link';
 import { format } from 'date-fns';
 
@@ -380,6 +381,31 @@ export default function DashboardClientFixed() {
                   <Button variant="ghost" className="w-full mt-4" asChild>
                     <Link href="/goals">
                       View all goals
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Quick Calendar */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quick Calendar</CardTitle>
+                  <CardDescription>View your upcoming events</CardDescription>
+                </CardHeader>
+                <CardContent className="p-3">
+                  <CalendarView 
+                    compact={true}
+                    showHeader={true}
+                    maxHeight="350px"
+                    onDateSelect={(date) => {
+                      // Optional: scroll to schedule when date is selected
+                      console.log('Selected date:', date);
+                    }}
+                  />
+                  <Button variant="ghost" className="w-full mt-4" asChild>
+                    <Link href="/calendar">
+                      View full calendar
                       <ChevronRight className="h-4 w-4 ml-1" />
                     </Link>
                   </Button>

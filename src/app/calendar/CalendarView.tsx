@@ -60,7 +60,19 @@ const categoryColors = {
   social: 'bg-purple-500 text-white'
 };
 
-export default function CalendarView() {
+interface CalendarViewProps {
+  showHeader?: boolean;
+  compact?: boolean;
+  maxHeight?: string;
+  onDateSelect?: (date: Date) => void;
+}
+
+export default function CalendarView({ 
+  showHeader = true, 
+  compact = false, 
+  maxHeight,
+  onDateSelect 
+}: CalendarViewProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentView, setCurrentView] = useState<'month' | 'week' | 'day'>('month');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -96,13 +108,18 @@ export default function CalendarView() {
     }
   };
 
+  const handleDateClick = (date: Date) => {
+    setSelectedDate(date);
+    onDateSelect?.(date);
+  };
+
   const renderMonthView = () => (
     <div className="space-y-4">
       {/* Calendar Header */}
       <div className="grid grid-cols-7 gap-1 mb-2">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-          <div key={day} className="p-2 text-center font-medium text-gray-500 text-sm">
-            {day}
+          <div key={day} className={`${compact ? 'p-1 text-xs' : 'p-2 text-sm'} text-center font-medium text-gray-500`}>
+            {compact ? day.charAt(0) : day}
           </div>
         ))}
       </div>
@@ -117,29 +134,29 @@ export default function CalendarView() {
           return (
             <motion.div
               key={index}
-              className={`min-h-[120px] p-2 border border-gray-200 cursor-pointer transition-all hover:bg-gray-50 ${
+              className={`${compact ? 'min-h-[60px] p-1' : 'min-h-[120px] p-2'} border border-gray-200 cursor-pointer transition-all hover:bg-gray-50 ${
                 !isCurrentMonth ? 'bg-gray-50 text-gray-400' : 'bg-white'
               } ${isSelected ? 'ring-2 ring-blue-500 bg-blue-50' : ''} ${
                 isToday(day) ? 'bg-blue-100 border-blue-300' : ''
               }`}
-              onClick={() => setSelectedDate(day)}
+              onClick={() => handleDateClick(day)}
               whileHover={{ scale: 1.02 }}
             >
-              <div className="flex justify-between items-start mb-2">
-                <span className={`text-sm font-medium ${
+              <div className="flex justify-between items-start mb-1">
+                <span className={`${compact ? 'text-xs' : 'text-sm'} font-medium ${
                   isToday(day) ? 'text-blue-600 font-bold' : ''
                 }`}>
                   {format(day, 'd')}
                 </span>
                 {dayEvents.length > 0 && (
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs bg-blue-100 text-blue-600 px-1 rounded">
                     {dayEvents.length}
                   </span>
                 )}
               </div>
               
               <div className="space-y-1">
-                {dayEvents.slice(0, 3).map((event) => (
+                {!compact && dayEvents.slice(0, 3).map((event) => (
                   <div
                     key={event.id}
                     className={`text-xs px-1 py-0.5 rounded truncate ${categoryColors[event.category]}`}
@@ -148,7 +165,7 @@ export default function CalendarView() {
                     {event.time && <span className="font-medium">{event.time}</span>} {event.title}
                   </div>
                 ))}
-                {dayEvents.length > 3 && (
+                {!compact && dayEvents.length > 3 && (
                   <div className="text-xs text-gray-500">
                     +{dayEvents.length - 3} more
                   </div>
@@ -313,73 +330,132 @@ export default function CalendarView() {
     );
   };
 
+  if (compact) {
+    return (
+      <div className="w-full" style={maxHeight ? { maxHeight } : {}}>
+        {showHeader && (
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-blue-600" />
+              <h3 className="text-base font-semibold text-gray-800">{format(currentDate, 'MMMM yyyy')}</h3>
+            </div>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigateDate('prev')}
+              >
+                <ChevronLeft className="w-3 h-3" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigateDate('next')}
+              >
+                <ChevronRight className="w-3 h-3" />
+              </Button>
+            </div>
+          </div>
+        )}
+        {renderMonthView()}
+        
+        {/* Selected Date Info for compact mode */}
+        {selectedDate && (
+          <div className="mt-3 p-2 bg-blue-50 rounded border border-blue-200">
+            <div className="text-sm font-medium text-blue-800 mb-1">
+              {format(selectedDate, 'EEEE, MMM d')}
+            </div>
+            {getEventsForDate(selectedDate).length > 0 ? (
+              <div className="space-y-1">
+                {getEventsForDate(selectedDate).slice(0, 2).map((event) => (
+                  <div key={event.id} className="text-xs text-blue-700">
+                    {event.time} - {event.title}
+                  </div>
+                ))}
+                {getEventsForDate(selectedDate).length > 2 && (
+                  <div className="text-xs text-blue-600">
+                    +{getEventsForDate(selectedDate).length - 2} more
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-xs text-blue-600">No events scheduled</div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-6 h-6 text-blue-600" />
-                <h1 className="text-2xl font-bold">Calendar</h1>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => navigateDate('prev')}
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                
-                <div className="text-lg font-semibold min-w-[200px] text-center">
-                  {currentView === 'month' && format(currentDate, 'MMMM yyyy')}
-                  {currentView === 'week' && `Week of ${format(startOfWeek(currentDate), 'MMM d')}`}
-                  {currentView === 'day' && format(currentDate, 'MMMM d, yyyy')}
+        {showHeader && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-6 h-6 text-blue-600" />
+                  <h1 className="text-2xl font-bold">Calendar</h1>
                 </div>
                 
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigateDate('prev')}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+                  
+                  <div className="text-lg font-semibold min-w-[200px] text-center">
+                    {currentView === 'month' && format(currentDate, 'MMMM yyyy')}
+                    {currentView === 'week' && `Week of ${format(startOfWeek(currentDate), 'MMM d')}`}
+                    {currentView === 'day' && format(currentDate, 'MMMM d, yyyy')}
+                  </div>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigateDate('next')}
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2">
                 <Button
-                  variant="outline"
+                  variant={currentView === 'day' ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => navigateDate('next')}
+                  onClick={() => setCurrentView('day')}
                 >
-                  <ChevronRight className="w-4 h-4" />
+                  Day
+                </Button>
+                <Button
+                  variant={currentView === 'week' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setCurrentView('week')}
+                >
+                  Week
+                </Button>
+                <Button
+                  variant={currentView === 'month' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setCurrentView('month')}
+                >
+                  Month
+                </Button>
+                
+                <Button>
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Event
                 </Button>
               </div>
             </div>
-            
-            <div className="flex items-center gap-2">
-              <Button
-                variant={currentView === 'day' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setCurrentView('day')}
-              >
-                Day
-              </Button>
-              <Button
-                variant={currentView === 'week' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setCurrentView('week')}
-              >
-                Week
-              </Button>
-              <Button
-                variant={currentView === 'month' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setCurrentView('month')}
-              >
-                Month
-              </Button>
-              
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                New Event
-              </Button>
-            </div>
           </div>
-        </div>
+        )}
 
         {/* Main Calendar Content */}
         <div className="bg-white rounded-lg shadow-sm p-6">
