@@ -1557,10 +1557,10 @@ export default function PhysicalPlannerView() {
       {showSettings && (
         <div className="absolute top-36 right-4 z-30 bg-white rounded-lg shadow-xl border p-6 w-96 max-w-[calc(100vw-2rem)]">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Planner Settings</h3>
+            <h3 className="text-lg font-semibold text-gray-800">Planner Settings</h3>
             <button
               onClick={() => setShowSettings(false)}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-gray-500 hover:text-gray-700 text-xl leading-none"
             >
               ×
             </button>
@@ -1576,7 +1576,7 @@ export default function PhysicalPlannerView() {
                     key={theme}
                     onClick={() => setSettings({...settings, theme})}
                     className={`p-2 text-xs rounded border ${
-                      settings.theme === theme ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                      settings.theme === theme ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-700 hover:text-gray-900'
                     }`}
                   >
                     {theme.charAt(0).toUpperCase() + theme.slice(1)}
@@ -1594,7 +1594,7 @@ export default function PhysicalPlannerView() {
                     key={layout}
                     onClick={() => setSettings({...settings, layout})}
                     className={`p-2 text-xs rounded border ${
-                      settings.layout === layout ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                      settings.layout === layout ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-700 hover:text-gray-900'
                     }`}
                   >
                     {layout.charAt(0).toUpperCase() + layout.slice(1)}
