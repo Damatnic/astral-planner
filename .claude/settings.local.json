@@ -55,7 +55,8 @@
       "WebSearch",
       "Bash(gh api:*)",
       "WebFetch(domain:ultimate-digital-planner-4jr89fqb4-astral-productions.vercel.app)",
-      "WebFetch(domain:ultimate-digital-planner-4xqosumff-astral-productions.vercel.app)"
+      "WebFetch(domain:ultimate-digital-planner-4xqosumff-astral-productions.vercel.app)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

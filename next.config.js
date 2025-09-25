@@ -4,9 +4,13 @@
 //   enabled: process.env.ANALYZE === 'true',
 // })
 // const withPWA = require('next-pwa')(...)
+const path = require('path');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Fix multiple lockfile warning
+  outputFileTracingRoot: __dirname,
+  
   experimental: {
     optimizePackageImports: [
       'lucide-react',
@@ -86,6 +90,14 @@ const nextConfig = {
   },
 
   webpack: (config, { isServer, webpack }) => {
+    // Suppress critical dependency warnings from Prisma instrumentation
+    config.ignoreWarnings = [
+      {
+        module: /node_modules\/@prisma\/instrumentation/,
+        message: /Critical dependency: the request of a dependency is an expression/,
+      },
+    ];
+    
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
@@ -140,12 +152,15 @@ const nextConfig = {
       config.resolve.mainFields = ['module', 'main'];
     }
 
-    // Enable webpack caching
+    // Enable webpack caching with better error handling
     config.cache = {
       type: 'filesystem',
       buildDependencies: {
         config: [__filename],
       },
+      cacheDirectory: path.resolve(__dirname, 'node_modules/.cache/webpack'),
+      compression: 'gzip',
+      hashAlgorithm: 'xxhash64',
     };
 
     return config;
