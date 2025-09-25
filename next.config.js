@@ -7,9 +7,6 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Force dynamic rendering for all pages to fix authentication issues
-  output: 'standalone',
-  
   experimental: {
     optimizePackageImports: [
       'lucide-react',
