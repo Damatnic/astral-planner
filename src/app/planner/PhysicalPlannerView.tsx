@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { format, addDays, subDays, startOfWeek, addWeeks, subWeeks, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay } from 'date-fns';
-import { ChevronLeft, ChevronRight, RotateCcw, BookOpen, Coffee, Feather, Heart, Star, Sun, Moon, Cloud, Bookmark, PenTool } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { format, addDays, subDays, startOfWeek, addWeeks, subWeeks, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay, parse, isValid } from 'date-fns';
+import { ChevronLeft, ChevronRight, RotateCcw, BookOpen, Coffee, Feather, Heart, Star, Sun, Moon, Cloud, Bookmark, PenTool, Mic, MicOff, Download, Shuffle, Sparkles, Zap, Settings, Calendar, Users, Share2, Save, CloudDrizzle, Palette, Layout, Wifi, WifiOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface PlannerEntry {
@@ -16,6 +16,56 @@ interface PlannerEntry {
   size: number;
   rotation: number;
   font: string;
+}
+
+interface ScheduleItem {
+  id: string;
+  time: string;
+  task: string;
+  completed: boolean;
+  priority: 'high' | 'medium' | 'low';
+  duration?: number; // in minutes
+  category?: string;
+  isDragging?: boolean;
+}
+
+interface HabitItem {
+  id: string;
+  name: string;
+  target: number;
+  current: number;
+  unit: string;
+  color: string;
+  streak: number;
+}
+
+interface CalendarEvent {
+  id: string;
+  title: string;
+  time: string;
+  endTime?: string;
+  type: 'event' | 'meeting' | 'reminder' | 'deadline';
+  color: string;
+  location?: string;
+  description?: string;
+}
+
+interface PlannerSettings {
+  theme: 'default' | 'minimalist' | 'colorful' | 'dark';
+  layout: 'daily' | 'weekly' | 'monthly';
+  showHabits: boolean;
+  showCalendar: boolean;
+  showWeather: boolean;
+  autoSave: boolean;
+  collaborationMode: boolean;
+}
+
+interface Template {
+  id: string;
+  name: string;
+  scheduleItems: ScheduleItem[];
+  notes: string[];
+  habits: HabitItem[];
 }
 
 const handwritingFonts = [
@@ -53,14 +103,14 @@ export default function PhysicalPlannerView() {
   const [paperTexture, setPaperTexture] = useState('lined');
   const [editingScheduleIndex, setEditingScheduleIndex] = useState<number | null>(null);
   const [editingNoteIndex, setEditingNoteIndex] = useState<number | null>(null);
-  const [scheduleItems, setScheduleItems] = useState([
-    { time: '7:00 AM', task: 'Morning meditation & coffee ☕', completed: true },
-    { time: '9:00 AM', task: 'Deep work session - Project Alpha', completed: false },
-    { time: '11:30 AM', task: 'Team meeting (remember to ask about budget)', completed: false },
-    { time: '1:00 PM', task: 'Lunch break & walk outside', completed: false },
-    { time: '3:00 PM', task: 'Client calls - Sarah & Mike', completed: false },
-    { time: '6:00 PM', task: 'Gym workout 💪', completed: false },
-    { time: '8:00 PM', task: 'Family dinner & relax', completed: false }
+  const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>([
+    { id: '1', time: '7:00 AM', task: 'Morning meditation & coffee ☕', completed: true, priority: 'medium', duration: 30, category: 'wellness' },
+    { id: '2', time: '9:00 AM', task: 'Deep work session - Project Alpha', completed: false, priority: 'high', duration: 120, category: 'work' },
+    { id: '3', time: '11:30 AM', task: 'Team meeting (remember to ask about budget)', completed: false, priority: 'high', duration: 60, category: 'work' },
+    { id: '4', time: '1:00 PM', task: 'Lunch break & walk outside', completed: false, priority: 'medium', duration: 45, category: 'wellness' },
+    { id: '5', time: '3:00 PM', task: 'Client calls - Sarah & Mike', completed: false, priority: 'high', duration: 90, category: 'work' },
+    { id: '6', time: '6:00 PM', task: 'Gym workout 💪', completed: false, priority: 'medium', duration: 60, category: 'fitness' },
+    { id: '7', time: '8:00 PM', task: 'Family dinner & relax', completed: false, priority: 'low', duration: 90, category: 'personal' }
   ]);
   const [quickNotes, setQuickNotes] = useState([
     'Remember to call mom this evening',
@@ -69,6 +119,38 @@ export default function PhysicalPlannerView() {
     'Book dentist appointment',
     'Read that article Sarah recommended'
   ]);
+  const [habitItems, setHabitItems] = useState<HabitItem[]>([
+    { id: '1', name: 'Water intake', target: 8, current: 5, unit: 'glasses', color: '#3B82F6', streak: 3 },
+    { id: '2', name: 'Steps', target: 10000, current: 7234, unit: 'steps', color: '#10B981', streak: 7 },
+    { id: '3', name: 'Reading', target: 30, current: 15, unit: 'minutes', color: '#8B5CF6', streak: 2 },
+    { id: '4', name: 'Meditation', target: 15, current: 10, unit: 'minutes', color: '#F59E0B', streak: 5 }
+  ]);
+  const [isVoiceRecording, setIsVoiceRecording] = useState(false);
+  const [draggedItem, setDraggedItem] = useState<string | null>(null);
+  const [smartSuggestions, setSmartSuggestions] = useState<string[]>([]);
+  const [showTemplates, setShowTemplates] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  
+  // Enhanced planner features
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([
+    { id: '1', title: 'Team Meeting', time: '09:00', endTime: '10:00', type: 'meeting', color: '#3B82F6', location: 'Conference Room A' },
+    { id: '2', title: 'Project Deadline', time: '17:00', type: 'deadline', color: '#EF4444', description: 'Submit final report' },
+    { id: '3', title: 'Lunch with Sarah', time: '12:30', endTime: '13:30', type: 'event', color: '#10B981', location: 'Downtown Cafe' }
+  ]);
+  const [settings, setSettings] = useState<PlannerSettings>({
+    theme: 'default',
+    layout: 'daily',
+    showHabits: true,
+    showCalendar: true,
+    showWeather: true,
+    autoSave: true,
+    collaborationMode: false
+  });
+  const [weatherInfo, setWeatherInfo] = useState({ temp: '22°C', condition: 'Sunny', icon: '☀️' });
+  const [showMiniCalendar, setShowMiniCalendar] = useState(false);
+  const [collaborators, setCollaborators] = useState<string[]>(['You', 'Sarah K.', 'Mike R.']);
+  const [showSettings, setShowSettings] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<'synced' | 'syncing' | 'offline'>('synced');
 
   // Simulate realistic handwriting with slight variations
   const getHandwritingStyle = () => ({
@@ -138,11 +220,210 @@ export default function PhysicalPlannerView() {
   };
 
   const addNewScheduleItem = () => {
-    setScheduleItems(prev => [...prev, { time: '9:00 PM', task: 'New task', completed: false }]);
+    const newId = (scheduleItems.length + 1).toString();
+    setScheduleItems(prev => [...prev, { 
+      id: newId, 
+      time: '9:00 PM', 
+      task: 'New task', 
+      completed: false, 
+      priority: 'medium',
+      duration: 30,
+      category: 'general'
+    }]);
   };
 
   const addNewNote = () => {
     setQuickNotes(prev => [...prev, 'New note']);
+  };
+
+  // Drag and Drop functionality
+  const handleDragStart = (e: React.DragEvent, itemId: string) => {
+    setDraggedItem(itemId);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (!draggedItem) return;
+
+    const dragIndex = scheduleItems.findIndex(item => item.id === draggedItem);
+    if (dragIndex === -1) return;
+
+    const newItems = [...scheduleItems];
+    const draggedScheduleItem = newItems[dragIndex];
+    newItems.splice(dragIndex, 1);
+    newItems.splice(targetIndex, 0, draggedScheduleItem);
+    
+    setScheduleItems(newItems);
+    setDraggedItem(null);
+  };
+
+  // Voice-to-text functionality
+  const startVoiceRecording = () => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert('Voice recognition not supported in your browser');
+      return;
+    }
+
+    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => {
+      setIsVoiceRecording(true);
+    };
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      const newNote = `🎤 ${transcript}`;
+      setQuickNotes(prev => [...prev, newNote]);
+      setIsVoiceRecording(false);
+    };
+
+    recognition.onerror = () => {
+      setIsVoiceRecording(false);
+    };
+
+    recognition.onend = () => {
+      setIsVoiceRecording(false);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
+
+  const stopVoiceRecording = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+  };
+
+  // Smart scheduling and suggestions
+  const autoScheduleTask = () => {
+    const availableSlots = [];
+    const workingHours = [];
+    
+    // Find available 30-minute slots between 9 AM and 5 PM
+    for (let hour = 9; hour < 17; hour++) {
+      for (let minute = 0; minute < 60; minute += 30) {
+        const timeSlot = `${hour}:${minute.toString().padStart(2, '0')} ${hour < 12 ? 'AM' : 'PM'}`;
+        const isOccupied = scheduleItems.some(item => item.time === timeSlot);
+        if (!isOccupied) {
+          availableSlots.push(timeSlot);
+        }
+      }
+    }
+
+    if (availableSlots.length > 0) {
+      const randomSlot = availableSlots[Math.floor(Math.random() * availableSlots.length)];
+      addNewScheduleItemWithTime(randomSlot);
+    }
+  };
+
+  const addNewScheduleItemWithTime = (time?: string) => {
+    const newTime = time || '9:00 AM';
+    const newId = (scheduleItems.length + 1).toString();
+    setScheduleItems(prev => [...prev, { 
+      id: newId, 
+      time: newTime, 
+      task: 'New task', 
+      completed: false, 
+      priority: 'medium',
+      duration: 30,
+      category: 'general'
+    }]);
+  };
+
+  // Habit tracking
+  const updateHabitProgress = (habitId: string, increment: number) => {
+    setHabitItems(prev => prev.map(habit => 
+      habit.id === habitId 
+        ? { 
+            ...habit, 
+            current: Math.min(habit.target, Math.max(0, habit.current + increment)),
+            streak: habit.current + increment >= habit.target ? habit.streak + 1 : habit.streak
+          }
+        : habit
+    ));
+  };
+
+  // Template system
+  const applyTemplate = (templateId: string) => {
+    const templates: Template[] = [
+      {
+        id: 'productive-day',
+        name: 'Productive Day',
+        scheduleItems: [
+          { id: 't1', time: '6:00 AM', task: 'Morning routine & exercise', completed: false, priority: 'high', duration: 60, category: 'wellness' },
+          { id: 't2', time: '8:00 AM', task: 'Breakfast & planning', completed: false, priority: 'medium', duration: 30, category: 'personal' },
+          { id: 't3', time: '9:00 AM', task: 'Deep work - Priority project', completed: false, priority: 'high', duration: 180, category: 'work' },
+          { id: 't4', time: '12:00 PM', task: 'Lunch & short walk', completed: false, priority: 'medium', duration: 45, category: 'wellness' },
+          { id: 't5', time: '2:00 PM', task: 'Meetings & collaboration', completed: false, priority: 'high', duration: 120, category: 'work' },
+          { id: 't6', time: '5:00 PM', task: 'Admin tasks & email', completed: false, priority: 'low', duration: 60, category: 'work' },
+          { id: 't7', time: '7:00 PM', task: 'Personal time & reflection', completed: false, priority: 'medium', duration: 90, category: 'personal' }
+        ],
+        notes: [
+          'Focus on the most important task first',
+          'Take regular breaks every 2 hours',
+          'Review progress at end of day',
+          'Prepare for tomorrow before finishing'
+        ],
+        habits: [
+          { id: 'h1', name: 'Deep focus blocks', target: 3, current: 0, unit: 'blocks', color: '#EF4444', streak: 0 },
+          { id: 'h2', name: 'Physical activity', target: 60, current: 0, unit: 'minutes', color: '#10B981', streak: 0 }
+        ]
+      },
+      {
+        id: 'wellness-focus',
+        name: 'Wellness Focus',
+        scheduleItems: [
+          { id: 'w1', time: '7:00 AM', task: 'Meditation & mindfulness', completed: false, priority: 'high', duration: 20, category: 'wellness' },
+          { id: 'w2', time: '8:00 AM', task: 'Healthy breakfast prep', completed: false, priority: 'medium', duration: 30, category: 'wellness' },
+          { id: 'w3', time: '10:00 AM', task: 'Nature walk or outdoor time', completed: false, priority: 'high', duration: 45, category: 'wellness' },
+          { id: 'w4', time: '12:00 PM', task: 'Nutritious lunch & hydration', completed: false, priority: 'medium', duration: 30, category: 'wellness' },
+          { id: 'w5', time: '3:00 PM', task: 'Gentle yoga or stretching', completed: false, priority: 'medium', duration: 30, category: 'fitness' },
+          { id: 'w6', time: '6:00 PM', task: 'Home-cooked dinner', completed: false, priority: 'medium', duration: 45, category: 'wellness' },
+          { id: 'w7', time: '8:00 PM', task: 'Reading & relaxation', completed: false, priority: 'low', duration: 60, category: 'personal' }
+        ],
+        notes: [
+          'Focus on mental and physical well-being',
+          'Stay hydrated throughout the day',
+          'Practice gratitude',
+          'Get 8 hours of quality sleep'
+        ],
+        habits: [
+          { id: 'hw1', name: 'Mindful minutes', target: 20, current: 0, unit: 'minutes', color: '#8B5CF6', streak: 0 },
+          { id: 'hw2', name: 'Water glasses', target: 8, current: 0, unit: 'glasses', color: '#3B82F6', streak: 0 }
+        ]
+      }
+    ];
+
+    const template = templates.find(t => t.id === templateId);
+    if (template) {
+      setScheduleItems(template.scheduleItems);
+      setQuickNotes(template.notes);
+      setHabitItems(template.habits);
+      setShowTemplates(false);
+    }
+  };
+
+  // Export functionality
+  const exportToPDF = () => {
+    // This would typically use a library like jsPDF or react-pdf
+    alert('Export to PDF feature - would integrate with PDF generation library');
+  };
+
+  const exportToImage = () => {
+    // This would capture the planner as an image
+    alert('Export to Image feature - would capture planner as PNG/JPG');
   };
 
   const renderPaperTexture = () => {
@@ -293,12 +574,27 @@ export default function PhysicalPlannerView() {
             <div className="space-y-3 ml-4">
               {scheduleItems.map((item, index) => (
                 <div 
-                  key={index} 
-                  className="flex items-start gap-3"
+                  key={item.id} 
+                  className={`flex items-start gap-3 relative group cursor-move transition-all duration-200 ${
+                    draggedItem === item.id ? 'opacity-50 scale-95' : 'hover:bg-yellow-50 hover:bg-opacity-30'
+                  } p-2 rounded-lg`}
                   style={{
                     transform: `rotate(${-1 + Math.random() * 2}deg) translateX(${-2 + Math.random() * 4}px)`
                   }}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, item.id)}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, index)}
                 >
+                  {/* Priority indicator */}
+                  <div 
+                    className={`w-1 h-6 rounded-full ${
+                      item.priority === 'high' ? 'bg-red-400' : 
+                      item.priority === 'medium' ? 'bg-yellow-400' : 'bg-green-400'
+                    }`}
+                    title={`Priority: ${item.priority}`}
+                  />
+                  
                   <div 
                     className="text-sm font-medium min-w-[70px]"
                     style={{
@@ -308,7 +604,13 @@ export default function PhysicalPlannerView() {
                     }}
                   >
                     {item.time}
+                    {item.duration && (
+                      <div className="text-xs text-gray-400">
+                        {item.duration}min
+                      </div>
+                    )}
                   </div>
+                  
                   <div className="flex-1 flex items-center gap-2">
                     <button
                       onClick={() => toggleTaskCompletion(index)}
@@ -320,6 +622,7 @@ export default function PhysicalPlannerView() {
                     >
                       {item.completed ? '✓' : '○'}
                     </button>
+                    
                     {editingScheduleIndex === index ? (
                       <input
                         type="text"
@@ -354,8 +657,16 @@ export default function PhysicalPlannerView() {
                         onClick={() => setEditingScheduleIndex(index)}
                       >
                         {item.task}
+                        {item.category && (
+                          <span className="text-xs text-gray-400 ml-2">#{item.category}</span>
+                        )}
                       </div>
                     )}
+                  </div>
+                  
+                  {/* Drag handle (visible on hover) */}
+                  <div className="opacity-0 group-hover:opacity-50 text-gray-400 text-xs transition-opacity">
+                    ⋮⋮
                   </div>
                 </div>
               ))}
@@ -618,7 +929,7 @@ export default function PhysicalPlannerView() {
             </div>
           </div>
           
-          {/* Habit Tracker */}
+          {/* Enhanced Habit Tracker */}
           <div>
             <h3 
               className="text-lg font-semibold mb-3 flex items-center gap-2"
@@ -632,55 +943,86 @@ export default function PhysicalPlannerView() {
               Daily Habits
             </h3>
             
-            <div className="ml-4 space-y-2">
-              {[
-                { habit: 'Water (8 cups)', completed: 5, total: 8 },
-                { habit: 'Steps taken', completed: 7234, total: 10000 },
-                { habit: 'Deep breaths', completed: 3, total: 5 },
-                { habit: 'Protein servings', completed: 2, total: 3 }
-              ].map((item, index) => (
+            <div className="ml-4 space-y-4">
+              {habitItems.map((habit, index) => (
                 <div 
-                  key={index}
-                  className="flex items-center justify-between"
+                  key={habit.id}
+                  className="group"
                   style={{
                     transform: `rotate(${-0.5 + Math.random()}deg)`
                   }}
                 >
-                  <span 
-                    className="text-sm"
-                    style={{
-                      fontFamily: handwritingFonts[(index + 1) % handwritingFonts.length],
-                      color: inkColors[index % inkColors.length],
-                      fontSize: `${13 + Math.random() * 2}px`
-                    }}
-                  >
-                    {item.habit}
-                  </span>
-                  <div className="flex gap-1">
-                    {item.habit === 'Water (8 cups)' ? (
-                      [...Array(8)].map((_, i) => (
-                        <div 
-                          key={i}
-                          className={`w-4 h-4 rounded-full border-2 ${
-                            i < item.completed ? 'bg-blue-400 border-blue-500' : 'border-gray-300'
-                          }`}
-                          style={{
-                            transform: `rotate(${-5 + Math.random() * 10}deg)`
-                          }}
-                        />
-                      ))
-                    ) : (
+                  <div className="flex items-center justify-between mb-2">
+                    <span 
+                      className="text-sm font-medium"
+                      style={{
+                        fontFamily: handwritingFonts[(index + 1) % handwritingFonts.length],
+                        color: inkColors[index % inkColors.length],
+                        fontSize: `${13 + Math.random() * 2}px`
+                      }}
+                    >
+                      {habit.name}
+                    </span>
+                    <div className="flex items-center gap-2">
                       <span 
-                        className="text-sm font-medium"
+                        className="text-xs"
                         style={{
                           fontFamily: 'Amatic SC',
-                          color: inkColors[(index + 3) % inkColors.length],
-                          fontSize: '16px'
+                          color: habit.color
                         }}
                       >
-                        {item.completed.toLocaleString()}/{item.total.toLocaleString()}
+                        {habit.current}/{habit.target} {habit.unit}
                       </span>
+                      {habit.streak > 0 && (
+                        <span 
+                          className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full"
+                          title={`${habit.streak} day streak!`}
+                        >
+                          🔥{habit.streak}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Progress Bar */}
+                  <div className="relative mb-2">
+                    <div 
+                      className="h-2 bg-gray-200 rounded-full overflow-hidden"
+                      style={{
+                        transform: `rotate(${-1 + Math.random() * 2}deg)`
+                      }}
+                    >
+                      <div 
+                        className="h-full transition-all duration-500 rounded-full"
+                        style={{
+                          backgroundColor: habit.color,
+                          width: `${Math.min(100, (habit.current / habit.target) * 100)}%`
+                        }}
+                      />
+                    </div>
+                    {habit.current >= habit.target && (
+                      <div className="absolute -top-1 -right-1">
+                        <span className="text-green-500">✓</span>
+                      </div>
                     )}
+                  </div>
+                  
+                  {/* Interactive Controls */}
+                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => updateHabitProgress(habit.id, -1)}
+                      className="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded"
+                      disabled={habit.current <= 0}
+                    >
+                      -1
+                    </button>
+                    <button
+                      onClick={() => updateHabitProgress(habit.id, 1)}
+                      className="text-xs bg-green-100 hover:bg-green-200 text-green-700 px-2 py-1 rounded"
+                      disabled={habit.current >= habit.target}
+                    >
+                      +1
+                    </button>
                   </div>
                 </div>
               ))}
@@ -726,9 +1068,57 @@ export default function PhysicalPlannerView() {
         <Bookmark className="w-8 h-8 text-red-600" />
       </div>
       
-      {/* Customization Toolbar */}
+      {/* Enhanced Customization Toolbar */}
       <div className="absolute top-4 right-4 z-30 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg border">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-wrap">
+          {/* Voice Recording */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-gray-600">Voice:</span>
+            <button
+              onClick={isVoiceRecording ? stopVoiceRecording : startVoiceRecording}
+              className={`p-1 rounded hover:bg-gray-100 ${isVoiceRecording ? 'bg-red-100 text-red-600' : 'text-gray-600'}`}
+              title={isVoiceRecording ? 'Stop recording' : 'Start voice note'}
+            >
+              {isVoiceRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+            </button>
+          </div>
+
+          {/* Smart Scheduling */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-gray-600">Smart:</span>
+            <button
+              onClick={autoScheduleTask}
+              className="p-1 rounded hover:bg-gray-100 text-purple-600"
+              title="Auto-schedule task in available slot"
+            >
+              <Sparkles className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Templates */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-gray-600">Template:</span>
+            <button
+              onClick={() => setShowTemplates(!showTemplates)}
+              className={`p-1 rounded hover:bg-gray-100 ${showTemplates ? 'bg-blue-100 text-blue-600' : 'text-gray-600'}`}
+              title="Load template"
+            >
+              <Shuffle className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Export */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-gray-600">Export:</span>
+            <button
+              onClick={exportToPDF}
+              className="p-1 rounded hover:bg-gray-100 text-green-600"
+              title="Export to PDF"
+            >
+              <Download className="w-4 h-4" />
+            </button>
+          </div>
+
           {/* Weather selector */}
           <div className="flex items-center gap-2">
             <span className="text-xs font-medium text-gray-600">Mood:</span>
@@ -769,6 +1159,61 @@ export default function PhysicalPlannerView() {
             </div>
           </div>
 
+          {/* Calendar Integration */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-gray-600">Calendar:</span>
+            <button
+              onClick={() => setShowMiniCalendar(!showMiniCalendar)}
+              className={`p-1 rounded hover:bg-gray-100 ${showMiniCalendar ? 'bg-blue-100 text-blue-600' : 'text-gray-600'}`}
+              title="Toggle mini calendar"
+            >
+              <Calendar className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Collaboration */}
+          {settings.collaborationMode && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-gray-600">Team:</span>
+              <button
+                onClick={() => {}}
+                className="p-1 rounded hover:bg-gray-100 text-green-600"
+                title="Share planner"
+              >
+                <Users className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => {}}
+                className="p-1 rounded hover:bg-gray-100 text-blue-600"
+                title="Share link"
+              >
+                <Share2 className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
+          {/* Sync Status */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-gray-600">Sync:</span>
+            <div className="flex items-center gap-1">
+              {syncStatus === 'synced' && <Wifi className="w-4 h-4 text-green-500" />}
+              {syncStatus === 'syncing' && <Save className="w-4 h-4 text-blue-500 animate-pulse" />}
+              {syncStatus === 'offline' && <WifiOff className="w-4 h-4 text-red-500" />}
+              <span className="text-xs text-gray-500 capitalize">{syncStatus}</span>
+            </div>
+          </div>
+
+          {/* Settings */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowSettings(!showSettings)}
+              className={`p-1 rounded hover:bg-gray-100 ${showSettings ? 'bg-gray-100 text-gray-800' : 'text-gray-600'}`}
+              title="Planner settings"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
+          </div>
+
           {/* Pen color selector */}
           <div className="flex items-center gap-2">
             <span className="text-xs font-medium text-gray-600">Pen:</span>
@@ -785,6 +1230,35 @@ export default function PhysicalPlannerView() {
           </div>
         </div>
       </div>
+
+      {/* Template Selection Modal */}
+      {showTemplates && (
+        <div className="absolute top-20 right-4 z-40 bg-white rounded-lg shadow-xl border p-4 w-80">
+          <h3 className="font-semibold mb-3 text-gray-800">Choose Template</h3>
+          <div className="space-y-2">
+            <button
+              onClick={() => applyTemplate('productive-day')}
+              className="w-full text-left p-3 rounded-lg hover:bg-blue-50 border border-blue-200"
+            >
+              <div className="font-medium text-blue-800">Productive Day</div>
+              <div className="text-sm text-blue-600">Optimized for deep work and focus</div>
+            </button>
+            <button
+              onClick={() => applyTemplate('wellness-focus')}
+              className="w-full text-left p-3 rounded-lg hover:bg-green-50 border border-green-200"
+            >
+              <div className="font-medium text-green-800">Wellness Focus</div>
+              <div className="text-sm text-green-600">Prioritizes health and well-being</div>
+            </button>
+          </div>
+          <button
+            onClick={() => setShowTemplates(false)}
+            className="mt-3 text-sm text-gray-500 hover:text-gray-700"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
 
       {/* Main planner */}
       <div className="relative w-full h-[calc(100vh-2rem)]">
@@ -976,6 +1450,178 @@ export default function PhysicalPlannerView() {
             </div>
           </div>
         </motion.div>
+      )}
+
+      {/* Mini Calendar */}
+      {showMiniCalendar && (
+        <div className="absolute top-20 right-4 z-40 bg-white rounded-lg shadow-xl border p-4 w-80">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">{format(currentDate, 'MMMM yyyy')}</h3>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentDate(subWeeks(currentDate, 1))}
+                className="p-1 rounded hover:bg-gray-100"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setCurrentDate(addWeeks(currentDate, 1))}
+                className="p-1 rounded hover:bg-gray-100"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          
+          {/* Calendar Grid */}
+          <div className="grid grid-cols-7 gap-1 text-center mb-4">
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+              <div key={day} className="text-xs font-medium text-gray-500 p-1">{day}</div>
+            ))}
+            {eachDayOfInterval({
+              start: startOfWeek(startOfMonth(currentDate)),
+              end: endOfMonth(currentDate)
+            }).map(day => (
+              <button
+                key={day.toString()}
+                onClick={() => setCurrentDate(day)}
+                className={`p-1 text-xs rounded hover:bg-blue-100 ${
+                  isSameDay(day, currentDate) ? 'bg-blue-500 text-white' :
+                  isToday(day) ? 'bg-blue-100 text-blue-600 font-semibold' :
+                  !isSameMonth(day, currentDate) ? 'text-gray-300' : ''
+                }`}
+              >
+                {format(day, 'd')}
+              </button>
+            ))}
+          </div>
+
+          {/* Today's Events */}
+          <div className="border-t pt-3">
+            <h4 className="text-sm font-medium mb-2">Today's Events</h4>
+            <div className="space-y-2">
+              {calendarEvents.map(event => (
+                <div key={event.id} className="flex items-center gap-2 text-xs">
+                  <div className={`w-2 h-2 rounded-full`} style={{ backgroundColor: event.color }}></div>
+                  <span className="font-medium">{event.time}</span>
+                  <span className="text-gray-600">{event.title}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Settings Panel */}
+      {showSettings && (
+        <div className="absolute top-20 right-4 z-40 bg-white rounded-lg shadow-xl border p-6 w-96">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">Planner Settings</h3>
+            <button
+              onClick={() => setShowSettings(false)}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              ×
+            </button>
+          </div>
+          
+          <div className="space-y-4">
+            {/* Theme Selection */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">Theme</label>
+              <div className="grid grid-cols-2 gap-2">
+                {(['default', 'minimalist', 'colorful', 'dark'] as const).map(theme => (
+                  <button
+                    key={theme}
+                    onClick={() => setSettings({...settings, theme})}
+                    className={`p-2 text-xs rounded border ${
+                      settings.theme === theme ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                    }`}
+                  >
+                    {theme.charAt(0).toUpperCase() + theme.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Layout Selection */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">Layout</label>
+              <div className="grid grid-cols-3 gap-2">
+                {(['daily', 'weekly', 'monthly'] as const).map(layout => (
+                  <button
+                    key={layout}
+                    onClick={() => setSettings({...settings, layout})}
+                    className={`p-2 text-xs rounded border ${
+                      settings.layout === layout ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                    }`}
+                  >
+                    {layout.charAt(0).toUpperCase() + layout.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Feature Toggles */}
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium text-gray-700">Features</h4>
+              {[
+                { key: 'showHabits' as const, label: 'Show Habits' },
+                { key: 'showCalendar' as const, label: 'Show Calendar' },
+                { key: 'showWeather' as const, label: 'Show Weather' },
+                { key: 'autoSave' as const, label: 'Auto Save' },
+                { key: 'collaborationMode' as const, label: 'Collaboration Mode' }
+              ].map(({ key, label }) => (
+                <div key={key} className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">{label}</span>
+                  <button
+                    onClick={() => setSettings({...settings, [key]: !settings[key]})}
+                    className={`w-8 h-4 rounded-full transition-colors ${
+                      settings[key] ? 'bg-blue-500' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div className={`w-3 h-3 rounded-full bg-white transition-transform ${
+                      settings[key] ? 'translate-x-4' : 'translate-x-0.5'
+                    }`} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Collaboration Info */}
+            {settings.collaborationMode && (
+              <div className="border-t pt-4">
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Active Collaborators</h4>
+                <div className="space-y-1">
+                  {collaborators.map((collaborator, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs font-medium">
+                        {collaborator.split(' ').map(n => n[0]).join('')}
+                      </div>
+                      <span className="text-sm text-gray-600">{collaborator}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Weather Display */}
+      {settings.showWeather && (
+        <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white/80 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg border">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">{weatherInfo.icon}</span>
+            <div>
+              <div className="text-lg font-semibold">{weatherInfo.temp}</div>
+              <div className="text-xs text-gray-600">{weatherInfo.condition}</div>
+            </div>
+            <div className="text-xs text-gray-500">
+              {format(currentDate, 'EEEE, MMM d')}
+            </div>
+          </div>
+        </div>
       )}
       
       {/* Paper texture filter */}

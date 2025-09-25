@@ -133,6 +133,9 @@ export default function DashboardClientFixed() {
           
           <nav className="flex items-center gap-4">
             <Button variant="ghost" size="sm" asChild>
+              <Link href="/">🏠 Home</Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild>
               <Link href="/calendar">Calendar</Link>
             </Button>
             <Button variant="ghost" size="sm" asChild>
