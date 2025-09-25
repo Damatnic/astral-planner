@@ -51,6 +51,26 @@ export default function RootLayout({
           />
           <Analytics />
         </Providers>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Service worker cleanup script
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.addEventListener('message', (event) => {
+                  if (event.data && event.data.type === 'CACHE_CLEARED') {
+                    console.log('Service worker reported cache cleared, reloading page...');
+                    window.location.reload();
+                  }
+                });
+                
+                // Register the cleanup service worker
+                navigator.serviceWorker.register('/sw.js')
+                  .then(() => console.log('Cleanup service worker registered'))
+                  .catch(err => console.log('Service worker registration failed:', err));
+              }
+            `
+          }}
+        />
       </body>
     </html>
   );

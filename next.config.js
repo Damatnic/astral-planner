@@ -102,7 +102,16 @@ const nextConfig = {
       ...config.resolve.fallback,
       fs: false,
       net: false,
-      tls: false
+      tls: false,
+      path: false,
+      stream: false,
+      crypto: false,
+      os: false,
+      util: false,
+      assert: false,
+      buffer: false,
+      url: false,
+      querystring: false
     };
 
     if (!isServer) {
