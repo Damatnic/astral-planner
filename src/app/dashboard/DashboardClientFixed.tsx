@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { 
   Calendar,
   CheckCircle2,
+  Circle,
   Target,
   TrendingUp,
   Clock,
