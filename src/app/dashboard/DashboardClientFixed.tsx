@@ -25,7 +25,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QuickCapture } from '@/components/quick-capture/QuickCapture';
 import PhysicalPlannerView from '../planner/PhysicalPlannerView';
 import Link from 'next/link';
-import { format } from 'date-fns';
+import { format, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, isSameMonth, isToday } from 'date-fns';
+
+interface CalendarEvent {
+  id: string;
+  title: string;
+  date: Date;
+  time: string;
+  color: string;
+  description?: string;
+}
 
 interface DashboardData {
   stats: {
@@ -68,6 +77,86 @@ export default function DashboardClientFixed() {
   const user = { id: 'test-user', firstName: 'Test', lastName: 'User' };
   const [view, setView] = useState('overview');
   
+  // Calendar state management
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [calendarView, setCalendarView] = useState<'month' | 'week' | 'day' | 'agenda'>('month');
+  const [events, setEvents] = useState<CalendarEvent[]>([
+    {
+      id: '1',
+      title: 'Team Meeting',
+      date: new Date(2024, 11, 5),
+      time: '9:00 AM',
+      color: 'blue',
+      description: 'Weekly team sync'
+    },
+    {
+      id: '2',
+      title: 'Project Review',
+      date: new Date(2024, 11, 12),
+      time: '2:00 PM',
+      color: 'green',
+      description: 'Review project progress'
+    },
+    {
+      id: '3',
+      title: 'Client Call',
+      date: new Date(2024, 11, 18),
+      time: '10:00 AM',
+      color: 'purple',
+      description: 'Call with client'
+    },
+    {
+      id: '4',
+      title: 'Lunch Meeting',
+      date: new Date(2024, 11, 25),
+      time: '12:00 PM',
+      color: 'orange',
+      description: 'Business lunch'
+    }
+  ]);
+  
+  // Calendar helper functions
+  const navigateMonth = (direction: 'prev' | 'next') => {
+    setCurrentDate(prev => direction === 'next' ? addMonths(prev, 1) : subMonths(prev, 1));
+  };
+
+  const getCalendarDays = () => {
+    const monthStart = startOfMonth(currentDate);
+    const monthEnd = endOfMonth(currentDate);
+    const calendarStart = startOfWeek(monthStart);
+    const calendarEnd = endOfWeek(monthEnd);
+    
+    return eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+  };
+
+  const getEventsForDate = (date: Date) => {
+    return events.filter(event => isSameDay(event.date, date));
+  };
+
+  const addEvent = (title: string, date: Date, time: string, color: string) => {
+    const newEvent: CalendarEvent = {
+      id: Date.now().toString(),
+      title,
+      date,
+      time,
+      color,
+    };
+    setEvents(prev => [...prev, newEvent]);
+  };
+
+  const removeEvent = (eventId: string) => {
+    setEvents(prev => prev.filter(event => event.id !== eventId));
+  };
+
+  const getUpcomingEvents = () => {
+    const today = new Date();
+    return events
+      .filter(event => event.date >= today)
+      .sort((a, b) => a.date.getTime() - b.date.getTime())
+      .slice(0, 4);
+  };
+  
   // Use static data instead of fetching from APIs to avoid errors
   const [data, setData] = useState<DashboardData>({
     stats: {
@@ -99,7 +188,7 @@ export default function DashboardClientFixed() {
   });
   
   const greeting = getGreeting();
-  const currentDate = format(new Date(), 'EEEE, MMMM d');
+  const todayFormatted = format(new Date(), 'EEEE, MMMM d');
 
   function getGreeting() {
     const hour = new Date().getHours();
@@ -182,7 +271,7 @@ export default function DashboardClientFixed() {
               <h1 className="text-3xl font-bold">
                 {greeting}, {user?.firstName || 'there'}! {getEmoji()}
               </h1>
-              <p className="text-muted-foreground mt-1">{currentDate}</p>
+              <p className="text-muted-foreground mt-1">{todayFormatted}</p>
             </div>
             
             <div className="flex items-center gap-4">
@@ -541,13 +630,13 @@ export default function DashboardClientFixed() {
                         <CardDescription>Full calendar with events and scheduling</CardDescription>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" onClick={() => navigateMonth('prev')}>
                           <ChevronLeft className="h-4 w-4" />
                         </Button>
                         <div className="text-sm font-medium min-w-[120px] text-center">
-                          {format(new Date(), 'MMMM yyyy')}
+                          {format(currentDate, 'MMMM yyyy')}
                         </div>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" onClick={() => navigateMonth('next')}>
                           <ChevronRight className="h-4 w-4" />
                         </Button>
                       </div>
@@ -566,30 +655,50 @@ export default function DashboardClientFixed() {
 
                       {/* Calendar Grid */}
                       <div className="grid grid-cols-7 gap-1">
-                        {Array.from({ length: 42 }).map((_, i) => {
-                          const dayNum = i - 6; // Start from previous month end
-                          const isCurrentMonth = dayNum > 0 && dayNum <= 30;
-                          const isToday = dayNum === new Date().getDate() && isCurrentMonth;
-                          const hasEvent = isCurrentMonth && [5, 12, 18, 25].includes(dayNum);
+                        {getCalendarDays().map((date, i) => {
+                          const dayEvents = getEventsForDate(date);
+                          const isCurrentMonthDay = isSameMonth(date, currentDate);
+                          const isTodayDate = isToday(date);
+                          const isSelectedDate = selectedDate && isSameDay(date, selectedDate);
                           
                           return (
                             <div
                               key={i}
+                              onClick={() => setSelectedDate(date)}
                               className={`min-h-[80px] p-2 border border-gray-200 cursor-pointer transition-colors hover:bg-gray-50 ${
-                                !isCurrentMonth ? 'bg-gray-50 text-gray-400' : 'bg-white text-gray-800'
-                              } ${isToday ? 'bg-blue-100 border-blue-300 font-bold text-blue-600' : ''}`}
+                                !isCurrentMonthDay ? 'bg-gray-50 text-gray-400' : 'bg-white text-gray-800'
+                              } ${isTodayDate ? 'bg-blue-100 border-blue-300 font-bold text-blue-600' : ''} ${
+                                isSelectedDate ? 'ring-2 ring-primary' : ''
+                              }`}
                             >
                               <div className="text-sm font-medium">
-                                {isCurrentMonth ? dayNum : ''}
+                                {format(date, 'd')}
                               </div>
-                              {hasEvent && isCurrentMonth && (
+                              {dayEvents.length > 0 && (
                                 <div className="mt-1 space-y-1">
-                                  <div className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded truncate">
-                                    Meeting
-                                  </div>
-                                  {dayNum === 12 && (
-                                    <div className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded truncate">
-                                      Lunch
+                                  {dayEvents.slice(0, 2).map((event) => (
+                                    <div
+                                      key={event.id}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (confirm(`Delete "${event.title}"?`)) {
+                                          removeEvent(event.id);
+                                        }
+                                      }}
+                                      className={`text-xs px-2 py-1 rounded truncate cursor-pointer hover:opacity-80 ${
+                                        event.color === 'blue' ? 'bg-blue-100 text-blue-700' :
+                                        event.color === 'green' ? 'bg-green-100 text-green-700' :
+                                        event.color === 'purple' ? 'bg-purple-100 text-purple-700' :
+                                        event.color === 'orange' ? 'bg-orange-100 text-orange-700' :
+                                        'bg-gray-100 text-gray-700'
+                                      }`}
+                                    >
+                                      {event.title}
+                                    </div>
+                                  ))}
+                                  {dayEvents.length > 2 && (
+                                    <div className="text-xs text-gray-500">
+                                      +{dayEvents.length - 2} more
                                     </div>
                                   )}
                                 </div>
@@ -620,19 +729,22 @@ export default function DashboardClientFixed() {
                         ))}
                       </div>
                       <div className="grid grid-cols-7 gap-1">
-                        {Array.from({ length: 35 }).map((_, i) => {
-                          const dayNum = i - 6;
-                          const isCurrentMonth = dayNum > 0 && dayNum <= 30;
-                          const isToday = dayNum === new Date().getDate() && isCurrentMonth;
+                        {getCalendarDays().slice(0, 35).map((date, i) => {
+                          const isCurrentMonthDay = isSameMonth(date, currentDate);
+                          const isTodayDate = isToday(date);
+                          const isSelectedDate = selectedDate && isSameDay(date, selectedDate);
                           
                           return (
                             <div
                               key={i}
+                              onClick={() => setSelectedDate(date)}
                               className={`h-6 flex items-center justify-center text-xs cursor-pointer rounded hover:bg-gray-100 ${
-                                !isCurrentMonth ? 'text-gray-400' : 'text-gray-800'
-                              } ${isToday ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}
+                                !isCurrentMonthDay ? 'text-gray-400' : 'text-gray-800'
+                              } ${isTodayDate ? 'bg-blue-600 text-white hover:bg-blue-700' : ''} ${
+                                isSelectedDate ? 'ring-1 ring-primary' : ''
+                              }`}
                             >
-                              {isCurrentMonth ? dayNum : ''}
+                              {format(date, 'd')}
                             </div>
                           );
                         })}
@@ -648,19 +760,39 @@ export default function DashboardClientFixed() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      {[
-                        { title: 'Team Meeting', date: 'Today, 9:00 AM', color: 'border-l-blue-500' },
-                        { title: 'Project Review', date: 'Tomorrow, 2:00 PM', color: 'border-l-green-500' },
-                        { title: 'Client Call', date: 'Friday, 10:00 AM', color: 'border-l-purple-500' },
-                        { title: 'Sprint Planning', date: 'Monday, 9:00 AM', color: 'border-l-orange-500' }
-                      ].map((event, i) => (
-                        <div key={i} className={`border-l-4 ${event.color} pl-3 py-2`}>
+                      {getUpcomingEvents().map((event, i) => (
+                        <div key={i} className={`border-l-4 ${
+                          event.color === 'blue' ? 'border-l-blue-500' :
+                          event.color === 'green' ? 'border-l-green-500' :
+                          event.color === 'purple' ? 'border-l-purple-500' :
+                          event.color === 'orange' ? 'border-l-orange-500' :
+                          'border-l-gray-500'
+                        } pl-3 py-2`}>
                           <div className="text-sm font-medium">{event.title}</div>
-                          <div className="text-xs text-muted-foreground">{event.date}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {format(event.date, 'MMM d')} at {event.time}
+                          </div>
                         </div>
                       ))}
                     </div>
-                    <Button variant="ghost" className="w-full mt-4" size="sm">
+                    <Button 
+                      variant="ghost" 
+                      className="w-full mt-4" 
+                      size="sm"
+                      onClick={() => {
+                        const title = prompt('Enter event title:');
+                        if (title) {
+                          const dateStr = prompt('Enter date (YYYY-MM-DD):', format(selectedDate || new Date(), 'yyyy-MM-dd'));
+                          const time = prompt('Enter time:', '9:00 AM');
+                          const color = prompt('Enter color (blue, green, purple, orange):', 'blue');
+                          
+                          if (dateStr && time) {
+                            const eventDate = new Date(dateStr);
+                            addEvent(title, eventDate, time, color || 'blue');
+                          }
+                        }
+                      }}
+                    >
                       <Plus className="h-4 w-4 mr-2" />
                       Add Event
                     </Button>
@@ -674,19 +806,39 @@ export default function DashboardClientFixed() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
-                      <Button variant="outline" className="w-full justify-start" size="sm">
+                      <Button 
+                        variant={calendarView === 'month' ? 'outline' : 'ghost'} 
+                        className="w-full justify-start" 
+                        size="sm"
+                        onClick={() => setCalendarView('month')}
+                      >
                         <Calendar className="h-4 w-4 mr-2" />
                         Month View
                       </Button>
-                      <Button variant="ghost" className="w-full justify-start" size="sm">
+                      <Button 
+                        variant={calendarView === 'week' ? 'outline' : 'ghost'} 
+                        className="w-full justify-start" 
+                        size="sm"
+                        onClick={() => setCalendarView('week')}
+                      >
                         <BarChart3 className="h-4 w-4 mr-2" />
                         Week View
                       </Button>
-                      <Button variant="ghost" className="w-full justify-start" size="sm">
+                      <Button 
+                        variant={calendarView === 'day' ? 'outline' : 'ghost'} 
+                        className="w-full justify-start" 
+                        size="sm"
+                        onClick={() => setCalendarView('day')}
+                      >
                         <Clock className="h-4 w-4 mr-2" />
                         Day View
                       </Button>
-                      <Button variant="ghost" className="w-full justify-start" size="sm">
+                      <Button 
+                        variant={calendarView === 'agenda' ? 'outline' : 'ghost'} 
+                        className="w-full justify-start" 
+                        size="sm"
+                        onClick={() => setCalendarView('agenda')}
+                      >
                         <Activity className="h-4 w-4 mr-2" />
                         Agenda View
                       </Button>
