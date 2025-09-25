@@ -44,7 +44,12 @@
       "Bash(PORT=3090 npm run dev)",
       "WebFetch(domain:astral-planner-pro-damatnic.vercel.app)",
       "WebFetch(domain:astral-planner-pro-git-master-damatnic.vercel.app)",
-      "WebFetch(domain:ultimate-digital-planner.vercel.app)"
+      "WebFetch(domain:ultimate-digital-planner.vercel.app)",
+      "Bash(NODE_ENV=development node scripts/verify-production.js)",
+      "Bash(NODE_ENV=production node scripts/verify-production.js)",
+      "Bash(npm audit:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(npm update:*)"
     ],
     "deny": [],
     "ask": []

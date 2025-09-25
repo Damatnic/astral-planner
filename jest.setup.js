@@ -141,19 +141,7 @@ import { TextEncoder, TextDecoder } from 'util'
 global.TextEncoder = TextEncoder
 global.TextDecoder = TextDecoder
 
-// Mock Web APIs for Node.js environment
-global.Request = class Request {
-  constructor(input, options = {}) {
-    this.url = typeof input === 'string' ? input : input.url
-    this.method = options.method || 'GET'
-    this.headers = new Map(Object.entries(options.headers || {}))
-    this.body = options.body
-  }
-
-  json() {
-    return Promise.resolve(JSON.parse(this.body || '{}'))
-  }
-}
+// Mock Web APIs for Node.js environment - removed to use Next.js built-in mocks
 
 global.Response = class Response {
   constructor(body, options = {}) {
@@ -173,8 +161,12 @@ process.env.NODE_ENV = 'test'
 process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = 'pk_test_test'
 process.env.CLERK_SECRET_KEY = 'sk_test_test'
 process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test'
+process.env.STACK_PROJECT_ID = 'test-project-id'
+process.env.STACK_SECRET_SERVER_KEY = 'test-secret-key'
+process.env.STACK_PUBLISHABLE_CLIENT_KEY = 'test-client-key'
 process.env.NEXT_PUBLIC_PUSHER_KEY = 'test-pusher-key'
 process.env.NEXT_PUBLIC_PUSHER_CLUSTER = 'us2'
 process.env.PUSHER_APP_ID = 'test-app-id'
 process.env.PUSHER_SECRET = 'test-pusher-secret'
 process.env.OPENAI_API_KEY = 'sk-test-openai-key'
+process.env.ENABLE_TEST_USER = 'true'

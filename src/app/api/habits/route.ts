@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { getUserForRequest } from '@/lib/auth';
 import { db } from '@/db';
 import { habits, habitEntries, users } from '@/db/schema';
 import { eq, and, desc, gte, lte, sql } from 'drizzle-orm';
@@ -22,9 +22,9 @@ const CreateHabitSchema = z.object({
 // GET /api/habits - List habits with logs
 export async function GET(req: NextRequest) {
   try {
-    const { userId } = auth();
+    const user = await getUserForRequest(req);
     
-    if (!userId) {
+    if (!user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -37,9 +37,7 @@ export async function GET(req: NextRequest) {
     const dateTo = searchParams.get('to');
 
     // Get user from database
-    const userRecord = await db.query.users.findFirst({
-      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
-    });
+    const userRecord = await db.select().from(users).where(eq(users.clerkId, user.id)).limit(1).then(r => r[0] || null);
 
     if (!userRecord) {
       return NextResponse.json(
@@ -56,10 +54,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Get habits
-    const userHabits = await db.query.habits.findMany({
-      where: and(...conditions),
-      orderBy: [desc(habits.currentStreak), desc(habits.createdAt)]
-    });
+    const userHabits = await db.select().from(habits).where(and(...conditions)).orderBy(desc(habits.currentStreak), desc(habits.createdAt));
 
     // Get logs for date range (default last 30 days)
     const fromDate = dateFrom ? new Date(dateFrom) : subDays(new Date(), 30);
@@ -70,13 +65,11 @@ export async function GET(req: NextRequest) {
     const toDateString = format(endOfDay(toDate), 'yyyy-MM-dd');
     
     const logs = habitIds.length > 0 
-      ? await db.query.habitEntries.findMany({
-          where: and(
+      ? await db.select().from(habitEntries).where(and(
             sql`${habitEntries.habitId} IN ${sql.raw(`(${habitIds.map((id: any) => `'${id}'`).join(',')})`)}`,
             gte(habitEntries.date, fromDateString),
             lte(habitEntries.date, toDateString)
-          )
-        })
+          ))
       : [];
 
     // Group logs by habit and date
@@ -162,9 +155,9 @@ export async function GET(req: NextRequest) {
 // POST /api/habits - Create habit
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = auth();
+    const user = await getUserForRequest(req);
     
-    if (!userId) {
+    if (!user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -175,9 +168,7 @@ export async function POST(req: NextRequest) {
     const validated = CreateHabitSchema.parse(body);
 
     // Get user from database
-    const userRecord = await db.query.users.findFirst({
-      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
-    });
+    const userRecord = await db.select().from(users).where(eq(users.clerkId, user.id)).limit(1).then(r => r[0] || null);
 
     if (!userRecord) {
       return NextResponse.json(
@@ -229,9 +220,9 @@ export async function POST(req: NextRequest) {
 // PATCH /api/habits/:id/log - Log habit completion
 export async function PATCH(req: NextRequest) {
   try {
-    const { userId } = auth();
+    const user = await getUserForRequest(req);
     
-    if (!userId) {
+    if (!user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -249,9 +240,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     // Get user from database
-    const userRecord = await db.query.users.findFirst({
-      where: (users: any, { eq }: any) => eq(users.clerkId, userId)
-    });
+    const userRecord = await db.select().from(users).where(eq(users.clerkId, user.id)).limit(1).then(r => r[0] || null);
 
     if (!userRecord) {
       return NextResponse.json(
@@ -261,12 +250,10 @@ export async function PATCH(req: NextRequest) {
     }
 
     // Verify habit belongs to user
-    const habit = await db.query.habits.findFirst({
-      where: and(
-        eq(habits.id, habitId),
-        eq(habits.userId, userRecord.id)
-      )
-    });
+    const habit = await db.select().from(habits).where(and(
+      eq(habits.id, habitId),
+      eq(habits.userId, userRecord.id)
+    )).limit(1).then(r => r[0] || null);
 
     if (!habit) {
       return NextResponse.json(
@@ -279,12 +266,10 @@ export async function PATCH(req: NextRequest) {
     const dateKey = format(logDate, 'yyyy-MM-dd');
 
     // Check if log exists for this date
-    const existingLog = await db.query.habitEntries.findFirst({
-      where: and(
-        eq(habitEntries.habitId, habitId),
-        sql`DATE(${habitEntries.date}) = ${dateKey}`
-      )
-    });
+    const existingLog = await db.select().from(habitEntries).where(and(
+      eq(habitEntries.habitId, habitId),
+      sql`DATE(${habitEntries.date}) = ${dateKey}`
+    )).limit(1).then(r => r[0] || null);
 
     let updatedLog;
     
@@ -317,13 +302,11 @@ export async function PATCH(req: NextRequest) {
       let checkDate = subDays(logDate, 1);
       
       for (let i = 0; i < 365; i++) {
-        const prevLog = await db.query.habitEntries.findFirst({
-          where: and(
-            eq(habitEntries.habitId, habitId),
-            sql`DATE(${habitEntries.date}) = ${format(checkDate, 'yyyy-MM-dd')}`,
-            eq(habitEntries.completed, true)
-          )
-        });
+        const prevLog = await db.select().from(habitEntries).where(and(
+          eq(habitEntries.habitId, habitId),
+          sql`DATE(${habitEntries.date}) = ${format(checkDate, 'yyyy-MM-dd')}`,
+          eq(habitEntries.completed, true)
+        )).limit(1).then(r => r[0] || null);
         
         if (prevLog) {
           newStreak++;

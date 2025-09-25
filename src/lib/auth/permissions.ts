@@ -1,15 +1,18 @@
-import { auth } from '@clerk/nextjs/server';
+import { getUserFromRequest } from '@/lib/auth';
+import { NextRequest } from 'next/server';
 import { permissions, featureFlags, type Permission, type Role } from './config';
 
 /**
  * Check if the current user has a specific permission
  */
-export async function hasPermission(permission: Permission): Promise<boolean> {
-  const { userId, sessionClaims } = auth();
+export async function hasPermission(req: NextRequest, permission: Permission): Promise<boolean> {
+  const user = await getUserFromRequest(req);
   
-  if (!userId) return false;
+  if (!user?.id) return false;
   
-  const userRole = ((sessionClaims as any)?.metadata?.role as Role) || 'FREE';
+  // For now, assume all authenticated users have basic permissions
+  // In a real implementation, you'd check user role from the database
+  const userRole = 'FREE' as Role; // Default role
   const userPermissions = permissions[userRole] || permissions.FREE;
   
   // Admin has all permissions
@@ -31,12 +34,13 @@ export async function hasPermission(permission: Permission): Promise<boolean> {
 /**
  * Check if the current user has access to a specific feature
  */
-export async function hasFeature(feature: keyof typeof featureFlags.FREE): Promise<boolean> {
-  const { userId, sessionClaims } = auth();
+export async function hasFeature(req: NextRequest, feature: keyof typeof featureFlags.FREE): Promise<boolean> {
+  const user = await getUserFromRequest(req);
   
-  if (!userId) return false;
+  if (!user?.id) return false;
   
-  const userRole = ((sessionClaims as any)?.metadata?.role as Role) || 'FREE';
+  // For now, assume all authenticated users have FREE tier features
+  const userRole = 'FREE' as Role; // Default role
   const userFeatures = featureFlags[userRole] || featureFlags.FREE;
   
   return Boolean(userFeatures[feature]);
@@ -45,12 +49,13 @@ export async function hasFeature(feature: keyof typeof featureFlags.FREE): Promi
 /**
  * Get the current user's feature limits
  */
-export async function getFeatureLimits() {
-  const { userId, sessionClaims } = auth();
+export async function getFeatureLimits(req: NextRequest) {
+  const user = await getUserFromRequest(req);
   
-  if (!userId) return featureFlags.FREE;
+  if (!user?.id) return featureFlags.FREE;
   
-  const userRole = ((sessionClaims as any)?.metadata?.role as Role) || 'FREE';
+  // For now, assume all authenticated users have FREE tier limits
+  const userRole = 'FREE' as Role; // Default role
   return featureFlags[userRole] || featureFlags.FREE;
 }
 
@@ -58,29 +63,30 @@ export async function getFeatureLimits() {
  * Check if user can perform action on resource
  */
 export async function canAccess(
+  req: NextRequest,
   resource: string,
   action: string,
   resourceOwnerId?: string,
   workspaceId?: string
 ): Promise<boolean> {
-  const { userId, sessionClaims } = auth();
+  const user = await getUserFromRequest(req);
   
-  if (!userId) return false;
+  if (!user?.id) return false;
   
   const permission = `${resource}:${action}`;
   
   // Check basic permission
-  const hasBasicPermission = await hasPermission(permission);
+  const hasBasicPermission = await hasPermission(req, permission);
   if (!hasBasicPermission) return false;
   
   // Check ownership for :own permissions
   if (permission.includes(':own') && resourceOwnerId) {
-    return userId === resourceOwnerId;
+    return user.id === resourceOwnerId;
   }
   
   // Check team access for :team permissions
   if (permission.includes(':team') && workspaceId) {
-    return await isWorkspaceMember(workspaceId);
+    return await isWorkspaceMember(req, workspaceId);
   }
   
   return true;
@@ -89,10 +95,10 @@ export async function canAccess(
 /**
  * Check if user is a member of a workspace
  */
-export async function isWorkspaceMember(workspaceId: string): Promise<boolean> {
-  const { userId } = auth();
+export async function isWorkspaceMember(req: NextRequest, workspaceId: string): Promise<boolean> {
+  const user = await getUserFromRequest(req);
   
-  if (!userId) return false;
+  if (!user?.id) return false;
   
   // This would query the database to check workspace membership
   // Implementation depends on your database setup
@@ -103,10 +109,10 @@ export async function isWorkspaceMember(workspaceId: string): Promise<boolean> {
 /**
  * Check if user is workspace owner or admin
  */
-export async function isWorkspaceAdmin(workspaceId: string): Promise<boolean> {
-  const { userId } = auth();
+export async function isWorkspaceAdmin(req: NextRequest, workspaceId: string): Promise<boolean> {
+  const user = await getUserFromRequest(req);
   
-  if (!userId) return false;
+  if (!user?.id) return false;
   
   // This would query the database to check workspace admin status
   // Implementation depends on your database setup
@@ -116,27 +122,32 @@ export async function isWorkspaceAdmin(workspaceId: string): Promise<boolean> {
 /**
  * Get user's role
  */
-export async function getUserRole(): Promise<Role> {
-  const { sessionClaims } = auth();
-  return ((sessionClaims as any)?.metadata?.role as Role) || 'FREE';
+export async function getUserRole(req: NextRequest): Promise<Role> {
+  const user = await getUserFromRequest(req);
+  
+  if (!user?.id) return 'FREE';
+  
+  // For now, return default role
+  // In a real implementation, you'd get this from the database
+  return 'FREE';
 }
 
 /**
  * Check if user has reached usage limits
  */
-export async function checkUsageLimits(resource: string): Promise<{
+export async function checkUsageLimits(req: NextRequest, resource: string): Promise<{
   allowed: boolean;
   limit: number;
   current: number;
   remaining: number;
 }> {
-  const { userId } = auth();
+  const user = await getUserFromRequest(req);
   
-  if (!userId) {
+  if (!user?.id) {
     return { allowed: false, limit: 0, current: 0, remaining: 0 };
   }
   
-  const limits = await getFeatureLimits();
+  const limits = await getFeatureLimits(req);
   
   // This would query the database to get current usage
   // For now, return mock data
@@ -180,8 +191,8 @@ export async function checkUsageLimits(resource: string): Promise<{
 /**
  * Require specific permission (throws if not authorized)
  */
-export async function requirePermission(permission: Permission): Promise<void> {
-  const allowed = await hasPermission(permission);
+export async function requirePermission(req: NextRequest, permission: Permission): Promise<void> {
+  const allowed = await hasPermission(req, permission);
   
   if (!allowed) {
     throw new Error(`Insufficient permissions: ${permission}`);
@@ -191,8 +202,8 @@ export async function requirePermission(permission: Permission): Promise<void> {
 /**
  * Require specific feature (throws if not available)
  */
-export async function requireFeature(feature: keyof typeof featureFlags.FREE): Promise<void> {
-  const allowed = await hasFeature(feature);
+export async function requireFeature(req: NextRequest, feature: keyof typeof featureFlags.FREE): Promise<void> {
+  const allowed = await hasFeature(req, feature);
   
   if (!allowed) {
     throw new Error(`Feature not available: ${feature}`);
@@ -206,9 +217,9 @@ export function withPermission(permission: Permission) {
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
     
-    descriptor.value = async function (...args: any[]) {
-      await requirePermission(permission);
-      return originalMethod.apply(this, args);
+    descriptor.value = async function (req: NextRequest, ...args: any[]) {
+      await requirePermission(req, permission);
+      return originalMethod.apply(this, [req, ...args]);
     };
     
     return descriptor;
@@ -222,9 +233,9 @@ export function withFeature(feature: keyof typeof featureFlags.FREE) {
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
     
-    descriptor.value = async function (...args: any[]) {
-      await requireFeature(feature);
-      return originalMethod.apply(this, args);
+    descriptor.value = async function (req: NextRequest, ...args: any[]) {
+      await requireFeature(req, feature);
+      return originalMethod.apply(this, [req, ...args]);
     };
     
     return descriptor;

@@ -36,7 +36,7 @@
     "perf:audit": "npm run bundle:check && npm run perf:lighthouse"
   },
   "dependencies": {
-    "@clerk/nextjs": "^4.29.1",
+    "@clerk/nextjs": "^6.32.2",
     "@clerk/themes": "^1.7.9",
     "@hookform/resolvers": "^5.2.2",
     "@minoru/react-dnd-treeview": "^3.5.3",
@@ -76,7 +76,7 @@
     "clsx": "^2.0.0",
     "cmdk": "^0.2.1",
     "date-fns": "^2.30.0",
-    "drizzle-kit": "^0.20.4",
+    "drizzle-kit": "^0.31.4",
     "drizzle-orm": "^0.29.0",
     "framer-motion": "^10.16.4",
     "google-auth-library": "^10.3.0",

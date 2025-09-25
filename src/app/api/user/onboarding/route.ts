@@ -1,14 +1,15 @@
-import { auth, clerkClient } from '@clerk/nextjs/server'
+import { clerkClient } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { getUserForRequest } from '@/lib/auth'
 import { db } from '@/db'
 import { users } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await auth()
+    const user = await getUserForRequest(req)
     
-    if (!userId) {
+    if (!user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -29,15 +30,15 @@ export async function POST(req: NextRequest) {
         },
         updatedAt: new Date(),
       })
-      .where(eq(users.clerkId, userId))
+      .where(eq(users.clerkId, user.id))
 
-    // Update Clerk user metadata
-    await clerkClient.users.updateUserMetadata(userId, {
-      publicMetadata: {
-        onboardingCompleted: true,
-        role: body.experience === 'advanced' ? 'power_user' : 'user',
-      },
-    })
+    // Skip Clerk metadata update - using Stack Auth now
+    // await clerkClient.users.updateUserMetadata(user.id, {
+    //   publicMetadata: {
+    //     onboardingCompleted: true,
+    //     role: body.experience === 'advanced' ? 'power_user' : 'user',
+    //   },
+    // })
 
     return NextResponse.json({
       success: true,
