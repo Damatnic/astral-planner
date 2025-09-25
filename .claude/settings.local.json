@@ -56,7 +56,14 @@
       "Bash(gh api:*)",
       "WebFetch(domain:ultimate-digital-planner-4jr89fqb4-astral-productions.vercel.app)",
       "WebFetch(domain:ultimate-digital-planner-4xqosumff-astral-productions.vercel.app)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(timeout:*)",
+      "WebFetch(domain:ultimate-digital-planner-h5hcz7yqm-astral-productions.vercel.app)",
+      "Bash(gh repo view:*)",
+      "Bash(gh repo list:*)",
+      "WebFetch(domain:ultimate-digital-planner-i65uo4x3d-astral-productions.vercel.app)",
+      "WebFetch(domain:ultimate-digital-planner-k8hjldemd-astral-productions.vercel.app)",
+      "WebFetch(domain:ultimate-digital-planner-aex6l2hdw-astral-productions.vercel.app)"
     ],
     "deny": [],
     "ask": []
