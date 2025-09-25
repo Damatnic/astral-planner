@@ -52,7 +52,9 @@
       "Bash(npm update:*)",
       "WebFetch(domain:ultimate-digital-planner-lr1srq6y3-astral-productions.vercel.app)",
       "Bash(npm run dev:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(gh api:*)",
+      "WebFetch(domain:ultimate-digital-planner-4jr89fqb4-astral-productions.vercel.app)"
     ],
     "deny": [],
     "ask": []

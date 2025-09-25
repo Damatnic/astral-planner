@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QuickCapture } from '@/components/quick-capture/QuickCapture';
+import PhysicalPlannerView from '../planner/PhysicalPlannerView';
 import Link from 'next/link';
 import { format } from 'date-fns';
 
@@ -252,6 +253,7 @@ export default function DashboardClientFixed() {
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="tasks">Tasks</TabsTrigger>
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
+            <TabsTrigger value="planner">Physical Planner</TabsTrigger>
             <TabsTrigger value="insights">Insights</TabsTrigger>
           </TabsList>
 
@@ -496,6 +498,12 @@ export default function DashboardClientFixed() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="planner" className="p-0">
+            <div className="h-[80vh] rounded-lg overflow-hidden">
+              <PhysicalPlannerView />
+            </div>
           </TabsContent>
 
           <TabsContent value="insights">

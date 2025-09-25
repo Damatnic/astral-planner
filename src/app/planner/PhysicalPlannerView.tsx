@@ -51,6 +51,24 @@ export default function PhysicalPlannerView() {
   const [pageFlipping, setPageFlipping] = useState(false);
   const [weatherMood, setWeatherMood] = useState('sunny');
   const [paperTexture, setPaperTexture] = useState('lined');
+  const [editingScheduleIndex, setEditingScheduleIndex] = useState<number | null>(null);
+  const [editingNoteIndex, setEditingNoteIndex] = useState<number | null>(null);
+  const [scheduleItems, setScheduleItems] = useState([
+    { time: '7:00 AM', task: 'Morning meditation & coffee ☕', completed: true },
+    { time: '9:00 AM', task: 'Deep work session - Project Alpha', completed: false },
+    { time: '11:30 AM', task: 'Team meeting (remember to ask about budget)', completed: false },
+    { time: '1:00 PM', task: 'Lunch break & walk outside', completed: false },
+    { time: '3:00 PM', task: 'Client calls - Sarah & Mike', completed: false },
+    { time: '6:00 PM', task: 'Gym workout 💪', completed: false },
+    { time: '8:00 PM', task: 'Family dinner & relax', completed: false }
+  ]);
+  const [quickNotes, setQuickNotes] = useState([
+    'Remember to call mom this evening',
+    'Pick up groceries: milk, bread, avocados',
+    'Research vacation destinations for summer',
+    'Book dentist appointment',
+    'Read that article Sarah recommended'
+  ]);
 
   // Simulate realistic handwriting with slight variations
   const getHandwritingStyle = () => ({
@@ -97,6 +115,34 @@ export default function PhysicalPlannerView() {
       }
       setPageFlipping(false);
     }, 300);
+  };
+
+  const updateScheduleItem = (index: number, newTask: string) => {
+    setScheduleItems(prev => prev.map((item, i) => 
+      i === index ? { ...item, task: newTask } : item
+    ));
+    setEditingScheduleIndex(null);
+  };
+
+  const updateNote = (index: number, newNote: string) => {
+    setQuickNotes(prev => prev.map((note, i) => 
+      i === index ? newNote : note
+    ));
+    setEditingNoteIndex(null);
+  };
+
+  const toggleTaskCompletion = (index: number) => {
+    setScheduleItems(prev => prev.map((item, i) => 
+      i === index ? { ...item, completed: !item.completed } : item
+    ));
+  };
+
+  const addNewScheduleItem = () => {
+    setScheduleItems(prev => [...prev, { time: '9:00 PM', task: 'New task', completed: false }]);
+  };
+
+  const addNewNote = () => {
+    setQuickNotes(prev => [...prev, 'New note']);
   };
 
   const renderPaperTexture = () => {
@@ -245,15 +291,7 @@ export default function PhysicalPlannerView() {
             </h3>
             
             <div className="space-y-3 ml-4">
-              {[
-                { time: '7:00 AM', task: 'Morning meditation & coffee ☕', completed: true },
-                { time: '9:00 AM', task: 'Deep work session - Project Alpha', completed: false },
-                { time: '11:30 AM', task: 'Team meeting (remember to ask about budget)', completed: false },
-                { time: '1:00 PM', task: 'Lunch break & walk outside', completed: false },
-                { time: '3:00 PM', task: 'Client calls - Sarah & Mike', completed: false },
-                { time: '6:00 PM', task: 'Gym workout 💪', completed: false },
-                { time: '8:00 PM', task: 'Family dinner & relax', completed: false }
-              ].map((item, index) => (
+              {scheduleItems.map((item, index) => (
                 <div 
                   key={index} 
                   className="flex items-start gap-3"
@@ -271,20 +309,64 @@ export default function PhysicalPlannerView() {
                   >
                     {item.time}
                   </div>
-                  <div 
-                    className={`flex-1 ${item.completed ? 'line-through opacity-60' : ''}`}
-                    style={{
-                      fontFamily: handwritingFonts[(index + 2) % handwritingFonts.length],
-                      color: item.completed ? inkColors[6] : inkColors[index % inkColors.length],
-                      fontSize: `${13 + Math.random() * 3}px`,
-                      lineHeight: '1.6'
-                    }}
-                  >
-                    {item.completed ? '✓ ' : '• '}{item.task}
+                  <div className="flex-1 flex items-center gap-2">
+                    <button
+                      onClick={() => toggleTaskCompletion(index)}
+                      className="flex-shrink-0 w-4 h-4 flex items-center justify-center hover:scale-110 transition-transform"
+                      style={{
+                        color: item.completed ? inkColors[6] : inkColors[index % inkColors.length],
+                        fontSize: '14px'
+                      }}
+                    >
+                      {item.completed ? '✓' : '○'}
+                    </button>
+                    {editingScheduleIndex === index ? (
+                      <input
+                        type="text"
+                        value={item.task}
+                        onChange={(e) => setScheduleItems(prev => prev.map((scheduleItem, i) => 
+                          i === index ? { ...scheduleItem, task: e.target.value } : scheduleItem
+                        ))}
+                        onBlur={() => setEditingScheduleIndex(null)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            setEditingScheduleIndex(null);
+                          }
+                        }}
+                        className="flex-1 bg-transparent border-none outline-none"
+                        style={{
+                          fontFamily: handwritingFonts[(index + 2) % handwritingFonts.length],
+                          color: item.completed ? inkColors[6] : inkColors[index % inkColors.length],
+                          fontSize: `${13 + Math.random() * 3}px`,
+                          lineHeight: '1.6'
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <div 
+                        className={`flex-1 cursor-pointer hover:bg-yellow-100 hover:bg-opacity-20 px-1 rounded ${item.completed ? 'line-through opacity-60' : ''}`}
+                        style={{
+                          fontFamily: handwritingFonts[(index + 2) % handwritingFonts.length],
+                          color: item.completed ? inkColors[6] : inkColors[index % inkColors.length],
+                          fontSize: `${13 + Math.random() * 3}px`,
+                          lineHeight: '1.6'
+                        }}
+                        onClick={() => setEditingScheduleIndex(index)}
+                      >
+                        {item.task}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
+            <button
+              onClick={addNewScheduleItem}
+              className="ml-4 mt-2 px-3 py-1 text-xs bg-amber-100 hover:bg-amber-200 rounded-lg text-amber-800 transition-colors"
+              style={{ fontFamily: 'Kalam' }}
+            >
+              + Add Task
+            </button>
           </div>
           
           {/* Quick notes */}
@@ -301,13 +383,7 @@ export default function PhysicalPlannerView() {
               Quick Notes
             </h3>
             <div className="space-y-2 ml-4">
-              {[
-                'Remember to call mom this evening',
-                'Pick up groceries: milk, bread, avocados',
-                'Research vacation destinations for summer',
-                'Book dentist appointment',
-                'Read that article Sarah recommended'
-              ].map((note, index) => (
+              {quickNotes.map((note, index) => (
                 <div 
                   key={index}
                   className="text-sm"
@@ -319,10 +395,45 @@ export default function PhysicalPlannerView() {
                     lineHeight: '1.8'
                   }}
                 >
-                  • {note}
+                  • {editingNoteIndex === index ? (
+                    <input
+                      type="text"
+                      value={note}
+                      onChange={(e) => setQuickNotes(prev => prev.map((noteItem, i) => 
+                        i === index ? e.target.value : noteItem
+                      ))}
+                      onBlur={() => setEditingNoteIndex(null)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          setEditingNoteIndex(null);
+                        }
+                      }}
+                      className="bg-transparent border-none outline-none w-full"
+                      style={{
+                        fontFamily: handwritingFonts[(index + 3) % handwritingFonts.length],
+                        color: inkColors[(index + 2) % inkColors.length],
+                        fontSize: `${12 + Math.random() * 2}px`
+                      }}
+                      autoFocus
+                    />
+                  ) : (
+                    <span 
+                      className="cursor-pointer hover:bg-yellow-100 hover:bg-opacity-20 px-1 rounded"
+                      onClick={() => setEditingNoteIndex(index)}
+                    >
+                      {note}
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
+            <button
+              onClick={addNewNote}
+              className="ml-4 mt-2 px-3 py-1 text-xs bg-amber-100 hover:bg-amber-200 rounded-lg text-amber-800 transition-colors"
+              style={{ fontFamily: 'Kalam' }}
+            >
+              + Add Note
+            </button>
           </div>
         </div>
         
@@ -595,7 +706,7 @@ export default function PhysicalPlannerView() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-100 via-yellow-50 to-orange-100 p-6 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-amber-100 via-yellow-50 to-orange-100 p-4">
       {/* Desk environment */}
       <div className="absolute inset-0 opacity-30">
         <div 
@@ -615,8 +726,68 @@ export default function PhysicalPlannerView() {
         <Bookmark className="w-8 h-8 text-red-600" />
       </div>
       
+      {/* Customization Toolbar */}
+      <div className="absolute top-4 right-4 z-30 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg border">
+        <div className="flex items-center gap-4">
+          {/* Weather selector */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-gray-600">Mood:</span>
+            <div className="flex gap-1">
+              {[
+                { mood: 'sunny', icon: Sun, color: 'text-yellow-500' },
+                { mood: 'cloudy', icon: Cloud, color: 'text-gray-400' },
+                { mood: 'moon', icon: Moon, color: 'text-blue-400' }
+              ].map(({ mood, icon: Icon, color }) => (
+                <button
+                  key={mood}
+                  onClick={() => setWeatherMood(mood)}
+                  className={`p-1 rounded hover:bg-gray-100 ${weatherMood === mood ? 'bg-gray-200' : ''}`}
+                >
+                  <Icon className={`w-4 h-4 ${color}`} />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Paper texture selector */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-gray-600">Paper:</span>
+            <div className="flex gap-1">
+              {[
+                { texture: 'lined', label: '📝' },
+                { texture: 'dotted', label: '⚪' },
+                { texture: 'grid', label: '⚏' }
+              ].map(({ texture, label }) => (
+                <button
+                  key={texture}
+                  onClick={() => setPaperTexture(texture)}
+                  className={`p-1 rounded hover:bg-gray-100 text-xs ${paperTexture === texture ? 'bg-gray-200' : ''}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Pen color selector */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-gray-600">Pen:</span>
+            <div className="flex gap-1">
+              {inkColors.slice(0, 5).map((color, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedPen(color)}
+                  className={`w-4 h-4 rounded-full border-2 ${selectedPen === color ? 'border-gray-600' : 'border-gray-300'}`}
+                  style={{ backgroundColor: color }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Main planner */}
-      <div className="relative max-w-6xl w-full">
+      <div className="relative w-full h-[calc(100vh-2rem)]">
         {/* Planner shadow */}
         <div className="absolute -inset-6 bg-black/20 rounded-xl blur-2xl transform rotate-1 -z-10" />
         
@@ -635,13 +806,12 @@ export default function PhysicalPlannerView() {
         </div>
         
         {/* Planner cover/binding */}
-        <div className="relative bg-gradient-to-r from-amber-900 via-yellow-900 to-amber-900 rounded-xl p-3 shadow-2xl">
+        <div className="relative bg-gradient-to-r from-amber-900 via-yellow-900 to-amber-900 rounded-xl p-3 shadow-2xl h-full">
           <div className="absolute left-1/2 top-0 bottom-0 w-12 -ml-6 bg-gradient-to-r from-black/30 via-transparent to-black/30 pointer-events-none z-10 rounded-lg" />
           
           {/* Page flip animation container */}
           <motion.div
-            className="bg-white rounded-lg shadow-inner overflow-hidden relative"
-            style={{ height: '800px' }}
+            className="bg-white rounded-lg shadow-inner overflow-hidden relative h-full"
             animate={{
               rotateY: pageFlipping ? (Math.random() > 0.5 ? 180 : -180) : 0
             }}
