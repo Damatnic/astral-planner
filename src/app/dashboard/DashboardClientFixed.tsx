@@ -16,7 +16,10 @@ import {
   Sparkles,
   Sun,
   Cloud,
-  Activity
+  Activity,
+  X,
+  Save,
+  Palette
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -81,6 +84,16 @@ export default function DashboardClientFixed() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [calendarView, setCalendarView] = useState<'month' | 'week' | 'day' | 'agenda'>('month');
+  
+  // Modal state management
+  const [showAddEventModal, setShowAddEventModal] = useState(false);
+  const [eventForm, setEventForm] = useState({
+    title: '',
+    date: '',
+    time: '9:00 AM',
+    color: 'blue',
+    description: ''
+  });
   const [events, setEvents] = useState<CalendarEvent[]>([
     {
       id: '1',
@@ -155,6 +168,38 @@ export default function DashboardClientFixed() {
       .filter(event => event.date >= today)
       .sort((a, b) => a.date.getTime() - b.date.getTime())
       .slice(0, 4);
+  };
+
+  // Modal handling functions
+  const openAddEventModal = (date?: Date) => {
+    const defaultDate = date || selectedDate || new Date();
+    setEventForm({
+      title: '',
+      date: format(defaultDate, 'yyyy-MM-dd'),
+      time: '9:00 AM',
+      color: 'blue',
+      description: ''
+    });
+    setShowAddEventModal(true);
+  };
+
+  const closeAddEventModal = () => {
+    setShowAddEventModal(false);
+    setEventForm({
+      title: '',
+      date: '',
+      time: '9:00 AM',
+      color: 'blue',
+      description: ''
+    });
+  };
+
+  const handleEventSubmit = () => {
+    if (eventForm.title && eventForm.date && eventForm.time) {
+      const eventDate = new Date(eventForm.date);
+      addEvent(eventForm.title, eventDate, eventForm.time, eventForm.color);
+      closeAddEventModal();
+    }
   };
   
   // Use static data instead of fetching from APIs to avoid errors
@@ -665,6 +710,7 @@ export default function DashboardClientFixed() {
                             <div
                               key={i}
                               onClick={() => setSelectedDate(date)}
+                              onDoubleClick={() => openAddEventModal(date)}
                               className={`min-h-[80px] p-2 border border-gray-200 cursor-pointer transition-colors hover:bg-gray-50 ${
                                 !isCurrentMonthDay ? 'bg-gray-50 text-gray-400' : 'bg-white text-gray-800'
                               } ${isTodayDate ? 'bg-blue-100 border-blue-300 font-bold text-blue-600' : ''} ${
@@ -690,6 +736,8 @@ export default function DashboardClientFixed() {
                                         event.color === 'green' ? 'bg-green-100 text-green-700' :
                                         event.color === 'purple' ? 'bg-purple-100 text-purple-700' :
                                         event.color === 'orange' ? 'bg-orange-100 text-orange-700' :
+                                        event.color === 'red' ? 'bg-red-100 text-red-700' :
+                                        event.color === 'yellow' ? 'bg-yellow-100 text-yellow-700' :
                                         'bg-gray-100 text-gray-700'
                                       }`}
                                     >
@@ -766,6 +814,8 @@ export default function DashboardClientFixed() {
                           event.color === 'green' ? 'border-l-green-500' :
                           event.color === 'purple' ? 'border-l-purple-500' :
                           event.color === 'orange' ? 'border-l-orange-500' :
+                          event.color === 'red' ? 'border-l-red-500' :
+                          event.color === 'yellow' ? 'border-l-yellow-500' :
                           'border-l-gray-500'
                         } pl-3 py-2`}>
                           <div className="text-sm font-medium">{event.title}</div>
@@ -779,19 +829,7 @@ export default function DashboardClientFixed() {
                       variant="ghost" 
                       className="w-full mt-4" 
                       size="sm"
-                      onClick={() => {
-                        const title = prompt('Enter event title:');
-                        if (title) {
-                          const dateStr = prompt('Enter date (YYYY-MM-DD):', format(selectedDate || new Date(), 'yyyy-MM-dd'));
-                          const time = prompt('Enter time:', '9:00 AM');
-                          const color = prompt('Enter color (blue, green, purple, orange):', 'blue');
-                          
-                          if (dateStr && time) {
-                            const eventDate = new Date(dateStr);
-                            addEvent(title, eventDate, time, color || 'blue');
-                          }
-                        }
-                      }}
+                      onClick={() => openAddEventModal()}
                     >
                       <Plus className="h-4 w-4 mr-2" />
                       Add Event
@@ -953,6 +991,169 @@ export default function DashboardClientFixed() {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Beautiful Add Event Modal */}
+      {showAddEventModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={closeAddEventModal}
+          />
+          
+          {/* Modal */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ type: "spring", duration: 0.3 }}
+            className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden"
+          >
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    <Calendar className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold">Create Event</h3>
+                    <p className="text-blue-100 text-sm">Add a new event to your calendar</p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={closeAddEventModal}
+                  className="text-white hover:bg-white/20 h-8 w-8 p-0"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Form */}
+            <div className="p-6 space-y-6">
+              {/* Event Title */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Event Title *
+                </label>
+                <input
+                  type="text"
+                  value={eventForm.title}
+                  onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
+                  placeholder="Enter event title..."
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 transition-all"
+                />
+              </div>
+
+              {/* Date and Time Row */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Date *
+                  </label>
+                  <input
+                    type="date"
+                    value={eventForm.date}
+                    onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Time *
+                  </label>
+                  <select
+                    value={eventForm.time}
+                    onChange={(e) => setEventForm({ ...eventForm, time: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all"
+                  >
+                    <option value="8:00 AM">8:00 AM</option>
+                    <option value="9:00 AM">9:00 AM</option>
+                    <option value="10:00 AM">10:00 AM</option>
+                    <option value="11:00 AM">11:00 AM</option>
+                    <option value="12:00 PM">12:00 PM</option>
+                    <option value="1:00 PM">1:00 PM</option>
+                    <option value="2:00 PM">2:00 PM</option>
+                    <option value="3:00 PM">3:00 PM</option>
+                    <option value="4:00 PM">4:00 PM</option>
+                    <option value="5:00 PM">5:00 PM</option>
+                    <option value="6:00 PM">6:00 PM</option>
+                    <option value="7:00 PM">7:00 PM</option>
+                    <option value="8:00 PM">8:00 PM</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Color Picker */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  Event Color
+                </label>
+                <div className="flex gap-3">
+                  {[
+                    { name: 'blue', color: 'bg-blue-500', ring: 'ring-blue-500' },
+                    { name: 'green', color: 'bg-green-500', ring: 'ring-green-500' },
+                    { name: 'purple', color: 'bg-purple-500', ring: 'ring-purple-500' },
+                    { name: 'orange', color: 'bg-orange-500', ring: 'ring-orange-500' },
+                    { name: 'red', color: 'bg-red-500', ring: 'ring-red-500' },
+                    { name: 'yellow', color: 'bg-yellow-500', ring: 'ring-yellow-500' }
+                  ].map((colorOption) => (
+                    <button
+                      key={colorOption.name}
+                      type="button"
+                      onClick={() => setEventForm({ ...eventForm, color: colorOption.name })}
+                      className={`w-8 h-8 rounded-full ${colorOption.color} transition-all hover:scale-110 ${
+                        eventForm.color === colorOption.name
+                          ? `ring-4 ${colorOption.ring} ring-offset-2`
+                          : 'hover:ring-2 hover:ring-gray-300'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Description (Optional)
+                </label>
+                <textarea
+                  value={eventForm.description}
+                  onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })}
+                  placeholder="Add event description..."
+                  rows={3}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 resize-none transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex gap-3 justify-end">
+              <Button
+                variant="outline"
+                onClick={closeAddEventModal}
+                className="px-6"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleEventSubmit}
+                disabled={!eventForm.title || !eventForm.date}
+                className="px-6 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                Create Event
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
