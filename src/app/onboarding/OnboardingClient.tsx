@@ -171,7 +171,7 @@ export default function OnboardingPage() {
   const handleComplete = async () => {
     try {
       // Save onboarding data
-      const response = await fetch('/api/onboarding/complete', {
+      const response = await fetch('/api/user/onboarding', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -180,7 +180,16 @@ export default function OnboardingPage() {
       });
 
       if (response.ok) {
+        const result = await response.json();
+        
+        // Store onboarding data in localStorage for demo purposes
+        localStorage.setItem('onboarding-data', JSON.stringify(result.data));
+        localStorage.setItem('onboarding-completed', 'true');
+        
+        // Navigate to dashboard
         router.push('/dashboard');
+      } else {
+        console.error('Onboarding failed:', await response.text());
       }
     } catch (error) {
       console.error('Failed to complete onboarding:', error);

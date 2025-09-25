@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { useOnboarding } from '@/hooks/use-onboarding';
 import { 
   Calendar,
   CheckCircle2,
@@ -78,9 +80,31 @@ interface DashboardData {
 }
 
 export default function DashboardClientFixed() {
+  const router = useRouter();
+  const { isCompleted, onboardingData } = useOnboarding();
+  
+  // Check if onboarding is completed, redirect if not
+  useEffect(() => {
+    if (isCompleted === false) {
+      router.push('/onboarding');
+    }
+  }, [isCompleted, router]);
+  
   // Mock user for development without authentication
   const user = { id: 'test-user', firstName: 'Test', lastName: 'User' };
   const [view, setView] = useState('overview');
+  
+  // Show loading while checking onboarding status
+  if (isCompleted === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
   
   // Calendar state management
   const [currentDate, setCurrentDate] = useState(new Date());
