@@ -145,6 +145,9 @@ export default function DashboardClientFixed() {
               <Link href="/habits">Habits</Link>
             </Button>
             <Button variant="ghost" size="sm" asChild>
+              <Link href="/planner">📝 Physical Planner</Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild>
               <Link href="/analytics">Analytics</Link>
             </Button>
           </nav>
@@ -536,10 +539,18 @@ export default function DashboardClientFixed() {
                 >
                   ← Back to Overview
                 </button>
+                <Button variant="outline" size="sm" asChild>
+                  <Link href="/planner">
+                    Open Full Screen
+                    <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                    </svg>
+                  </Link>
+                </Button>
               </div>
             </div>
             
-            <div className="h-[55vh] max-h-[650px] min-h-[450px] rounded-b-lg overflow-hidden border border-t-0 shadow-lg bg-white">
+            <div className="h-[75vh] max-h-[900px] min-h-[600px] rounded-b-lg overflow-hidden border border-t-0 shadow-lg bg-white">
               <PhysicalPlannerView />
             </div>
           </TabsContent>

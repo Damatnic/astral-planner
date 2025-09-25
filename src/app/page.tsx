@@ -84,6 +84,9 @@ export default function HomePage() {
               <Link href="/dashboard">Dashboard</Link>
             </Button>
             <Button asChild variant="ghost">
+              <Link href="/planner">Physical Planner</Link>
+            </Button>
+            <Button asChild variant="ghost">
               <Link href="/goals">Goals</Link>
             </Button>
             <Button asChild variant="ghost">
