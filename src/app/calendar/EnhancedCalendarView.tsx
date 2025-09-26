@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { format, startOfWeek, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay, addMonths, subMonths, addWeeks, subWeeks, startOfDay, addMinutes, parseISO } from 'date-fns';
 import { ChevronLeft, ChevronRight, Calendar, Clock, Target, Plus, Edit3, Trash2, Filter, Search, Zap, Brain, Timer, TrendingUp, CheckCircle, AlertCircle, Star, Focus, BookOpen, ArrowLeft, Home } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -163,8 +163,13 @@ const priorityColors = {
 };
 
 export default function EnhancedCalendarView() {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
   const [currentView, setCurrentView] = useState<'month' | 'week' | 'day' | 'agenda'>('month');
+
+  // Initialize date on client-side only to prevent hydration mismatch
+  useEffect(() => {
+    setCurrentDate(new Date());
+  }, []);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>(mockEvents);
   const [habits] = useState<Habit[]>(mockHabits);
@@ -255,6 +260,8 @@ export default function EnhancedCalendarView() {
   }, [getEventsForDate, getHabitsForDate]);
 
   const navigateDate = (direction: 'prev' | 'next') => {
+    if (!currentDate) return;
+    
     if (currentView === 'month') {
       setCurrentDate(direction === 'next' ? addMonths(currentDate, 1) : subMonths(currentDate, 1));
     } else if (currentView === 'week') {
@@ -311,6 +318,7 @@ export default function EnhancedCalendarView() {
         {/* Calendar Days */}
         <div className="grid grid-cols-7 gap-1">
           {useMemo(() => {
+            if (!currentDate) return [];
             const start = startOfMonth(currentDate);
             const end = endOfMonth(currentDate);
             const startDate = startOfWeek(start);
@@ -319,7 +327,7 @@ export default function EnhancedCalendarView() {
           }, [currentDate]).map((day, index) => {
             const dayEvents = getEventsForDate(day);
             const dayHabits = getHabitsForDate(day);
-            const isCurrentMonth = isSameMonth(day, currentDate);
+            const isCurrentMonth = currentDate ? isSameMonth(day, currentDate) : false;
             const isSelected = selectedDate && isSameDay(day, selectedDate);
             const completedEventsCount = dayEvents.filter(e => e.isCompleted).length;
             const completedHabitsCount = dayHabits.filter(h => h.completedToday).length;
@@ -404,9 +412,9 @@ export default function EnhancedCalendarView() {
           {[...Array(14)].map((_, i) => {
             const hour = i + 7; // Start from 7 AM
             const timeString = `${hour.toString().padStart(2, '0')}:00`;
-            const hourEvents = getEventsForDate(currentDate).filter(event => 
+            const hourEvents = currentDate ? getEventsForDate(currentDate).filter(event => 
               event.startTime && event.startTime.startsWith(hour.toString().padStart(2, '0'))
-            );
+            ) : [];
             
             return (
               <div key={i} className="flex border-b border-gray-100 min-h-[60px]">
@@ -567,9 +575,9 @@ export default function EnhancedCalendarView() {
                 </Button>
                 
                 <div className="text-lg font-semibold min-w-[180px] text-center text-gray-800">
-                  {currentView === 'month' && format(currentDate, 'MMMM yyyy')}
-                  {currentView === 'week' && `Week of ${format(startOfWeek(currentDate), 'MMM d')}`}
-                  {currentView === 'day' && format(currentDate, 'MMMM d, yyyy')}
+                  {currentView === 'month' && (currentDate ? format(currentDate, 'MMMM yyyy') : 'Loading...')}
+                  {currentView === 'week' && (currentDate ? `Week of ${format(startOfWeek(currentDate), 'MMM d')}` : 'Loading...')}
+                  {currentView === 'day' && (currentDate ? format(currentDate, 'MMMM d, yyyy') : 'Loading...')}
                   {currentView === 'agenda' && 'Smart Agenda'}
                 </div>
                 

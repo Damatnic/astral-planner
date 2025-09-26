@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { format, startOfWeek, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay, addMonths, subMonths, addWeeks, subWeeks } from 'date-fns';
 import { ChevronLeft, ChevronRight, Calendar, Clock, Target, Plus, Edit3, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -73,13 +73,19 @@ export default function CalendarView({
   maxHeight,
   onDateSelect 
 }: CalendarViewProps) {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
   const [currentView, setCurrentView] = useState<'month' | 'week' | 'day'>('month');
+
+  // Initialize date on client-side only to prevent hydration mismatch
+  useEffect(() => {
+    setCurrentDate(new Date());
+  }, []);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [events] = useState<CalendarEvent[]>(mockEvents);
 
   // Monthly view data
   const monthDays = useMemo(() => {
+    if (!currentDate) return [];
     const start = startOfMonth(currentDate);
     const end = endOfMonth(currentDate);
     const startDate = startOfWeek(start);
@@ -89,6 +95,7 @@ export default function CalendarView({
 
   // Weekly view data
   const weekDays = useMemo(() => {
+    if (!currentDate) return [];
     const start = startOfWeek(currentDate);
     return [...Array(7)].map((_, i) => addDays(start, i));
   }, [currentDate]);
@@ -99,6 +106,8 @@ export default function CalendarView({
   };
 
   const navigateDate = (direction: 'prev' | 'next') => {
+    if (!currentDate) return;
+    
     if (currentView === 'month') {
       setCurrentDate(direction === 'next' ? addMonths(currentDate, 1) : subMonths(currentDate, 1));
     } else if (currentView === 'week') {
@@ -128,7 +137,7 @@ export default function CalendarView({
       <div className="grid grid-cols-7 gap-1">
         {monthDays.map((day, index) => {
           const dayEvents = getEventsForDate(day);
-          const isCurrentMonth = isSameMonth(day, currentDate);
+          const isCurrentMonth = currentDate ? isSameMonth(day, currentDate) : false;
           const isSelected = selectedDate && isSameDay(day, selectedDate);
           
           return (
@@ -225,7 +234,7 @@ export default function CalendarView({
   );
 
   const renderDayView = () => {
-    const dayEvents = getEventsForDate(currentDate);
+    const dayEvents = currentDate ? getEventsForDate(currentDate) : [];
     
     return (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -233,7 +242,7 @@ export default function CalendarView({
         <div className="lg:col-span-2 space-y-2">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">
-              {format(currentDate, 'EEEE, MMMM d, yyyy')}
+              {currentDate ? format(currentDate, 'EEEE, MMMM d, yyyy') : 'Loading...'}
             </h3>
             <Button size="sm">
               <Plus className="w-4 h-4 mr-1" />
@@ -337,7 +346,7 @@ export default function CalendarView({
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-blue-600" />
-              <h3 className="text-base font-semibold text-gray-800">{format(currentDate, 'MMMM yyyy')}</h3>
+              <h3 className="text-base font-semibold text-gray-800">{currentDate ? format(currentDate, 'MMMM yyyy') : 'Loading...'}</h3>
             </div>
             <div className="flex items-center gap-1">
               <Button
@@ -410,9 +419,9 @@ export default function CalendarView({
                   </Button>
                   
                   <div className="text-lg font-semibold min-w-[200px] text-center">
-                    {currentView === 'month' && format(currentDate, 'MMMM yyyy')}
-                    {currentView === 'week' && `Week of ${format(startOfWeek(currentDate), 'MMM d')}`}
-                    {currentView === 'day' && format(currentDate, 'MMMM d, yyyy')}
+                    {currentView === 'month' && (currentDate ? format(currentDate, 'MMMM yyyy') : 'Loading...')}
+                    {currentView === 'week' && (currentDate ? `Week of ${format(startOfWeek(currentDate), 'MMM d')}` : 'Loading...')}
+                    {currentView === 'day' && (currentDate ? format(currentDate, 'MMMM d, yyyy') : 'Loading...')}
                   </div>
                   
                   <Button
