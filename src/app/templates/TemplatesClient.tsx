@@ -99,9 +99,12 @@ const sortOptions = [
   { value: 'recent', label: 'Recently Added' }
 ];
 
+// Mock user for development without authentication (moved outside component to prevent recreating on every render)
+const MOCK_USER = { id: 'test-user', firstName: 'Test', lastName: 'User' };
+
 export default function TemplatesPage() {
   // Mock user for development without authentication
-  const user = { id: 'test-user', firstName: 'Test', lastName: 'User' };
+  const user = MOCK_USER;
   const [data, setData] = useState<TemplatesData>({
     templates: [],
     pagination: { total: 0, limit: 20, offset: 0, hasMore: false },

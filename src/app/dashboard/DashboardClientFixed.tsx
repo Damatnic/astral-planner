@@ -79,6 +79,9 @@ interface DashboardData {
   error?: string;
 }
 
+// Mock user for development without authentication (moved outside component to prevent recreating on every render)
+const MOCK_USER = { id: 'test-user', firstName: 'Test', lastName: 'User' };
+
 export default function DashboardClientFixed() {
   const router = useRouter();
   const { isCompleted, onboardingData, isClient } = useOnboarding();
@@ -91,7 +94,7 @@ export default function DashboardClientFixed() {
   }, [isCompleted, router, isClient]);
   
   // Mock user for development without authentication
-  const user = { id: 'test-user', firstName: 'Test', lastName: 'User' };
+  const user = MOCK_USER;
   const [view, setView] = useState('overview');
   
   // Show loading while checking onboarding status or during hydration

@@ -102,9 +102,11 @@ const frequencyOptions = [
   { value: 'custom', label: 'Custom' }
 ];
 
+// Mock user for development without authentication (moved outside component to prevent recreating on every render)
+const MOCK_USER = { id: 'test-user', firstName: 'Test', lastName: 'User' };
+
 export default function HabitsPage() {
-  // Mock user for development without authentication
-  const user = { id: 'test-user', firstName: 'Test', lastName: 'User' };
+  const user = MOCK_USER;
   const [data, setData] = useState<HabitsData>({
     habits: [],
     stats: { totalHabits: 0, activeToday: 0, totalCompletions: 0, averageCompletionRate: 0, longestStreak: 0 },

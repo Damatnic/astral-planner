@@ -81,9 +81,12 @@ const goalCategories = [
   'Career', 'Health', 'Finance', 'Education', 'Personal', 'Relationships', 'Travel', 'Hobbies'
 ];
 
+// Mock user for development without authentication (moved outside component to prevent recreating on every render)
+const MOCK_USER = { id: 'test-user', firstName: 'Test', lastName: 'User' };
+
 export default function GoalsPage() {
   // Mock user for development without authentication
-  const user = { id: 'test-user', firstName: 'Test', lastName: 'User' };
+  const user = MOCK_USER;
   const [data, setData] = useState<GoalsData>({
     goals: [],
     stats: { total: 0, completed: 0, inProgress: 0, notStarted: 0, overdue: 0 },

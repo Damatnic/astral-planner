@@ -63,9 +63,12 @@ interface Goal {
   updatedAt: string;
 }
 
+// Mock user for development without authentication (moved outside component to prevent recreating on every render)
+const MOCK_USER = { id: 'test-user', firstName: 'Test', lastName: 'User' };
+
 export default function GoalDetailPage() {
   // Mock user for development without authentication
-  const user = { id: 'test-user', firstName: 'Test', lastName: 'User' };
+  const user = MOCK_USER;
   const params = useParams();
   const router = useRouter();
   const [goal, setGoal] = useState<Goal | null>(null);
