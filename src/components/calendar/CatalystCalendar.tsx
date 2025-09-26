@@ -234,13 +234,31 @@ export const CatalystCalendar: React.FC<CalendarProps> = memo(({
   enableVirtualization = true,
   showMiniCalendar = false
 }) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   // const listRef = useRef<List>(null);
 
+  // Initialize currentDate on client side to prevent hydration mismatch
+  useEffect(() => {
+    if (!currentDate) {
+      setCurrentDate(new Date());
+    }
+  }, [currentDate]);
+
   // Memoized date calculations
   const { monthStart, monthEnd, calendarStart, calendarEnd } = useMemo(() => {
+    if (!currentDate) {
+      // Return default values when currentDate is null (during SSR)
+      const now = new Date();
+      const monthStart = startOfMonth(now);
+      const monthEnd = endOfMonth(now);
+      const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
+      const calendarEnd = addDays(calendarStart, 41); // 6 weeks
+      
+      return { monthStart, monthEnd, calendarStart, calendarEnd };
+    }
+    
     const monthStart = startOfMonth(currentDate);
     const monthEnd = endOfMonth(currentDate);
     const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
@@ -273,9 +291,10 @@ export const CatalystCalendar: React.FC<CalendarProps> = memo(({
   const navigateMonth = useCallback((direction: 'prev' | 'next') => {
     setIsLoading(true);
     setCurrentDate(prev => {
+      const baseDate = prev || new Date();
       const newDate = direction === 'next' 
-        ? addDays(prev, 32) 
-        : addDays(prev, -32);
+        ? addDays(baseDate, 32) 
+        : addDays(baseDate, -32);
       return startOfMonth(newDate);
     });
     
@@ -310,7 +329,7 @@ export const CatalystCalendar: React.FC<CalendarProps> = memo(({
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-4">
             <h2 className="text-2xl font-bold">
-              {format(currentDate, 'MMMM yyyy')}
+              {currentDate ? format(currentDate, 'MMMM yyyy') : 'Loading...'}
             </h2>
             {isLoading && (
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
@@ -361,7 +380,7 @@ export const CatalystCalendar: React.FC<CalendarProps> = memo(({
         {/* Calendar Grid */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={format(currentDate, 'yyyy-MM')}
+            key={currentDate ? format(currentDate, 'yyyy-MM') : 'loading'}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -375,7 +394,7 @@ export const CatalystCalendar: React.FC<CalendarProps> = memo(({
                   week={week}
                   events={visibleEvents}
                   selectedDate={selectedDate}
-                  currentMonth={currentDate}
+                  currentMonth={currentDate || new Date()}
                   onDateClick={handleDateClick}
                   onEventClick={onEventClick}
                   onEventCreate={onEventCreate}
@@ -393,7 +412,7 @@ export const CatalystCalendar: React.FC<CalendarProps> = memo(({
           <div className="flex items-center space-x-4">
             <Badge variant="outline">
               <Calendar className="h-3 w-3 mr-1" />
-              {format(currentDate, 'MMM yyyy')}
+              {currentDate ? format(currentDate, 'MMM yyyy') : 'Loading'}
             </Badge>
             {selectedDate && (
               <Badge variant="secondary">
