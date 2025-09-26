@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
+
 import { db } from '@/db';
 import { blocks } from '@/db/schema/blocks';
 import { workspaces } from '@/db/schema/workspaces';
 import { eq } from 'drizzle-orm';
-import Logger from '@/lib/logger';
 
 async function handlePOST(req: NextRequest) {
   try {
@@ -66,7 +65,7 @@ async function handlePOST(req: NextRequest) {
       updatedAt: new Date(),
     }).returning();
 
-    Logger.info('Task created from web share:', {
+    console.log('Task created from web share:', {
       taskId: newTask.id,
       userId: user.id,
       title: newTask.title,
@@ -81,7 +80,7 @@ async function handlePOST(req: NextRequest) {
 
     return NextResponse.redirect(dashboardUrl.toString());
   } catch (error) {
-    Logger.error('Web share error:', error);
+    console.error('Web share error:', error);
     
     // Redirect to dashboard with error
     const dashboardUrl = new URL('/dashboard', req.nextUrl.origin);
@@ -107,5 +106,9 @@ async function handleGET(req: NextRequest) {
   return NextResponse.redirect(dashboardUrl.toString());
 }
 
-export const POST = withAuth(handlePOST);
-export const GET = withAuth(handleGET);
+export async function POST(req: NextRequest) {
+  return await handlePOST(req);
+}
+export async function GET(req: NextRequest) {
+  return await handleGET(req);
+}

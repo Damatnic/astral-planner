@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
+
 import { db } from '@/db';
 import { templateLikes } from '@/db/schema/templates';
 import { eq, and } from 'drizzle-orm';
-import Logger from '@/lib/logger';
 
 async function handlePOST(req: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -37,11 +36,11 @@ async function handlePOST(req: NextRequest, { params }: { params: { id: string }
       userId: user.id,
     });
 
-    Logger.info('Template liked:', { templateId, userId: user.id });
+    console.log('Template liked:', { templateId, userId: user.id });
 
     return NextResponse.json({ success: true, liked: true });
   } catch (error) {
-    Logger.error('Template like error:', error);
+    console.error('Template like error:', error);
     return NextResponse.json(
       { error: 'Failed to like template' },
       { status: 500 }
@@ -65,11 +64,11 @@ async function handleDELETE(req: NextRequest, { params }: { params: { id: string
         eq(templateLikes.userId, user.id)
       ));
 
-    Logger.info('Template unliked:', { templateId, userId: user.id });
+    console.log('Template unliked:', { templateId, userId: user.id });
 
     return NextResponse.json({ success: true, liked: false });
   } catch (error) {
-    Logger.error('Template unlike error:', error);
+    console.error('Template unlike error:', error);
     return NextResponse.json(
       { error: 'Failed to unlike template' },
       { status: 500 }
@@ -77,5 +76,11 @@ async function handleDELETE(req: NextRequest, { params }: { params: { id: string
   }
 }
 
-export const POST = withAuth(handlePOST);
-export const DELETE = withAuth(handleDELETE);
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  return await handlePOST(req, { params: resolvedParams });
+}
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  return await handleDELETE(req, { params: resolvedParams });
+}

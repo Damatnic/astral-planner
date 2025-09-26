@@ -1,10 +1,17 @@
 import { NextResponse, NextRequest } from 'next/server';
+import { getAuthContext, isPublicRoute, shouldIgnoreRoute } from './lib/auth/auth-utils';
 
-// Temporary minimal middleware to resolve production deployment issues
-// TODO: Restore full authentication middleware once Stack Auth is configured
+// Enhanced middleware with authentication support for PIN-based and JWT auth
 export default async function middleware(req: NextRequest) {
   try {
-    console.log(`[MIDDLEWARE] ${req.method} ${req.nextUrl.pathname}`);
+    const pathname = req.nextUrl.pathname;
+    
+    console.log(`[MIDDLEWARE] ${req.method} ${pathname}`);
+    
+    // Skip middleware for static files and ignored routes
+    if (shouldIgnoreRoute(pathname)) {
+      return NextResponse.next();
+    }
     
     const response = NextResponse.next();
     
@@ -15,6 +22,27 @@ export default async function middleware(req: NextRequest) {
     response.headers.set('X-DNS-Prefetch-Control', 'on');
     response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
     response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    
+    // Skip auth for public routes
+    if (isPublicRoute(pathname)) {
+      return response;
+    }
+    
+    // Check authentication for protected routes
+    const authContext = await getAuthContext(req);
+    
+    if (!authContext.isAuthenticated) {
+      // Redirect unauthenticated users to home page
+      const loginUrl = new URL('/', req.url);
+      return NextResponse.redirect(loginUrl);
+    }
+    
+    // Add user context to response headers for client-side access
+    if (authContext.user) {
+      response.headers.set('X-User-ID', authContext.user.id);
+      response.headers.set('X-User-Role', authContext.user.role);
+      response.headers.set('X-Is-Demo', authContext.isDemo.toString());
+    }
     
     return response;
     

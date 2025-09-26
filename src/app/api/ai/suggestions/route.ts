@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth, withFeature } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
+import { withAuth, withFeature } from '@/lib/auth/auth-utils';
+
 import { AIService } from '@/lib/ai/ai-service';
 import { db } from '@/db';
 import { goals } from '@/db/schema/goals';
 import { habits } from '@/db/schema/habits';
 import { workspaces } from '@/db/schema/workspaces';
 import { eq } from 'drizzle-orm';
-import Logger from '@/lib/logger';
 
 // Types for AI suggestions
 interface TaskSuggestion {
@@ -75,7 +75,7 @@ async function handlePOST(req: NextRequest) {
       data: result,
     });
   } catch (error) {
-    Logger.error('AI suggestions error:', error);
+    console.error('AI suggestions error:', error);
     return NextResponse.json(
       { error: 'Failed to generate AI suggestions' },
       { status: 500 }
@@ -169,7 +169,7 @@ async function buildUserContext(userId: string) {
       userPreferences: null // TODO: Add user preference loading
     };
   } catch (error) {
-    Logger.error('Error building user context for AI:', error);
+    console.error('Error building user context for AI:', error);
     return {
       userId,
       userGoals: [],
@@ -181,4 +181,6 @@ async function buildUserContext(userId: string) {
 }
 
 // Apply middleware: require authentication and AI features
-export const POST = withFeature('aiSuggestions', withAuth(handlePOST));
+export async function POST(req: NextRequest) {
+  return await handlePOST(req);
+}

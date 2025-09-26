@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
+
 import { db } from '@/db';
 import { templates, templateUsage } from '@/db/schema/templates';
 import { blocks } from '@/db/schema/blocks';
@@ -8,7 +8,6 @@ import { goals } from '@/db/schema/goals';
 import { habits } from '@/db/schema/habits';
 import { workspaces } from '@/db/schema/workspaces';
 import { eq } from 'drizzle-orm';
-import Logger from '@/lib/logger';
 
 // Predefined templates with content (matching the GET endpoint)
 const PREDEFINED_TEMPLATES: Record<string, any> = {
@@ -199,7 +198,7 @@ async function handlePOST(req: NextRequest, { params }: { params: { id: string }
       createdAt: new Date(),
     });
 
-    Logger.info('Template installed:', { 
+    console.log('Template installed:', { 
       templateId, 
       userId: user.id, 
       itemsInstalled: {
@@ -222,7 +221,7 @@ async function handlePOST(req: NextRequest, { params }: { params: { id: string }
     });
 
   } catch (error) {
-    Logger.error('Template installation error:', error);
+    console.error('Template installation error:', error);
     
     // Record failed installation
     try {
@@ -241,7 +240,7 @@ async function handlePOST(req: NextRequest, { params }: { params: { id: string }
         });
       }
     } catch (recordError) {
-      Logger.error('Failed to record template installation error:', recordError);
+      console.error('Failed to record template installation error:', recordError);
     }
 
     return NextResponse.json(
@@ -251,4 +250,7 @@ async function handlePOST(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export const POST = withAuth(handlePOST);
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  return await handlePOST(req, { params: resolvedParams });
+}

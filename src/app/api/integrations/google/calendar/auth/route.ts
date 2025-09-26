@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
-import Logger from '@/lib/logger';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
@@ -15,7 +13,7 @@ async function handleGET(req: NextRequest) {
     }
 
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-      Logger.error('Google OAuth credentials not configured');
+      console.error('Google OAuth credentials not configured');
       return NextResponse.json(
         { error: 'Google Calendar integration not configured' },
         { status: 500 }
@@ -37,13 +35,13 @@ async function handleGET(req: NextRequest) {
     authUrl.searchParams.set('prompt', 'consent');
     authUrl.searchParams.set('state', user.id); // Pass user ID as state
 
-    Logger.info('Generated Google OAuth URL for user:', { userId: user.id });
+    console.log('Generated Google OAuth URL for user:', { userId: user.id });
 
     return NextResponse.json({
       authUrl: authUrl.toString()
     });
   } catch (error) {
-    Logger.error('Google Calendar auth error:', error);
+    console.error('Google Calendar auth error:', error);
     return NextResponse.json(
       { error: 'Failed to generate auth URL' },
       { status: 500 }
@@ -51,4 +49,6 @@ async function handleGET(req: NextRequest) {
   }
 }
 
-export const GET = withAuth(handleGET);
+export async function GET(req: NextRequest) {
+  return await handleGET(req);
+}

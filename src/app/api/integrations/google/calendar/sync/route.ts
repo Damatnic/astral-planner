@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
+
 import { db } from '@/db';
 import { users } from '@/db/schema/users';
 import { blocks } from '@/db/schema/blocks';
 import { workspaces } from '@/db/schema/workspaces';
 import { eq } from 'drizzle-orm';
-import Logger from '@/lib/logger';
 
 interface GoogleCalendarTokens {
   access_token: string;
@@ -61,7 +60,7 @@ async function refreshGoogleToken(refreshToken: string): Promise<GoogleCalendarT
     });
 
     if (!response.ok) {
-      Logger.error('Failed to refresh Google token:', await response.text());
+      console.error('Failed to refresh Google token:', await response.text());
       return null;
     }
 
@@ -73,7 +72,7 @@ async function refreshGoogleToken(refreshToken: string): Promise<GoogleCalendarT
       scope: tokenData.scope,
     };
   } catch (error) {
-    Logger.error('Error refreshing Google token:', error);
+    console.error('Error refreshing Google token:', error);
     return null;
   }
 }
@@ -112,7 +111,7 @@ async function getValidAccessToken(userId: string): Promise<string | null> {
 
     return null;
   } catch (error) {
-    Logger.error('Error getting valid access token:', error);
+    console.error('Error getting valid access token:', error);
     return null;
   }
 }
@@ -224,13 +223,13 @@ async function syncEventsToDatabase(userId: string, events: GoogleCalendarEvent[
       }
     }
 
-    Logger.info('Successfully synced Google Calendar events:', {
+    console.log('Successfully synced Google Calendar events:', {
       userId,
       calendarId,
       eventCount: events.length,
     });
   } catch (error) {
-    Logger.error('Error syncing events to database:', error);
+    console.error('Error syncing events to database:', error);
     throw error;
   }
 }
@@ -263,7 +262,7 @@ async function handleGET(req: NextRequest) {
       })),
     });
   } catch (error) {
-    Logger.error('Google Calendar sync GET error:', error);
+    console.error('Google Calendar sync GET error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch calendars' },
       { status: 500 }
@@ -293,7 +292,7 @@ async function handlePOST(req: NextRequest) {
     const events = await fetchGoogleCalendarEvents(accessToken, calendarId);
     await syncEventsToDatabase(user.id, events, calendarId);
 
-    Logger.info('Successfully synced Google Calendar:', {
+    console.log('Successfully synced Google Calendar:', {
       userId: user.id,
       calendarId,
       eventCount: events.length,
@@ -305,7 +304,7 @@ async function handlePOST(req: NextRequest) {
       calendarId,
     });
   } catch (error) {
-    Logger.error('Google Calendar sync POST error:', error);
+    console.error('Google Calendar sync POST error:', error);
     return NextResponse.json(
       { error: 'Failed to sync calendar' },
       { status: 500 }
@@ -313,5 +312,9 @@ async function handlePOST(req: NextRequest) {
   }
 }
 
-export const GET = withAuth(handleGET);
-export const POST = withAuth(handlePOST);
+export async function GET(req: NextRequest) {
+  return await handleGET(req);
+}
+export async function POST(req: NextRequest) {
+  return await handlePOST(req);
+}

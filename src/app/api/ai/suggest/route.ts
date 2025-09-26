@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
-import Logger from '@/lib/logger';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
 
 // Generate contextual suggestions based on partial input
 function generateSuggestions(input: string): string[] {
@@ -125,7 +123,7 @@ async function handlePOST(req: NextRequest) {
 
     const suggestions = generateSuggestions(input);
     
-    Logger.info('AI suggestions generated:', { 
+    console.log('AI suggestions generated:', { 
       input, 
       suggestionCount: suggestions.length,
       userId: user.id 
@@ -139,7 +137,7 @@ async function handlePOST(req: NextRequest) {
     });
 
   } catch (error) {
-    Logger.error('AI suggest error:', error);
+    console.error('AI suggest error:', error);
     return NextResponse.json(
       { error: 'Failed to generate suggestions' },
       { status: 500 }
@@ -147,4 +145,6 @@ async function handlePOST(req: NextRequest) {
   }
 }
 
-export const POST = withAuth(handlePOST);
+export async function POST(req: NextRequest) {
+  return await handlePOST(req);
+}

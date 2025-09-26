@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth, withRole } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
+import { withAuth, withRole } from '@/lib/auth/auth-utils';
+
 import { db } from '@/db';
 import { users } from '@/db/schema/users';
 import { blocks } from '@/db/schema/blocks';
@@ -9,7 +10,6 @@ import { habits } from '@/db/schema/habits';
 import { workspaces } from '@/db/schema/workspaces';
 import { blockActivity } from '@/db/schema/blocks';
 import { count, desc } from 'drizzle-orm';
-import Logger from '@/lib/logger';
 
 async function handleGET(req: NextRequest) {
   try {
@@ -29,7 +29,7 @@ async function handleGET(req: NextRequest) {
       return await handleSummaryExport(user.id);
     }
   } catch (error) {
-    Logger.error('Admin export error:', error);
+    console.error('Admin export error:', error);
     return NextResponse.json(
       { error: 'Failed to export data' },
       { status: 500 }
@@ -79,7 +79,7 @@ async function handleSummaryExport(adminUserId: string) {
     })),
   };
 
-  Logger.info('Admin summary export completed:', { adminUserId, dataSize: JSON.stringify(exportData).length });
+  console.log('Admin summary export completed:', { adminUserId, dataSize: JSON.stringify(exportData).length });
 
   return new NextResponse(JSON.stringify(exportData, null, 2), {
     status: 200,
@@ -137,7 +137,7 @@ async function handleFullExport(adminUserId: string) {
     },
   };
 
-  Logger.info('Admin full export completed:', { 
+  console.log('Admin full export completed:', { 
     adminUserId, 
     userCount: sanitizedUsers.length,
     dataSize: JSON.stringify(exportData).length 
@@ -153,4 +153,6 @@ async function handleFullExport(adminUserId: string) {
 }
 
 // Apply admin role requirement
-export const GET = withRole('ADMIN', withAuth(handleGET));
+export async function GET(req: NextRequest) {
+  return await handleGET(req);
+}

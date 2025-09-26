@@ -15,8 +15,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     defaultOptions: {
       queries: {
         staleTime: 60 * 1000, // 1 minute
-        retry: (failureCount, error: any) => {
-          if (error?.status === 404 || error?.status === 401) return false;
+        retry: (failureCount, error: unknown) => {
+          const apiError = error as { status?: number };
+          if (apiError?.status === 404 || apiError?.status === 401) return false;
           return failureCount < 3;
         },
       },

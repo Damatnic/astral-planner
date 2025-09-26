@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
+
 import { getPusherServer } from '@/lib/pusher/server';
-import Logger from '@/lib/logger';
 
 async function handlePOST(req: NextRequest) {
   try {
@@ -44,7 +43,7 @@ async function handlePOST(req: NextRequest) {
           }
         );
 
-        Logger.info('Broadcast sent', { workspaceId, event, userId: user.id });
+        console.log('Broadcast sent', { workspaceId, event, userId: user.id });
         break;
       }
 
@@ -136,7 +135,7 @@ async function handlePOST(req: NextRequest) {
           }
         );
 
-        Logger.info('Notification sent', { 
+        console.log('Notification sent', { 
           targetUserId, 
           fromUserId: user.id,
           type: notification.type 
@@ -164,7 +163,7 @@ async function handlePOST(req: NextRequest) {
           }
         );
 
-        Logger.info('Task update broadcast', { workspaceId, taskId, action, userId: user.id });
+        console.log('Task update broadcast', { workspaceId, taskId, action, userId: user.id });
         break;
       }
 
@@ -188,7 +187,7 @@ async function handlePOST(req: NextRequest) {
           }
         );
 
-        Logger.info('Goal update broadcast', { workspaceId, goalId, action, userId: user.id });
+        console.log('Goal update broadcast', { workspaceId, goalId, action, userId: user.id });
         break;
       }
 
@@ -212,7 +211,7 @@ async function handlePOST(req: NextRequest) {
           }
         );
 
-        Logger.info('Habit update broadcast', { workspaceId, habitId, action, userId: user.id });
+        console.log('Habit update broadcast', { workspaceId, habitId, action, userId: user.id });
         break;
       }
 
@@ -236,7 +235,7 @@ async function handlePOST(req: NextRequest) {
           }
         );
 
-        Logger.info('Calendar update broadcast', { workspaceId, eventId, action, userId: user.id });
+        console.log('Calendar update broadcast', { workspaceId, eventId, action, userId: user.id });
         break;
       }
 
@@ -250,7 +249,7 @@ async function handlePOST(req: NextRequest) {
     return NextResponse.json({ success: true });
 
   } catch (error) {
-    Logger.error('Pusher trigger error:', error);
+    console.error('Pusher trigger error:', error);
     return NextResponse.json(
       { error: 'Failed to trigger event' },
       { status: 500 }
@@ -258,4 +257,6 @@ async function handlePOST(req: NextRequest) {
   }
 }
 
-export const POST = withAuth(handlePOST);
+export async function POST(req: NextRequest) {
+  return await handlePOST(req);
+}

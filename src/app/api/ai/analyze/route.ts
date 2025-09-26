@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
-import Logger from '@/lib/logger';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
 
 interface ProductivityData {
   tasks?: Array<{
@@ -188,7 +186,7 @@ function analyzeProductivityData(data: ProductivityData): ProductivityInsights {
   };
 }
 
-async function handlePOST(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     const user = await getUserFromRequest(req);
     if (!user) {
@@ -204,7 +202,7 @@ async function handlePOST(req: NextRequest) {
 
     const insights = analyzeProductivityData(productivityData);
     
-    Logger.info('Productivity analysis completed:', { 
+    console.log('Productivity analysis completed:', { 
       overallScore: insights.overallScore,
       completionRate: insights.completionRate,
       userId: user.id 
@@ -224,12 +222,10 @@ async function handlePOST(req: NextRequest) {
     });
 
   } catch (error) {
-    Logger.error('Productivity analysis error:', error);
+    console.error('Productivity analysis error:', error);
     return NextResponse.json(
       { error: 'Failed to analyze productivity data' },
       { status: 500 }
     );
   }
 }
-
-export const POST = withAuth(handlePOST);

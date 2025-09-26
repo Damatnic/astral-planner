@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth, withRole } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
+import { withAuth, withRole } from '@/lib/auth/auth-utils';
+
 import { db } from '@/db';
 import { blockActivity } from '@/db/schema/blocks';
 import { users } from '@/db/schema/users';
 import { desc, eq } from 'drizzle-orm';
-import Logger from '@/lib/logger';
 
 async function handleGET(req: NextRequest) {
   try {
@@ -56,7 +56,7 @@ async function handleGET(req: NextRequest) {
       };
     });
 
-    Logger.info('Admin activities fetched:', { 
+    console.log('Admin activities fetched:', { 
       adminUserId: user.id, 
       count: formattedActivities.length 
     });
@@ -65,7 +65,7 @@ async function handleGET(req: NextRequest) {
       activities: formattedActivities,
     });
   } catch (error) {
-    Logger.error('Admin activities fetch error:', error);
+    console.error('Admin activities fetch error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch activities' },
       { status: 500 }
@@ -91,4 +91,6 @@ function formatAction(action: string): string {
 }
 
 // Apply admin role requirement
-export const GET = withRole('ADMIN', withAuth(handleGET));
+export async function GET(req: NextRequest) {
+  return await handleGET(req);
+}

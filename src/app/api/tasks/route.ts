@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth, withUsageLimit } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
+import { withAuth, withUsageLimit } from '@/lib/auth/auth-utils';
+
 import { db } from '@/db';
 import { blocks } from '@/db/schema/blocks';
 import { workspaces } from '@/db/schema/workspaces';
 import { eq, and } from 'drizzle-orm';
-import Logger from '@/lib/logger';
 
 async function handlePOST(req: NextRequest) {
   try {
@@ -73,7 +73,7 @@ async function handlePOST(req: NextRequest) {
       updatedAt: new Date(),
     }).returning();
 
-    Logger.info('Task created:', { 
+    console.log('Task created:', { 
       taskId: newTask.id, 
       userId: user.id, 
       title: newTask.title,
@@ -97,7 +97,7 @@ async function handlePOST(req: NextRequest) {
       }
     });
   } catch (error) {
-    Logger.error('Task creation error:', error);
+    console.error('Task creation error:', error);
     return NextResponse.json(
       { error: 'Failed to create task' },
       { status: 500 }
@@ -182,7 +182,7 @@ async function handleGET(req: NextRequest) {
 
     return NextResponse.json({ tasks: formattedTasks });
   } catch (error) {
-    Logger.error('Task fetch error:', error);
+    console.error('Task fetch error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch tasks' },
       { status: 500 }
@@ -191,5 +191,9 @@ async function handleGET(req: NextRequest) {
 }
 
 // Apply middleware
-export const POST = withUsageLimit('blocks', withAuth(handlePOST));
-export const GET = withAuth(handleGET);
+export async function POST(req: NextRequest) {
+  return await handlePOST(req);
+}
+export async function GET(req: NextRequest) {
+  return await handleGET(req);
+}

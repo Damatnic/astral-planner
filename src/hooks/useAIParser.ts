@@ -4,6 +4,12 @@ import { useState, useCallback } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { ParsedInput } from '@/lib/ai/parser';
+import type { 
+  AIParseOptions, 
+  TaskData, 
+  SchedulePreferences, 
+  ProductivityData 
+} from '@/types/api';
 
 export function useAIParser() {
   const [isLoading, setIsLoading] = useState(false);
@@ -12,7 +18,7 @@ export function useAIParser() {
   const parseInputMutation = useMutation({
     mutationFn: async ({ input, options }: { 
       input: string; 
-      options?: { preview?: boolean; context?: any } 
+      options?: AIParseOptions 
     }) => {
       const response = await fetch('/api/ai/parse', {
         method: 'POST',
@@ -53,8 +59,8 @@ export function useAIParser() {
 
   const generateScheduleMutation = useMutation({
     mutationFn: async ({ tasks, preferences }: { 
-      tasks: any[]; 
-      preferences: any 
+      tasks: TaskData[]; 
+      preferences: SchedulePreferences 
     }) => {
       const response = await fetch('/api/ai/schedule', {
         method: 'POST',
@@ -75,7 +81,7 @@ export function useAIParser() {
   });
 
   const analyzeProductivityMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: ProductivityData) => {
       const response = await fetch('/api/ai/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -92,7 +98,7 @@ export function useAIParser() {
   });
 
   const parseInput = useCallback(
-    async (input: string, options?: { preview?: boolean; context?: any }): Promise<ParsedInput | string | null> => {
+    async (input: string, options?: AIParseOptions): Promise<ParsedInput | string | null> => {
       if (options?.preview) {
         // For preview mode, return suggestion string
         const result = await parseInputMutation.mutateAsync({ input, options });
@@ -118,7 +124,7 @@ export function useAIParser() {
   );
 
   const generateSchedule = useCallback(
-    async (tasks: any[], preferences: any) => {
+    async (tasks: TaskData[], preferences: SchedulePreferences) => {
       const result = await generateScheduleMutation.mutateAsync({ tasks, preferences });
       return result.schedule || [];
     },
@@ -126,7 +132,7 @@ export function useAIParser() {
   );
 
   const analyzeProductivity = useCallback(
-    async (data: any) => {
+    async (data: ProductivityData) => {
       const result = await analyzeProductivityMutation.mutateAsync(data);
       return result;
     },

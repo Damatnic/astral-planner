@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
-import Logger from '@/lib/logger';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
 
 // Simple AI parser that extracts task information from natural language
 function parseNaturalLanguage(input: string): {
@@ -164,7 +162,7 @@ async function handlePOST(req: NextRequest) {
     // For preview mode, return a suggestion
     if (preview) {
       const suggestion = generateSuggestion(input);
-      Logger.info('AI parse preview:', { input, suggestion, userId: user.id });
+      console.log('AI parse preview:', { input, suggestion, userId: user.id });
       
       return NextResponse.json({
         suggestion,
@@ -175,7 +173,7 @@ async function handlePOST(req: NextRequest) {
     // For full parsing, return structured data
     const parsed = parseNaturalLanguage(input);
     
-    Logger.info('AI parse result:', { 
+    console.log('AI parse result:', { 
       input, 
       parsed: { ...parsed, dueDate: parsed.dueDate?.toISOString() },
       userId: user.id 
@@ -188,7 +186,7 @@ async function handlePOST(req: NextRequest) {
     });
 
   } catch (error) {
-    Logger.error('AI parse error:', error);
+    console.error('AI parse error:', error);
     return NextResponse.json(
       { error: 'Failed to parse input' },
       { status: 500 }
@@ -196,4 +194,6 @@ async function handlePOST(req: NextRequest) {
   }
 }
 
-export const POST = withAuth(handlePOST);
+export async function POST(req: NextRequest) {
+  return await handlePOST(req);
+}

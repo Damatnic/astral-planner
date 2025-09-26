@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/middleware';
-import Logger from '@/lib/logger';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
 
 async function handleGET(req: NextRequest) {
   try {
@@ -18,7 +17,7 @@ async function handleGET(req: NextRequest) {
       const action = protocolUrl.hostname; // The action after web+planner://
       const params = protocolUrl.searchParams;
 
-      Logger.info('Protocol handler invoked:', { action, url });
+      console.log('Protocol handler invoked:', { action, url });
 
       // Handle different protocol actions
       switch (action) {
@@ -79,14 +78,16 @@ async function handleGET(req: NextRequest) {
           return NextResponse.redirect(new URL('/dashboard', req.nextUrl.origin));
       }
     } catch (error) {
-      Logger.error('Protocol URL parsing error:', error);
+      console.error('Protocol URL parsing error:', error);
       // Fallback to dashboard
       return NextResponse.redirect(new URL('/dashboard', req.nextUrl.origin));
     }
   } catch (error) {
-    Logger.error('Protocol handler error:', error);
+    console.error('Protocol handler error:', error);
     return NextResponse.redirect(new URL('/dashboard', req.nextUrl.origin));
   }
 }
 
-export const GET = withAuth(handleGET);
+export async function GET(req: NextRequest) {
+  return await handleGET(req);
+}

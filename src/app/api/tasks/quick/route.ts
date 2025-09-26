@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
+
 import { db } from '@/db';
 import { blocks } from '@/db/schema/blocks';
 import { goals } from '@/db/schema/goals';
 import { habits } from '@/db/schema/habits';
 import { workspaces } from '@/db/schema/workspaces';
 import { eq } from 'drizzle-orm';
-import Logger from '@/lib/logger';
+
 import { broadcastTaskUpdate } from '@/lib/realtime/broadcaster';
 
 async function handlePOST(req: NextRequest) {
@@ -191,11 +191,11 @@ async function handlePOST(req: NextRequest) {
         );
       }
     } catch (broadcastError) {
-      Logger.error('Failed to broadcast task creation:', broadcastError);
+      console.error('Failed to broadcast task creation:', broadcastError);
       // Don't fail the request if broadcasting fails
     }
 
-    Logger.info('Quick item created:', { 
+    console.log('Quick item created:', { 
       type, 
       title, 
       userId: user.id,
@@ -209,7 +209,7 @@ async function handlePOST(req: NextRequest) {
     });
 
   } catch (error) {
-    Logger.error('Quick creation error:', error);
+    console.error('Quick creation error:', error);
     return NextResponse.json(
       { error: 'Failed to create item' },
       { status: 500 }
@@ -217,4 +217,6 @@ async function handlePOST(req: NextRequest) {
   }
 }
 
-export const POST = withAuth(handlePOST);
+export async function POST(req: NextRequest) {
+  return await handlePOST(req);
+}

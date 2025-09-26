@@ -2,6 +2,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
 import { useState, useCallback } from 'react'
+import { ListNavigationItem } from '@/types/api'
 
 export interface KeyboardShortcut {
   keys: string
@@ -155,10 +156,10 @@ export function useFormShortcuts(
 }
 
 // Hook for list navigation
-export function useListNavigation(
-  items: any[],
-  onSelect?: (item: any, index: number) => void,
-  onAction?: (item: any, index: number) => void
+export function useListNavigation<T extends ListNavigationItem>(
+  items: T[],
+  onSelect?: (item: T, index: number) => void,
+  onAction?: (item: T, index: number) => void
 ) {
   const [selectedIndex, setSelectedIndex] = useState(0)
 

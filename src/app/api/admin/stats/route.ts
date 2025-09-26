@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth, withRole } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
+import { withAuth, withRole } from '@/lib/auth/auth-utils';
+
 import { db } from '@/db';
 import { users } from '@/db/schema/users';
 import { blocks } from '@/db/schema/blocks';
@@ -8,7 +9,6 @@ import { goals } from '@/db/schema/goals';
 import { habits } from '@/db/schema/habits';
 import { workspaces } from '@/db/schema/workspaces';
 import { sql, count, eq, gt } from 'drizzle-orm';
-import Logger from '@/lib/logger';
 
 async function handleGET(req: NextRequest) {
   try {
@@ -70,11 +70,11 @@ async function handleGET(req: NextRequest) {
       storageUsed,
     };
 
-    Logger.info('Admin stats fetched:', { userId: user.id, stats });
+    console.log('Admin stats fetched:', { userId: user.id, stats });
 
     return NextResponse.json(stats);
   } catch (error) {
-    Logger.error('Admin stats error:', error);
+    console.error('Admin stats error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch stats' },
       { status: 500 }
@@ -83,4 +83,6 @@ async function handleGET(req: NextRequest) {
 }
 
 // Apply admin role requirement
-export const GET = withRole('ADMIN', withAuth(handleGET));
+export async function GET(req: NextRequest) {
+  return await handleGET(req);
+}

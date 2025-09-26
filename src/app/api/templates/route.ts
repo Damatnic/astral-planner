@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth, withFeature } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
+import { withAuth, withFeature } from '@/lib/auth/auth-utils';
+
 import { db } from '@/db';
 import { templates } from '@/db/schema/templates';
 import { users } from '@/db/schema/users';
 import { blocks } from '@/db/schema/blocks';
 import { workspaces } from '@/db/schema/workspaces';
 import { eq, and, desc, ilike, inArray } from 'drizzle-orm';
-import Logger from '@/lib/logger';
 
 // Predefined template library with popular productivity templates
 const PREDEFINED_TEMPLATES = [
@@ -191,7 +191,7 @@ async function handleGET(req: NextRequest) {
         });
       }
     } catch (error) {
-      Logger.error('Error fetching custom templates:', error);
+      console.error('Error fetching custom templates:', error);
     }
 
     // Apply filters
@@ -230,7 +230,7 @@ async function handleGET(req: NextRequest) {
     const startIndex = (page - 1) * limit;
     const paginatedTemplates = templateList.slice(startIndex, startIndex + limit);
 
-    Logger.info('Templates fetched:', { 
+    console.log('Templates fetched:', { 
       userId: user.id, 
       count: paginatedTemplates.length,
       total: templateList.length 
@@ -248,7 +248,7 @@ async function handleGET(req: NextRequest) {
       }
     });
   } catch (error) {
-    Logger.error('Templates fetch error:', error);
+    console.error('Templates fetch error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch templates' },
       { status: 500 }
@@ -256,4 +256,6 @@ async function handleGET(req: NextRequest) {
   }
 }
 
-export const GET = withFeature('templates', withAuth(handleGET));
+export async function GET(req: NextRequest) {
+  return await handleGET(req);
+}

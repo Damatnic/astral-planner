@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
+
 import { db } from '@/db';
 import { users } from '@/db/schema/users';
 import { eq } from 'drizzle-orm';
-import Logger from '@/lib/logger';
 
 interface GoogleCalendarTokens {
   access_token: string;
@@ -32,7 +31,7 @@ async function getValidAccessToken(userId: string): Promise<string | null> {
     // Token expired - would need refresh logic here
     return null;
   } catch (error) {
-    Logger.error('Error getting valid access token:', error);
+    console.error('Error getting valid access token:', error);
     return null;
   }
 }
@@ -93,13 +92,13 @@ async function handlePOST(req: NextRequest) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      Logger.error('Failed to create Google Calendar event:', errorText);
+      console.error('Failed to create Google Calendar event:', errorText);
       throw new Error(`Failed to create event: ${response.status}`);
     }
 
     const event = await response.json();
 
-    Logger.info('Successfully created Google Calendar event:', {
+    console.log('Successfully created Google Calendar event:', {
       userId: user.id,
       eventId: event.id,
       title: event.summary,
@@ -119,7 +118,7 @@ async function handlePOST(req: NextRequest) {
       },
     });
   } catch (error) {
-    Logger.error('Google Calendar create event error:', error);
+    console.error('Google Calendar create event error:', error);
     return NextResponse.json(
       { error: 'Failed to create event' },
       { status: 500 }
@@ -160,13 +159,13 @@ async function handlePATCH(req: NextRequest) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      Logger.error('Failed to update Google Calendar event:', errorText);
+      console.error('Failed to update Google Calendar event:', errorText);
       throw new Error(`Failed to update event: ${response.status}`);
     }
 
     const event = await response.json();
 
-    Logger.info('Successfully updated Google Calendar event:', {
+    console.log('Successfully updated Google Calendar event:', {
       userId: user.id,
       eventId: event.id,
     });
@@ -185,7 +184,7 @@ async function handlePATCH(req: NextRequest) {
       },
     });
   } catch (error) {
-    Logger.error('Google Calendar update event error:', error);
+    console.error('Google Calendar update event error:', error);
     return NextResponse.json(
       { error: 'Failed to update event' },
       { status: 500 }
@@ -232,11 +231,11 @@ async function handleDELETE(req: NextRequest) {
 
     if (!response.ok && response.status !== 404) {
       const errorText = await response.text();
-      Logger.error('Failed to delete Google Calendar event:', errorText);
+      console.error('Failed to delete Google Calendar event:', errorText);
       throw new Error(`Failed to delete event: ${response.status}`);
     }
 
-    Logger.info('Successfully deleted Google Calendar event:', {
+    console.log('Successfully deleted Google Calendar event:', {
       userId: user.id,
       eventId,
     });
@@ -245,7 +244,7 @@ async function handleDELETE(req: NextRequest) {
       success: true,
     });
   } catch (error) {
-    Logger.error('Google Calendar delete event error:', error);
+    console.error('Google Calendar delete event error:', error);
     return NextResponse.json(
       { error: 'Failed to delete event' },
       { status: 500 }
@@ -253,6 +252,12 @@ async function handleDELETE(req: NextRequest) {
   }
 }
 
-export const POST = withAuth(handlePOST);
-export const PATCH = withAuth(handlePATCH);
-export const DELETE = withAuth(handleDELETE);
+export async function POST(req: NextRequest) {
+  return await handlePOST(req);
+}
+export async function PATCH(req: NextRequest) {
+  return await handlePATCH(req);
+}
+export async function DELETE(req: NextRequest) {
+  return await handleDELETE(req);
+}

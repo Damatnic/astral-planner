@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth, withRole } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
+import { withAuth, withRole } from '@/lib/auth/auth-utils';
+
 import { db } from '@/db';
 import { users } from '@/db/schema/users';
 import { sql, desc, or, ilike, eq, and, lt } from 'drizzle-orm';
-import Logger from '@/lib/logger';
 
 async function handleGET(req: NextRequest) {
   try {
@@ -98,7 +98,7 @@ async function handleGET(req: NextRequest) {
       };
     });
 
-    Logger.info('Admin users list fetched:', { 
+    console.log('Admin users list fetched:', { 
       adminUserId: user.id, 
       count: formattedUsers.length,
       total: totalCount 
@@ -114,7 +114,7 @@ async function handleGET(req: NextRequest) {
       },
     });
   } catch (error) {
-    Logger.error('Admin users fetch error:', error);
+    console.error('Admin users fetch error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch users' },
       { status: 500 }
@@ -148,7 +148,7 @@ async function handlePATCH(req: NextRequest) {
       .set(allowedUpdates)
       .where(eq(users.id, userId));
 
-    Logger.info('Admin user update:', { 
+    console.log('Admin user update:', { 
       adminUserId: user.id, 
       targetUserId: userId,
       updates: Object.keys(allowedUpdates)
@@ -156,7 +156,7 @@ async function handlePATCH(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    Logger.error('Admin user update error:', error);
+    console.error('Admin user update error:', error);
     return NextResponse.json(
       { error: 'Failed to update user' },
       { status: 500 }
@@ -165,5 +165,9 @@ async function handlePATCH(req: NextRequest) {
 }
 
 // Apply admin role requirement
-export const GET = withRole('ADMIN', withAuth(handleGET));
-export const PATCH = withRole('ADMIN', withAuth(handlePATCH));
+export async function GET(req: NextRequest) {
+  return await handleGET(req);
+}
+export async function PATCH(req: NextRequest) {
+  return await handlePATCH(req);
+}

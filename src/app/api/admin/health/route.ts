@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth, withRole } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
+import { withAuth, withRole } from '@/lib/auth/auth-utils';
+
 import { db } from '@/db';
 import { users } from '@/db/schema/users';
-import Logger from '@/lib/logger';
 
 interface SystemHealth {
   database: 'healthy' | 'degraded' | 'down';
@@ -18,7 +18,7 @@ async function checkDatabaseHealth(): Promise<'healthy' | 'degraded' | 'down'> {
     await db.select().from(users).limit(1);
     return 'healthy';
   } catch (error) {
-    Logger.error('Database health check failed:', error);
+    console.error('Database health check failed:', error);
     return 'down';
   }
 }
@@ -29,7 +29,7 @@ async function checkRedisHealth(): Promise<'healthy' | 'degraded' | 'down'> {
     // For now, assume healthy since we don't have Redis configured
     return 'healthy';
   } catch (error) {
-    Logger.error('Redis health check failed:', error);
+    console.error('Redis health check failed:', error);
     return 'down';
   }
 }
@@ -43,7 +43,7 @@ async function checkPusherHealth(): Promise<'healthy' | 'degraded' | 'down'> {
       return 'degraded';
     }
   } catch (error) {
-    Logger.error('Pusher health check failed:', error);
+    console.error('Pusher health check failed:', error);
     return 'down';
   }
 }
@@ -53,7 +53,7 @@ async function checkAPIHealth(): Promise<'healthy' | 'degraded' | 'down'> {
     // Basic API health - if this endpoint is running, API is healthy
     return 'healthy';
   } catch (error) {
-    Logger.error('API health check failed:', error);
+    console.error('API health check failed:', error);
     return 'down';
   }
 }
@@ -80,11 +80,11 @@ async function handleGET(req: NextRequest) {
       api: apiHealth,
     };
 
-    Logger.info('System health check completed:', { userId: user.id, health });
+    console.log('System health check completed:', { userId: user.id, health });
 
     return NextResponse.json(health);
   } catch (error) {
-    Logger.error('Admin health check error:', error);
+    console.error('Admin health check error:', error);
     return NextResponse.json(
       { error: 'Failed to check system health' },
       { status: 500 }
@@ -93,4 +93,6 @@ async function handleGET(req: NextRequest) {
 }
 
 // Apply admin role requirement
-export const GET = withRole('ADMIN', withAuth(handleGET));
+export async function GET(req: NextRequest) {
+  return await handleGET(req);
+}

@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/middleware';
-import { getUserFromRequest } from '@/lib/auth';
-import Logger from '@/lib/logger';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
 
 interface Task {
   id?: string;
@@ -140,7 +138,7 @@ async function handlePOST(req: NextRequest) {
 
     const schedule = generateSmartSchedule(tasks, preferences);
     
-    Logger.info('Smart schedule generated:', { 
+    console.log('Smart schedule generated:', { 
       taskCount: tasks.length,
       scheduleCount: schedule.length,
       userId: user.id 
@@ -164,7 +162,7 @@ async function handlePOST(req: NextRequest) {
     });
 
   } catch (error) {
-    Logger.error('AI schedule generation error:', error);
+    console.error('AI schedule generation error:', error);
     return NextResponse.json(
       { error: 'Failed to generate schedule' },
       { status: 500 }
@@ -172,4 +170,6 @@ async function handlePOST(req: NextRequest) {
   }
 }
 
-export const POST = withAuth(handlePOST);
+export async function POST(req: NextRequest) {
+  return await handlePOST(req);
+}

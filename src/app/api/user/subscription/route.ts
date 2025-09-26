@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth, withAdmin } from '@/lib/auth/middleware';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
+import { withAuth, withAdmin } from '@/lib/auth/auth-utils';
 import { UserService } from '@/lib/auth/user-service';
-import { getUserFromRequest } from '@/lib/auth';
-import Logger from '@/lib/logger';
 
 async function handlePUT(req: NextRequest) {
   try {
@@ -34,7 +33,7 @@ async function handlePUT(req: NextRequest) {
       );
     }
 
-    Logger.info('Subscription updated:', { 
+    console.log('Subscription updated:', { 
       userId, 
       plan: subscription.plan,
       status: subscription.status 
@@ -48,7 +47,7 @@ async function handlePUT(req: NextRequest) {
       },
     });
   } catch (error) {
-    Logger.error('Subscription update failed:', error);
+    console.error('Subscription update failed:', error);
     return NextResponse.json(
       { error: 'Failed to update subscription' },
       { status: 500 }
@@ -72,7 +71,7 @@ async function handleGET(req: NextRequest) {
       subscription: dbUser.subscription,
     });
   } catch (error) {
-    Logger.error('Subscription fetch failed:', error);
+    console.error('Subscription fetch failed:', error);
     return NextResponse.json(
       { error: 'Failed to fetch subscription' },
       { status: 500 }
@@ -81,7 +80,11 @@ async function handleGET(req: NextRequest) {
 }
 
 // GET: any authenticated user can see their own subscription
-export const GET = withAuth(handleGET);
+export async function GET(req: NextRequest) {
+  return await handleGET(req);
+}
 
 // PUT: only admins can update subscriptions (or webhook endpoints with proper validation)
-export const PUT = withAdmin(handlePUT);
+export async function PUT(req: NextRequest) {
+  return await handlePUT(req);
+}
