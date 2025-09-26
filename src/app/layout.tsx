@@ -65,8 +65,17 @@ export default function RootLayout({
                 
                 // Register the cleanup service worker
                 navigator.serviceWorker.register('/sw.js')
-                  .then(() => console.log('Cleanup service worker registered'))
-                  .catch(err => console.log('Service worker registration failed:', err));
+                  .then(() => {
+                    // Silently register - only log if needed for debugging
+                    if (process.env.NODE_ENV === 'development') {
+                      console.log('Cleanup service worker registered');
+                    }
+                  })
+                  .catch(err => {
+                    if (process.env.NODE_ENV === 'development') {
+                      console.log('Service worker registration failed:', err);
+                    }
+                  });
               }
             `
           }}

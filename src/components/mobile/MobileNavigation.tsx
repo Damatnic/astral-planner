@@ -13,7 +13,8 @@ import {
   Plus,
   Menu,
   X,
-  BookOpen
+  BookOpen,
+  Activity
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet'
@@ -25,6 +26,7 @@ const navigation = [
   { name: 'Calendar', href: '/calendar', icon: Calendar },
   { name: 'Planner', href: '/planner', icon: BookOpen },
   { name: 'Goals', href: '/goals', icon: Target },
+  { name: 'Habits', href: '/habits', icon: Activity },
   { name: 'Analytics', href: '/analytics', icon: TrendingUp },
   { name: 'Settings', href: '/settings', icon: Settings },
 ]

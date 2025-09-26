@@ -35,6 +35,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { format, startOfWeek, addDays, isSameDay, parseISO } from 'date-fns';
+import MobileNavigation from '@/components/mobile/MobileNavigation';
 // import Logger from '@/lib/logger'; // Removed to prevent 500 errors in production
 
 interface Habit {
@@ -534,25 +535,10 @@ export default function HabitsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      {/* Header */}
-      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur">
-        <div className="container flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <Activity className="h-6 w-6 text-primary" />
-              <span className="text-lg font-bold">Habits</span>
-            </Link>
-          </div>
-          
-          <Button onClick={() => setShowCreateDialog(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            New Habit
-          </Button>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-8">
+    <>
+      <MobileNavigation />
+      <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+        <main className="container mx-auto px-4 py-8 pt-20 pb-24">
         {/* Stats Overview */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5 mb-8">
           <Card>
@@ -1031,7 +1017,24 @@ export default function HabitsPage() {
             </div>
           </DialogContent>
         </Dialog>
-      </main>
-    </div>
+        {/* Floating Action Button for Mobile */}
+        <Button
+          onClick={() => setShowCreateDialog(true)}
+          className="fixed bottom-20 right-4 z-40 h-14 w-14 rounded-full shadow-lg mobile:flex desktop:hidden"
+          size="icon"
+        >
+          <Plus className="h-6 w-6" />
+        </Button>
+
+        {/* Desktop Create Button */}
+        <div className="mobile:hidden desktop:block fixed top-4 right-4 z-40">
+          <Button onClick={() => setShowCreateDialog(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Habit
+          </Button>
+        </div>
+        </main>
+      </div>
+    </>
   );
 }
