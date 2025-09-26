@@ -1037,5 +1037,6 @@ export default function HabitsPage() {
         </div>
       </main>
     </div>
+    </>
   );
 }
