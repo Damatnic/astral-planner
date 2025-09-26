@@ -374,6 +374,7 @@ export interface AdminUser {
   firstName: string;
   lastName: string;
   imageUrl?: string;
+  role: 'admin' | 'user' | 'premium';
   lastActiveAt: Timestamp;
   totalTasksCompleted: number;
   streakDays: number;

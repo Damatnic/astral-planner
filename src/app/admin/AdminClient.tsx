@@ -284,8 +284,8 @@ export default function AdminDashboard() {
                       </TableCell>
                       <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        <Badge variant={user.isActive ? 'default' : 'secondary'}>
-                          {user.isActive ? 'Active' : 'Inactive'}
+                        <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>
+                          {user.status === 'active' ? 'Active' : user.status}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -315,16 +315,16 @@ export default function AdminDashboard() {
                     <div key={activity.id} className="flex items-start gap-4 pb-4 border-b">
                       <div className="flex-1">
                         <p className="text-sm">
-                          <span className="font-medium">{activity.user}</span>
+                          <span className="font-medium">User {activity.userId}</span>
                           {' '}{activity.action}{' '}
-                          <span className="font-medium">{activity.target}</span>
+                          <span className="font-medium">{activity.entityType}</span>
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {new Date(activity.createdAt).toLocaleString()}
+                          {new Date(activity.timestamp).toLocaleString()}
                         </p>
                       </div>
-                      {activity.metadata && (
-                        <Badge variant="outline">{activity.metadata.type}</Badge>
+                      {activity.details && (
+                        <Badge variant="outline">Activity</Badge>
                       )}
                     </div>
                   ))}
