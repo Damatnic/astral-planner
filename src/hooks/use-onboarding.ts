@@ -15,7 +15,7 @@ interface OnboardingData {
 export function useOnboarding() {
   const [isCompleted, setIsCompleted] = useState<boolean | null>(null);
   const [onboardingData, setOnboardingData] = useState<OnboardingData | null>(null);
-  const [isClient, setIsClient] = useState(false);
+  const [isClient, setIsClient] = useState<boolean | null>(null);
 
   useEffect(() => {
     // Mark that we're on the client side

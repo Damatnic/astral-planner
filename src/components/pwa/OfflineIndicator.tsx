@@ -11,12 +11,12 @@ interface OfflineIndicatorProps {
 }
 
 export function OfflineIndicator({ className }: OfflineIndicatorProps) {
-  // Initialize as true to match server-side state, then update on client
-  const [isOnline, setIsOnline] = useState(true)
+  // Initialize as null to prevent hydration mismatch, then update on client
+  const [isOnline, setIsOnline] = useState<boolean | null>(null)
   const [showOfflineAlert, setShowOfflineAlert] = useState(false)
   const [lastOnlineTime, setLastOnlineTime] = useState<Date | null>(null)
   
-  // Initialize lastOnlineTime on client-side only
+  // Initialize on client-side only
   useEffect(() => {
     setLastOnlineTime(new Date())
     // Set initial online state on client
@@ -117,24 +117,28 @@ export function OfflineIndicator({ className }: OfflineIndicatorProps) {
       <div className={cn(
         'fixed top-4 right-4 z-40 flex items-center gap-2 px-2 py-1 rounded-full text-xs',
         'mobile:top-16 tablet:top-4', // Adjust for mobile header
-        isOnline 
+        isOnline === true
           ? 'bg-success/10 text-success border border-success/20' 
-          : 'bg-destructive/10 text-destructive border border-destructive/20',
+          : isOnline === false
+          ? 'bg-destructive/10 text-destructive border border-destructive/20'
+          : 'bg-muted/10 text-muted-foreground border border-muted/20',
         'transition-all duration-200',
         className
       )}>
-        {isOnline ? (
+        {isOnline === true ? (
           <Wifi className="h-3 w-3" />
-        ) : (
+        ) : isOnline === false ? (
           <WifiOff className="h-3 w-3" />
+        ) : (
+          <div className="h-3 w-3 rounded-full border border-current animate-pulse" />
         )}
         <span className="hidden mobile:inline">
-          {isOnline ? 'Online' : 'Offline'}
+          {isOnline === true ? 'Online' : isOnline === false ? 'Offline' : 'Checking...'}
         </span>
       </div>
 
       {/* Offline Alert */}
-      {showOfflineAlert && !isOnline && (
+      {showOfflineAlert && isOnline === false && (
         <Alert className={cn(
           'fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-md',
           'mobile:bottom-20 tablet:bottom-4', // Adjust for mobile tab bar
@@ -166,7 +170,7 @@ export function OfflineIndicator({ className }: OfflineIndicatorProps) {
       )}
 
       {/* Back Online Notification */}
-      {showOfflineAlert && isOnline && (
+      {showOfflineAlert && isOnline === true && (
         <Alert className={cn(
           'fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-md',
           'mobile:bottom-20 tablet:bottom-4',

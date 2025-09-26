@@ -72,7 +72,9 @@
       "Bash(set ANALYZE=true)",
       "Bash(npm run bundle:check:*)",
       "Bash(npm run test:*)",
-      "Bash(dir scripts)"
+      "Bash(dir scripts)",
+      "Bash(npm start)",
+      "Bash(PORT=3050 npm start)"
     ],
     "deny": [],
     "ask": []

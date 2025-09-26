@@ -17,8 +17,8 @@ export function ResponsiveLayout({
   showMobileNav = true 
 }: ResponsiveLayoutProps) {
   const pathname = usePathname()
-  const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait')
-  const [isStandalone, setIsStandalone] = useState(false)
+  const [orientation, setOrientation] = useState<'portrait' | 'landscape' | null>(null)
+  const [isStandalone, setIsStandalone] = useState<boolean | null>(null)
 
   useEffect(() => {
     // Check if app is installed as PWA
