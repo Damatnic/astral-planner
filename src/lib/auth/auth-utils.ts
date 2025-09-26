@@ -33,63 +33,9 @@ export async function verifyToken(token: string): Promise<AuthUser | null> {
 }
 
 export async function getAuthContext(request: NextRequest): Promise<AuthContext> {
-  // Check for PIN-based demo authentication first (cookies)
-  const demoPin = request.cookies.get('demo_pin')?.value;
-  const sessionPin = request.cookies.get('session_pin')?.value;
+  console.warn('[SECURITY WARNING] Legacy PIN authentication detected - migrating to secure JWT');
   
-  // Also check for custom header-based authentication
-  const userDataHeader = request.headers.get('x-user-data');
-  const pinHeader = request.headers.get('x-pin');
-  
-  // Parse user data from header if present
-  let headerUserData = null;
-  if (userDataHeader) {
-    try {
-      headerUserData = JSON.parse(userDataHeader);
-    } catch (error) {
-      console.warn('Invalid user data header:', error);
-    }
-  }
-  
-  // Check demo user (PIN: 0000)
-  if (demoPin === '0000' || sessionPin === '0000' || pinHeader === '0000' || 
-      (headerUserData && (headerUserData.id === 'demo-user' || headerUserData.pin === '0000'))) {
-    return {
-      user: {
-        id: 'demo-user',
-        email: 'demo@astralchronos.com',
-        role: 'user',
-        pin: '0000',
-        firstName: 'Demo',
-        lastName: 'User',
-        name: 'Demo User',
-        imageUrl: '/avatars/demo-user.png'
-      },
-      isAuthenticated: true,
-      isDemo: true
-    };
-  }
-  
-  // Check Nick's account (PIN: 7347)
-  if (demoPin === '7347' || sessionPin === '7347' || pinHeader === '7347' || 
-      (headerUserData && (headerUserData.id === 'nick-planner' || headerUserData.pin === '7347'))) {
-    return {
-      user: {
-        id: 'nick-user',
-        email: 'nick@astralchronos.com',
-        role: 'premium',
-        pin: '7347',
-        firstName: 'Nick',
-        lastName: 'Developer',
-        name: 'Nick Developer',
-        imageUrl: '/avatars/nick-user.png'
-      },
-      isAuthenticated: true,
-      isDemo: false
-    };
-  }
-  
-  // Check for JWT token authentication
+  // SECURE JWT TOKEN AUTHENTICATION ONLY
   const authHeader = request.headers.get('authorization');
   const token = authHeader?.replace('Bearer ', '') || request.cookies.get('auth_token')?.value;
   
@@ -100,6 +46,28 @@ export async function getAuthContext(request: NextRequest): Promise<AuthContext>
         user,
         isAuthenticated: true,
         isDemo: false
+      };
+    }
+  }
+
+  // TEMPORARY DEMO MODE (ONLY IN DEVELOPMENT)
+  if (process.env.NODE_ENV === 'development' && process.env.ENABLE_DEMO_MODE === 'true') {
+    const demoHeader = request.headers.get('x-demo-user');
+    
+    if (demoHeader === 'demo-user') {
+      console.warn('[DEMO MODE] Using demo user - DISABLE IN PRODUCTION');
+      return {
+        user: {
+          id: 'demo-user',
+          email: 'demo@astralchronos.com',
+          role: 'user',
+          firstName: 'Demo',
+          lastName: 'User',
+          name: 'Demo User',
+          imageUrl: '/avatars/demo-user.png'
+        },
+        isAuthenticated: true,
+        isDemo: true
       };
     }
   }

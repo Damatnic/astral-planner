@@ -1,0 +1,480 @@
+# Quantum's Production-Grade CI/CD Pipeline
+# Zero-downtime deployments with comprehensive testing and security
+
+name: 🚀 Production CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop, release/*]
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: astral-planner
+  NODE_VERSION: '18'
+  POSTGRES_VERSION: '15'
+  REDIS_VERSION: '7'
+
+jobs:
+  # Security and Code Quality Scanning
+  security-scan:
+    name: 🔒 Security Scanning
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    strategy:
+      matrix:
+        scan-type: [secrets, sast, dependencies, containers]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --audit
+
+      - name: Secret Scanning
+        if: matrix.scan-type == 'secrets'
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: main
+          head: HEAD
+
+      - name: SAST Analysis
+        if: matrix.scan-type == 'sast'
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript, typescript
+
+      - name: Dependency Vulnerability Scan
+        if: matrix.scan-type == 'dependencies'
+        run: |
+          npm audit --audit-level=moderate
+          npx audit-ci --moderate
+
+      - name: Container Security Scan
+        if: matrix.scan-type == 'containers'
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: './Dockerfile'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload SARIF results
+        if: matrix.scan-type == 'containers'
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # Code Quality Gates
+  quality-gates:
+    name: ✅ Quality Gates
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        check: [lint, format, type-check, build]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: ESLint
+        if: matrix.check == 'lint'
+        run: npm run lint
+
+      - name: Type Check
+        if: matrix.check == 'type-check'
+        run: npm run type-check:strict
+
+      - name: Build Application
+        if: matrix.check == 'build'
+        run: |
+          npm run build
+          npm run bundle:check
+
+  # Comprehensive Testing Suite
+  test:
+    name: 🧪 Test Suite
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    strategy:
+      matrix:
+        test-suite: [unit, integration, e2e]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup test environment
+        run: |
+          cp .env.example .env.test
+          echo "DATABASE_URL=postgresql://test_user:test_password@localhost:5432/test_db" >> .env.test
+          echo "REDIS_URL=redis://localhost:6379" >> .env.test
+
+      - name: Run Database Migrations
+        run: npm run db:migrate
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
+
+      - name: Unit Tests
+        if: matrix.test-suite == 'unit'
+        run: npm run test:unit -- --coverage --maxWorkers=2
+
+      - name: Integration Tests
+        if: matrix.test-suite == 'integration'
+        run: npm run test:integration -- --maxWorkers=2
+
+      - name: E2E Tests
+        if: matrix.test-suite == 'e2e'
+        run: |
+          npm run build
+          npm run start &
+          sleep 30
+          npm run test:e2e
+
+      - name: Upload Coverage
+        if: matrix.test-suite == 'unit'
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          fail_ci_if_error: true
+
+  # Performance Testing
+  performance:
+    name: ⚡ Performance Testing
+    runs-on: ubuntu-latest
+    needs: [security-scan, quality-gates, test]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Start application
+        run: |
+          npm run start &
+          sleep 30
+
+      - name: Lighthouse Performance Audit
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          configPath: './lighthouse.config.js'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - name: Load Testing with K6
+        run: |
+          docker run --rm -i --network host grafana/k6:latest run - < scripts/load-test.js
+
+  # Multi-Architecture Container Build
+  build:
+    name: 🐳 Container Build
+    runs-on: ubuntu-latest
+    needs: [security-scan, quality-gates, test]
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image-digest: ${{ steps.build.outputs.digest }}
+      image-uri: ${{ steps.build.outputs.imageUri }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
+
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          image: ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          format: spdx-json
+          output-file: sbom.spdx.json
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v3
+        with:
+          name: sbom
+          path: sbom.spdx.json
+
+  # Container Security Scanning
+  container-scan:
+    name: 🛡️ Container Security
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      security-events: write
+    steps:
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ needs.build.outputs.image-uri }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # Staging Deployment
+  deploy-staging:
+    name: 🚀 Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [build, container-scan, performance]
+    if: github.ref == 'refs/heads/develop'
+    environment:
+      name: staging
+      url: https://staging.astral-planner.com
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name astral-planner-staging
+
+      - name: Deploy to Staging
+        run: |
+          # Blue-Green Deployment
+          envsubst < k8s/overlays/staging/kustomization.yaml | kubectl apply -f -
+          kubectl set image deployment/astral-planner-app app=${{ needs.build.outputs.image-uri }} -n astral-planner-staging
+          kubectl rollout status deployment/astral-planner-app -n astral-planner-staging --timeout=600s
+
+      - name: Run Smoke Tests
+        run: |
+          kubectl run smoke-test --rm -i --image=curlimages/curl -- \
+            curl -f https://staging.astral-planner.com/api/health
+
+  # Production Deployment
+  deploy-production:
+    name: 🌟 Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build, container-scan, performance]
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://astral-planner.com
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name astral-planner-production
+
+      - name: Canary Deployment
+        run: |
+          # Deploy canary version (10% traffic)
+          kubectl apply -f k8s/overlays/production/canary/
+          kubectl set image deployment/astral-planner-app-canary app=${{ needs.build.outputs.image-uri }} -n astral-planner-production
+          kubectl rollout status deployment/astral-planner-app-canary -n astral-planner-production --timeout=600s
+
+      - name: Monitor Canary Metrics
+        run: |
+          # Wait and monitor metrics for 10 minutes
+          sleep 600
+          # Check error rate, latency, and throughput
+          ./scripts/check-canary-metrics.sh
+
+      - name: Promote to Full Production
+        run: |
+          # Gradually increase traffic: 25%, 50%, 75%, 100%
+          for traffic in 25 50 75 100; do
+            kubectl patch virtualservice astral-planner-vs -n astral-planner-production --type=json \
+              -p="[{\"op\": \"replace\", \"path\": \"/spec/http/0/match/0/headers/canary/exact\", \"value\": \"$traffic\"}]"
+            sleep 300
+            ./scripts/check-metrics.sh || exit 1
+          done
+
+      - name: Cleanup Canary
+        if: success()
+        run: |
+          kubectl delete -f k8s/overlays/production/canary/
+
+      - name: Rollback on Failure
+        if: failure()
+        run: |
+          kubectl rollout undo deployment/astral-planner-app -n astral-planner-production
+          kubectl delete -f k8s/overlays/production/canary/
+
+  # Post-Deployment Verification
+  post-deploy:
+    name: ✅ Post-Deployment Verification
+    runs-on: ubuntu-latest
+    needs: [deploy-production]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Health Check
+        run: |
+          curl -f https://astral-planner.com/api/health
+          curl -f https://astral-planner.com/api/ready
+
+      - name: Integration Tests on Production
+        run: |
+          npm ci
+          npm run test:integration:production
+
+      - name: Performance Verification
+        run: |
+          # Run performance tests against production
+          docker run --rm -v $PWD:/workspace grafana/k6:latest run /workspace/scripts/production-perf-test.js
+
+      - name: Security Scan Live Site
+        run: |
+          docker run --rm -v $PWD:/zap/wrk/:rw \
+            owasp/zap2docker-stable zap-baseline.py \
+            -t https://astral-planner.com \
+            -g gen.conf -r zap-report.html
+
+  # Notification
+  notify:
+    name: 📢 Deployment Notification
+    runs-on: ubuntu-latest
+    needs: [deploy-production, post-deploy]
+    if: always()
+    steps:
+      - name: Notify Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: '#deployments'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+
+      - name: Create GitHub Release
+        if: github.ref == 'refs/heads/main' && success()
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release v${{ github.run_number }}
+          body: |
+            ## 🚀 Production Deployment Successful
+            
+            **Deployment Metrics:**
+            - Build Time: ${{ github.run_number }}
+            - Tests Passed: ✅
+            - Security Scans: ✅
+            - Performance: ✅
+            
+            **Changes:**
+            ${{ github.event.head_commit.message }}
+          draft: false
+          prerelease: false

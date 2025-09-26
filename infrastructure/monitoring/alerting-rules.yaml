@@ -1,0 +1,470 @@
+# Quantum's Prometheus Alerting Rules - Comprehensive Production Monitoring
+# Advanced alerting with intelligent thresholds and escalation policies
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-rules
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/component: alerting-rules
+data:
+  astral-planner-app.yml: |
+    groups:
+    - name: astral-planner.application
+      interval: 30s
+      rules:
+      
+      # Application Health & Availability
+      - alert: ApplicationDown
+        expr: up{job="astral-planner-app"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: astral-planner
+          component: application
+          team: quantum-devops
+        annotations:
+          summary: "Astral Planner application instance is down"
+          description: "Application instance {{ $labels.instance }} in namespace {{ $labels.namespace }} has been down for more than 1 minute."
+          runbook_url: "https://wiki.astral-planner.com/runbooks/application-down"
+          dashboard_url: "https://grafana.astral-planner.com/d/app-overview"
+      
+      - alert: HighErrorRate
+        expr: (rate(http_requests_total{job="astral-planner-app",status=~"5.."}[5m]) / rate(http_requests_total{job="astral-planner-app"}[5m])) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          service: astral-planner
+          component: application
+          team: quantum-devops
+        annotations:
+          summary: "High error rate detected in Astral Planner"
+          description: "Error rate is {{ printf \"%.2f\" $value }}% for {{ $labels.instance }} in namespace {{ $labels.namespace }}"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/high-error-rate"
+      
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="astral-planner-app"}[5m])) > 1
+        for: 3m
+        labels:
+          severity: warning
+          service: astral-planner
+          component: application
+          team: quantum-devops
+        annotations:
+          summary: "High latency detected in Astral Planner"
+          description: "95th percentile latency is {{ printf \"%.2f\" $value }}s for {{ $labels.instance }}"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/high-latency"
+      
+      - alert: VeryHighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="astral-planner-app"}[5m])) > 3
+        for: 1m
+        labels:
+          severity: critical
+          service: astral-planner
+          component: application
+          team: quantum-devops
+        annotations:
+          summary: "Very high latency detected in Astral Planner"
+          description: "95th percentile latency is {{ printf \"%.2f\" $value }}s for {{ $labels.instance }}"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/very-high-latency"
+      
+      # Resource Utilization
+      - alert: HighCPUUsage
+        expr: (rate(container_cpu_usage_seconds_total{pod=~"astral-planner-app-.*"}[5m]) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: astral-planner
+          component: resources
+          team: quantum-devops
+        annotations:
+          summary: "High CPU usage detected"
+          description: "Pod {{ $labels.pod }} CPU usage is {{ printf \"%.2f\" $value }}%"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/high-cpu"
+      
+      - alert: CriticalCPUUsage
+        expr: (rate(container_cpu_usage_seconds_total{pod=~"astral-planner-app-.*"}[5m]) * 100) > 95
+        for: 2m
+        labels:
+          severity: critical
+          service: astral-planner
+          component: resources
+          team: quantum-devops
+        annotations:
+          summary: "Critical CPU usage detected"
+          description: "Pod {{ $labels.pod }} CPU usage is {{ printf \"%.2f\" $value }}%"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/critical-cpu"
+      
+      - alert: HighMemoryUsage
+        expr: (container_memory_working_set_bytes{pod=~"astral-planner-app-.*"} / container_spec_memory_limit_bytes{pod=~"astral-planner-app-.*"} * 100) > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: astral-planner
+          component: resources
+          team: quantum-devops
+        annotations:
+          summary: "High memory usage detected"
+          description: "Pod {{ $labels.pod }} memory usage is {{ printf \"%.2f\" $value }}%"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/high-memory"
+      
+      - alert: CriticalMemoryUsage
+        expr: (container_memory_working_set_bytes{pod=~"astral-planner-app-.*"} / container_spec_memory_limit_bytes{pod=~"astral-planner-app-.*"} * 100) > 95
+        for: 2m
+        labels:
+          severity: critical
+          service: astral-planner
+          component: resources
+          team: quantum-devops
+        annotations:
+          summary: "Critical memory usage detected"
+          description: "Pod {{ $labels.pod }} memory usage is {{ printf \"%.2f\" $value }}%"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/critical-memory"
+      
+      # Database & Cache
+      - alert: DatabaseConnectionFailure
+        expr: increase(database_connection_errors_total{job="astral-planner-app"}[5m]) > 5
+        for: 1m
+        labels:
+          severity: critical
+          service: astral-planner
+          component: database
+          team: quantum-devops
+        annotations:
+          summary: "Database connection failures detected"
+          description: "{{ $value }} database connection errors in the last 5 minutes for {{ $labels.instance }}"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/database-connection-failure"
+      
+      - alert: HighDatabaseLatency
+        expr: histogram_quantile(0.95, rate(database_query_duration_seconds_bucket{job="astral-planner-app"}[5m])) > 0.5
+        for: 3m
+        labels:
+          severity: warning
+          service: astral-planner
+          component: database
+          team: quantum-devops
+        annotations:
+          summary: "High database query latency"
+          description: "95th percentile database latency is {{ printf \"%.2f\" $value }}s"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/high-database-latency"
+      
+      - alert: RedisConnectionFailure
+        expr: increase(redis_connection_errors_total{job="astral-planner-app"}[5m]) > 3
+        for: 1m
+        labels:
+          severity: warning
+          service: astral-planner
+          component: cache
+          team: quantum-devops
+        annotations:
+          summary: "Redis connection failures detected"
+          description: "{{ $value }} Redis connection errors in the last 5 minutes"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/redis-connection-failure"
+      
+      # Business Logic & Custom Metrics
+      - alert: HighAuthenticationFailureRate
+        expr: (rate(authentication_failures_total{job="astral-planner-app"}[5m]) / rate(authentication_attempts_total{job="astral-planner-app"}[5m])) > 0.10
+        for: 3m
+        labels:
+          severity: warning
+          service: astral-planner
+          component: authentication
+          team: security
+        annotations:
+          summary: "High authentication failure rate"
+          description: "Authentication failure rate is {{ printf \"%.2f\" $value }}%"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/high-auth-failure-rate"
+      
+      - alert: TaskCreationErrors
+        expr: increase(task_creation_errors_total{job="astral-planner-app"}[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+          service: astral-planner
+          component: business-logic
+          team: quantum-devops
+        annotations:
+          summary: "High task creation error rate"
+          description: "{{ $value }} task creation errors in the last 5 minutes"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/task-creation-errors"
+      
+      - alert: AIServiceDown
+        expr: ai_service_health{job="astral-planner-app"} == 0
+        for: 2m
+        labels:
+          severity: warning
+          service: astral-planner
+          component: ai-service
+          team: quantum-devops
+        annotations:
+          summary: "AI Service is not responding"
+          description: "AI service health check is failing for {{ $labels.instance }}"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/ai-service-down"
+      
+      - alert: BackgroundJobQueueBacklog
+        expr: background_job_queue_depth{job="astral-planner-app"} > 1000
+        for: 5m
+        labels:
+          severity: warning
+          service: astral-planner
+          component: background-jobs
+          team: quantum-devops
+        annotations:
+          summary: "Background job queue backlog"
+          description: "Background job queue has {{ $value }} pending jobs"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/job-queue-backlog"
+      
+      # Deployment & Scaling
+      - alert: PodCrashLooping
+        expr: rate(kube_pod_container_status_restarts_total{pod=~"astral-planner-app-.*"}[5m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+          service: astral-planner
+          component: deployment
+          team: quantum-devops
+        annotations:
+          summary: "Pod is crash looping"
+          description: "Pod {{ $labels.pod }} is restarting frequently"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/pod-crash-looping"
+      
+      - alert: HPAScalingIssue
+        expr: kube_horizontalpodautoscaler_status_current_replicas{horizontalpodautoscaler="astral-planner-hpa"} >= kube_horizontalpodautoscaler_spec_max_replicas{horizontalpodautoscaler="astral-planner-hpa"}
+        for: 10m
+        labels:
+          severity: warning
+          service: astral-planner
+          component: scaling
+          team: quantum-devops
+        annotations:
+          summary: "HPA at maximum replica limit"
+          description: "HPA has reached maximum replicas and may need adjustment"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/hpa-max-replicas"
+      
+      - alert: LowReplicaCount
+        expr: kube_deployment_status_replicas_available{deployment="astral-planner-app"} < 2
+        for: 5m
+        labels:
+          severity: critical
+          service: astral-planner
+          component: availability
+          team: quantum-devops
+        annotations:
+          summary: "Low replica count for application"
+          description: "Only {{ $value }} replicas are available for astral-planner-app"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/low-replica-count"
+
+  infrastructure.yml: |
+    groups:
+    - name: astral-planner.infrastructure
+      interval: 30s
+      rules:
+      
+      # Kubernetes Cluster Health
+      - alert: KubernetesNodeNotReady
+        expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          service: kubernetes
+          component: node
+          team: quantum-devops
+        annotations:
+          summary: "Kubernetes node not ready"
+          description: "Node {{ $labels.node }} has been not ready for more than 5 minutes"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/node-not-ready"
+      
+      - alert: KubernetesMemoryPressure
+        expr: kube_node_status_condition{condition="MemoryPressure",status="true"} == 1
+        for: 2m
+        labels:
+          severity: warning
+          service: kubernetes
+          component: node
+          team: quantum-devops
+        annotations:
+          summary: "Kubernetes node under memory pressure"
+          description: "Node {{ $labels.node }} is under memory pressure"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/memory-pressure"
+      
+      - alert: KubernetesDiskPressure
+        expr: kube_node_status_condition{condition="DiskPressure",status="true"} == 1
+        for: 2m
+        labels:
+          severity: warning
+          service: kubernetes
+          component: node
+          team: quantum-devops
+        annotations:
+          summary: "Kubernetes node under disk pressure"
+          description: "Node {{ $labels.node }} is under disk pressure"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/disk-pressure"
+      
+      # Persistent Volumes
+      - alert: PersistentVolumeFillingUp
+        expr: (kubelet_volume_stats_available_bytes / kubelet_volume_stats_capacity_bytes) < 0.15
+        for: 5m
+        labels:
+          severity: warning
+          service: kubernetes
+          component: storage
+          team: quantum-devops
+        annotations:
+          summary: "PersistentVolume is filling up"
+          description: "PV {{ $labels.persistentvolumeclaim }} in namespace {{ $labels.namespace }} is {{ printf \"%.2f\" $value }}% full"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/pv-filling-up"
+      
+      - alert: PersistentVolumeAlmostFull
+        expr: (kubelet_volume_stats_available_bytes / kubelet_volume_stats_capacity_bytes) < 0.05
+        for: 1m
+        labels:
+          severity: critical
+          service: kubernetes
+          component: storage
+          team: quantum-devops
+        annotations:
+          summary: "PersistentVolume almost full"
+          description: "PV {{ $labels.persistentvolumeclaim }} in namespace {{ $labels.namespace }} is {{ printf \"%.2f\" $value }}% full"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/pv-almost-full"
+      
+      # API Server
+      - alert: KubernetesAPIServerDown
+        expr: up{job="kubernetes-apiservers"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: kubernetes
+          component: apiserver
+          team: quantum-devops
+        annotations:
+          summary: "Kubernetes API server is down"
+          description: "API server {{ $labels.instance }} is down"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/apiserver-down"
+      
+      - alert: KubernetesAPIServerLatency
+        expr: histogram_quantile(0.99, rate(apiserver_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          service: kubernetes
+          component: apiserver
+          team: quantum-devops
+        annotations:
+          summary: "Kubernetes API server high latency"
+          description: "API server latency is {{ printf \"%.2f\" $value }}s"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/apiserver-latency"
+      
+      # etcd
+      - alert: EtcdDown
+        expr: up{job="etcd"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: kubernetes
+          component: etcd
+          team: quantum-devops
+        annotations:
+          summary: "etcd is down"
+          description: "etcd instance {{ $labels.instance }} is down"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/etcd-down"
+      
+      - alert: EtcdHighLatency
+        expr: histogram_quantile(0.99, rate(etcd_disk_wal_fsync_duration_seconds_bucket[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          service: kubernetes
+          component: etcd
+          team: quantum-devops
+        annotations:
+          summary: "etcd high disk latency"
+          description: "etcd disk latency is {{ printf \"%.2f\" $value }}s"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/etcd-latency"
+
+  external-services.yml: |
+    groups:
+    - name: astral-planner.external-services
+      interval: 30s
+      rules:
+      
+      # Database (PostgreSQL/Aurora)
+      - alert: DatabaseDown
+        expr: up{job="postgres-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: database
+          component: postgresql
+          team: quantum-devops
+        annotations:
+          summary: "Database is down"
+          description: "PostgreSQL database is unreachable"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/database-down"
+      
+      - alert: DatabaseHighConnections
+        expr: pg_stat_activity_count / pg_settings_max_connections > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: database
+          component: postgresql
+          team: quantum-devops
+        annotations:
+          summary: "Database connection pool near limit"
+          description: "Database connections are at {{ printf \"%.2f\" $value }}% of maximum"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/database-connections"
+      
+      - alert: DatabaseReplicationLag
+        expr: pg_replication_lag > 30
+        for: 5m
+        labels:
+          severity: warning
+          service: database
+          component: postgresql
+          team: quantum-devops
+        annotations:
+          summary: "Database replication lag is high"
+          description: "Replication lag is {{ $value }} seconds"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/replication-lag"
+      
+      # Cache (Redis)
+      - alert: RedisDown
+        expr: up{job="redis-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: cache
+          component: redis
+          team: quantum-devops
+        annotations:
+          summary: "Redis is down"
+          description: "Redis instance is unreachable"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/redis-down"
+      
+      - alert: RedisHighMemoryUsage
+        expr: (redis_memory_used_bytes / redis_memory_max_bytes) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: cache
+          component: redis
+          team: quantum-devops
+        annotations:
+          summary: "Redis high memory usage"
+          description: "Redis memory usage is {{ printf \"%.2f\" $value }}%"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/redis-memory"
+      
+      - alert: RedisConnectionRejected
+        expr: increase(redis_rejected_connections_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+          service: cache
+          component: redis
+          team: quantum-devops
+        annotations:
+          summary: "Redis rejecting connections"
+          description: "Redis rejected {{ $value }} connections in the last 5 minutes"
+          runbook_url: "https://wiki.astral-planner.com/runbooks/redis-rejected-connections"

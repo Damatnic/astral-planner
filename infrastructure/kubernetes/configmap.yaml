@@ -1,0 +1,290 @@
+# Quantum's ConfigMap - Application Configuration Management
+# Centralized configuration with environment-specific settings
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: astral-planner-config
+  namespace: astral-planner-production
+  labels:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/instance: production
+    app.kubernetes.io/component: configuration
+    app.kubernetes.io/part-of: astral-planner
+    managed-by: quantum-devops
+data:
+  # Application Configuration
+  NODE_ENV: "production"
+  PORT: "3000"
+  HOSTNAME: "0.0.0.0"
+  NEXT_TELEMETRY_DISABLED: "1"
+  
+  # Database Configuration
+  DB_POOL_MAX: "20"
+  DB_POOL_MIN: "5"
+  DB_IDLE_TIMEOUT: "30000"
+  DB_CONNECTION_TIMEOUT: "5000"
+  
+  # AI Configuration
+  AI_PROVIDER: "openai"
+  AI_MODEL: "gpt-4"
+  AI_MAX_TOKENS: "1000"
+  AI_TEMPERATURE: "0.7"
+  ENABLE_AI_FEATURES: "true"
+  
+  # External Services Configuration
+  NEXT_PUBLIC_PUSHER_CLUSTER: "us2"
+  EMAIL_PROVIDER: "resend"
+  FROM_EMAIL: "noreply@astral-planner.com"
+  
+  # Performance Configuration
+  ENABLE_COMPRESSION: "true"
+  CACHE_TTL: "3600"
+  MAX_REQUEST_SIZE: "10mb"
+  RATE_LIMIT_WINDOW: "900000"
+  RATE_LIMIT_MAX: "100"
+  
+  # Monitoring Configuration
+  ENABLE_METRICS: "true"
+  METRICS_PORT: "9090"
+  HEALTH_CHECK_PATH: "/api/health"
+  READY_CHECK_PATH: "/api/ready"
+  
+  # Security Configuration
+  SECURITY_HEADERS: "true"
+  CORS_ORIGIN: "https://astral-planner.com"
+  COOKIE_SECURE: "true"
+  COOKIE_SAME_SITE: "strict"
+  
+  # Redis Configuration
+  REDIS_POOL_SIZE: "10"
+  REDIS_POOL_MIN: "2"
+  REDIS_RETRY_ATTEMPTS: "3"
+  REDIS_RETRY_DELAY: "1000"
+  
+  # Logging Configuration
+  LOG_LEVEL: "info"
+  LOG_FORMAT: "json"
+  ENABLE_REQUEST_LOGGING: "true"
+  
+  # Feature Flags
+  ENABLE_ANALYTICS: "true"
+  ENABLE_PWA: "true"
+  ENABLE_OFFLINE_MODE: "true"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: astral-planner-config
+  namespace: astral-planner-staging
+  labels:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/instance: staging
+    app.kubernetes.io/component: configuration
+    app.kubernetes.io/part-of: astral-planner
+    managed-by: quantum-devops
+data:
+  # Application Configuration
+  NODE_ENV: "staging"
+  PORT: "3000"
+  HOSTNAME: "0.0.0.0"
+  NEXT_TELEMETRY_DISABLED: "1"
+  
+  # Database Configuration
+  DB_POOL_MAX: "10"
+  DB_POOL_MIN: "2"
+  DB_IDLE_TIMEOUT: "30000"
+  DB_CONNECTION_TIMEOUT: "5000"
+  
+  # AI Configuration
+  AI_PROVIDER: "openai"
+  AI_MODEL: "gpt-3.5-turbo"
+  AI_MAX_TOKENS: "500"
+  AI_TEMPERATURE: "0.7"
+  ENABLE_AI_FEATURES: "true"
+  
+  # External Services Configuration
+  NEXT_PUBLIC_PUSHER_CLUSTER: "us2"
+  EMAIL_PROVIDER: "resend"
+  FROM_EMAIL: "staging@astral-planner.com"
+  
+  # Performance Configuration
+  ENABLE_COMPRESSION: "true"
+  CACHE_TTL: "1800"
+  MAX_REQUEST_SIZE: "5mb"
+  RATE_LIMIT_WINDOW: "900000"
+  RATE_LIMIT_MAX: "200"
+  
+  # Monitoring Configuration
+  ENABLE_METRICS: "true"
+  METRICS_PORT: "9090"
+  HEALTH_CHECK_PATH: "/api/health"
+  READY_CHECK_PATH: "/api/ready"
+  
+  # Security Configuration
+  SECURITY_HEADERS: "true"
+  CORS_ORIGIN: "https://staging.astral-planner.com"
+  COOKIE_SECURE: "true"
+  COOKIE_SAME_SITE: "lax"
+  
+  # Redis Configuration
+  REDIS_POOL_SIZE: "5"
+  REDIS_POOL_MIN: "1"
+  REDIS_RETRY_ATTEMPTS: "3"
+  REDIS_RETRY_DELAY: "1000"
+  
+  # Logging Configuration
+  LOG_LEVEL: "debug"
+  LOG_FORMAT: "json"
+  ENABLE_REQUEST_LOGGING: "true"
+  
+  # Feature Flags
+  ENABLE_ANALYTICS: "false"
+  ENABLE_PWA: "true"
+  ENABLE_OFFLINE_MODE: "false"
+---
+# Nginx Configuration for Production Optimization
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: astral-planner-production
+  labels:
+    app.kubernetes.io/name: nginx
+    app.kubernetes.io/component: reverse-proxy
+    app.kubernetes.io/part-of: astral-planner
+data:
+  nginx.conf: |
+    user nginx;
+    worker_processes auto;
+    worker_rlimit_nofile 65535;
+    error_log /var/log/nginx/error.log warn;
+    pid /var/run/nginx.pid;
+    
+    events {
+        worker_connections 4096;
+        use epoll;
+        multi_accept on;
+    }
+    
+    http {
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+        
+        # Logging
+        log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                       '$status $body_bytes_sent "$http_referer" '
+                       '"$http_user_agent" "$http_x_forwarded_for" '
+                       'rt=$request_time uct="$upstream_connect_time" '
+                       'uht="$upstream_header_time" urt="$upstream_response_time"';
+        
+        access_log /var/log/nginx/access.log main;
+        
+        # Performance
+        sendfile on;
+        tcp_nopush on;
+        tcp_nodelay on;
+        keepalive_timeout 65;
+        keepalive_requests 1000;
+        types_hash_max_size 2048;
+        client_max_body_size 10m;
+        client_body_buffer_size 128k;
+        
+        # Compression
+        gzip on;
+        gzip_vary on;
+        gzip_min_length 1024;
+        gzip_proxied any;
+        gzip_comp_level 6;
+        gzip_types
+            text/plain
+            text/css
+            text/xml
+            text/javascript
+            application/json
+            application/javascript
+            application/xml+rss
+            application/atom+xml
+            image/svg+xml;
+        
+        # Security Headers
+        add_header X-Frame-Options DENY always;
+        add_header X-Content-Type-Options nosniff always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+        
+        # Rate Limiting
+        limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
+        limit_req_zone $binary_remote_addr zone=login:10m rate=1r/s;
+        
+        # Upstream
+        upstream astral_planner {
+            least_conn;
+            server astral-planner-app:3000 max_fails=3 fail_timeout=30s;
+            keepalive 32;
+        }
+        
+        server {
+            listen 80;
+            server_name _;
+            
+            # Health checks
+            location /nginx-health {
+                access_log off;
+                return 200 "healthy\n";
+                add_header Content-Type text/plain;
+            }
+            
+            # API rate limiting
+            location /api/ {
+                limit_req zone=api burst=20 nodelay;
+                proxy_pass http://astral_planner;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_cache_bypass $http_upgrade;
+                proxy_connect_timeout 5s;
+                proxy_send_timeout 60s;
+                proxy_read_timeout 60s;
+            }
+            
+            # Auth endpoints with stricter rate limiting
+            location ~ ^/api/(sign-in|sign-up|auth) {
+                limit_req zone=login burst=5 nodelay;
+                proxy_pass http://astral_planner;
+                proxy_http_version 1.1;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+            
+            # Static files with long cache
+            location /_next/static/ {
+                proxy_pass http://astral_planner;
+                expires 1y;
+                add_header Cache-Control "public, immutable";
+            }
+            
+            # All other requests
+            location / {
+                proxy_pass http://astral_planner;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_cache_bypass $http_upgrade;
+                proxy_connect_timeout 5s;
+                proxy_send_timeout 60s;
+                proxy_read_timeout 60s;
+            }
+        }
+    }

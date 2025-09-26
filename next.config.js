@@ -1,17 +1,87 @@
-// Temporarily disabled for debugging
-// const { withSentryConfig } = require('@sentry/nextjs')
-// const withBundleAnalyzer = require('@next/bundle-analyzer')({
-//   enabled: process.env.ANALYZE === 'true',
-// })
-// const withPWA = require('next-pwa')(...)
+// Catalyst Performance Configuration - Blazing Fast Bundle Optimization
+const { withSentryConfig } = require('@sentry/nextjs')
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  disable: process.env.NODE_ENV === 'development',
+  register: true,
+  skipWaiting: true,
+  disableDevLogs: true,
+  maximumFileSizeToCacheInBytes: 5000000,
+  runtimeCaching: [
+    {
+      urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'google-fonts',
+        expiration: {
+          maxEntries: 10,
+          maxAgeSeconds: 365 * 24 * 60 * 60,
+          purgeOnQuotaError: true
+        }
+      }
+    },
+    {
+      urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'google-fonts-static',
+        expiration: {
+          maxEntries: 20,
+          maxAgeSeconds: 365 * 24 * 60 * 60,
+          purgeOnQuotaError: true
+        }
+      }
+    },
+    {
+      urlPattern: /\/_next\/image\?url=.*/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'next-image',
+        expiration: {
+          maxEntries: 100,
+          maxAgeSeconds: 7 * 24 * 60 * 60,
+          purgeOnQuotaError: true
+        }
+      }
+    },
+    {
+      urlPattern: /\/api\/.*/i,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'api-cache',
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: 60 * 60,
+          purgeOnQuotaError: true
+        }
+      }
+    },
+    {
+      urlPattern: /^https:\/\/.*\.(woff2|woff|ttf|eot)$/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'fonts',
+        expiration: {
+          maxEntries: 30,
+          maxAgeSeconds: 365 * 24 * 60 * 60,
+          purgeOnQuotaError: true
+        }
+      }
+    }
+  ]
+})
 const path = require('path');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Fix multiple lockfile warning
+  // Performance optimizations
   outputFileTracingRoot: __dirname,
   
   experimental: {
+    // Aggressive package optimization with tree shaking
     optimizePackageImports: [
       'lucide-react',
       'date-fns',
@@ -22,8 +92,39 @@ const nextConfig = {
       '@radix-ui/react-popover',
       '@radix-ui/react-select',
       '@radix-ui/react-tabs',
-      '@radix-ui/react-toast'
+      '@radix-ui/react-toast',
+      '@radix-ui/react-checkbox',
+      '@radix-ui/react-switch',
+      '@radix-ui/react-separator',
+      '@radix-ui/react-avatar',
+      '@radix-ui/react-progress',
+      '@radix-ui/react-radio-group',
+      '@radix-ui/react-scroll-area',
+      '@radix-ui/react-slider',
+      '@radix-ui/react-tooltip',
+      'framer-motion',
+      '@tanstack/react-query',
+      'clsx',
+      'class-variance-authority',
+      'tailwind-merge',
+      'react-window',
+      'react-hook-form',
+      'cmdk'
     ],
+    // Enable modern bundling
+    esmExternals: true,
+    // Optimize CSS with lightning CSS
+    optimizeCss: true,
+  },
+  
+  // Turbo configuration
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
+      },
+    },
   },
   
   serverExternalPackages: ['@neondatabase/serverless'],
@@ -120,39 +221,93 @@ const nextConfig = {
         '@': './src'
       };
       
-      // Optimize bundle splitting
+      // Catalyst's Aggressive Bundle Splitting Strategy
       if (config.optimization && config.optimization.splitChunks) {
-        config.optimization.splitChunks.cacheGroups = {
-          default: false,
-          vendors: false,
-          lucide: {
-            name: 'lucide',
-            test: /[\\/]node_modules[\\/](lucide-react)[\\/]/,
-            chunks: 'all',
-            priority: 30,
-            reuseExistingChunk: true,
-          },
-          radix: {
-            name: 'radix',
-            test: /[\\/]node_modules[\\/](@radix-ui)[\\/]/,
-            chunks: 'all',
-            priority: 25,
-            reuseExistingChunk: true,
-          },
-          recharts: {
-            name: 'recharts',
-            test: /[\\/]node_modules[\\/](recharts|d3-)[\\/]/,
-            chunks: 'all',
-            priority: 20,
-            reuseExistingChunk: true,
-          },
-          vendor: {
-            name: 'vendor',
-            test: /[\\/]node_modules[\\/]/,
-            chunks: 'all',
-            priority: 10,
-            reuseExistingChunk: true,
-            minChunks: 2,
+        config.optimization.splitChunks = {
+          chunks: 'all',
+          minSize: 20000,
+          maxSize: 200000,
+          maxAsyncRequests: 10,
+          maxInitialRequests: 6,
+          automaticNameDelimiter: '-',
+          cacheGroups: {
+            default: false,
+            vendors: false,
+            // Critical UI components - Load first
+            criticalUI: {
+              name: 'critical-ui',
+              test: /[\\/]node_modules[\\/](@radix-ui\/(react-dialog|react-dropdown-menu|react-tabs|react-toast))[\\/]/,
+              chunks: 'all',
+              priority: 50,
+              reuseExistingChunk: true,
+              enforce: true,
+            },
+            // Icons - Lazy load
+            icons: {
+              name: 'icons',
+              test: /[\\/]node_modules[\\/](lucide-react)[\\/]/,
+              chunks: 'async',
+              priority: 40,
+              reuseExistingChunk: true,
+            },
+            // Charts - Async load only when needed
+            charts: {
+              name: 'charts',
+              test: /[\\/]node_modules[\\/](recharts|d3-)[\\/]/,
+              chunks: 'async',
+              priority: 35,
+              reuseExistingChunk: true,
+            },
+            // Form handling
+            forms: {
+              name: 'forms',
+              test: /[\\/]node_modules[\\/](react-hook-form|@hookform)[\\/]/,
+              chunks: 'all',
+              priority: 30,
+              reuseExistingChunk: true,
+            },
+            // Date utilities
+            dates: {
+              name: 'dates',
+              test: /[\\/]node_modules[\\/](date-fns|react-day-picker)[\\/]/,
+              chunks: 'all',
+              priority: 25,
+              reuseExistingChunk: true,
+            },
+            // Animation libraries
+            animation: {
+              name: 'animation',
+              test: /[\\/]node_modules[\\/](framer-motion)[\\/]/,
+              chunks: 'async',
+              priority: 20,
+              reuseExistingChunk: true,
+            },
+            // React Query
+            query: {
+              name: 'react-query',
+              test: /[\\/]node_modules[\\/](@tanstack\/react-query)[\\/]/,
+              chunks: 'all',
+              priority: 18,
+              reuseExistingChunk: true,
+            },
+            // Utilities
+            utils: {
+              name: 'utils',
+              test: /[\\/]node_modules[\\/](clsx|class-variance-authority|tailwind-merge)[\\/]/,
+              chunks: 'all',
+              priority: 15,
+              reuseExistingChunk: true,
+            },
+            // Common vendor libraries
+            vendor: {
+              name: 'vendor',
+              test: /[\\/]node_modules[\\/]/,
+              chunks: 'all',
+              priority: 10,
+              reuseExistingChunk: true,
+              minChunks: 2,
+              maxSize: 150000,
+            },
           },
         };
       }
@@ -194,13 +349,7 @@ const sentryWebpackPluginOptions = {
   automaticVercelMonitors: true,
 }
 
-// Simplified export for debugging
-module.exports = nextConfig
-
-// Original complex export:
-// module.exports = withBundleAnalyzer(
-//   withSentryConfig(
-//     withPWA(nextConfig),
-//     sentryWebpackPluginOptions
-//   )
-// )
+// Catalyst Production Export - All Optimizations Enabled
+module.exports = withBundleAnalyzer(
+  withPWA(nextConfig)
+)

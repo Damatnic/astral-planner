@@ -186,7 +186,7 @@ export interface Analytics {
 }
 
 // API types
-export interface APIResponse<T = any> {
+export interface APIResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
@@ -215,7 +215,7 @@ export interface QueryParams {
   sort?: string;
   order?: 'asc' | 'desc';
   search?: string;
-  filter?: Record<string, any>;
+  filter?: Record<string, unknown>;
 }
 
 export interface FilterParams {
@@ -236,7 +236,7 @@ export interface Notification {
   type: 'reminder' | 'achievement' | 'system' | 'social';
   title: string;
   message: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   read: boolean;
   createdAt: Timestamp;
 }
@@ -249,7 +249,7 @@ export interface Integration {
   accessToken: string;
   refreshToken?: string;
   expiresAt?: Timestamp;
-  settings: Record<string, any>;
+  settings: Record<string, unknown>;
   isActive: boolean;
   createdAt: Timestamp;
   updatedAt: Timestamp;
@@ -320,12 +320,12 @@ export interface AIInsight {
   title: string;
   message: string;
   confidence: number;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   actionable: boolean;
   actions?: Array<{
     type: string;
     label: string;
-    payload: Record<string, any>;
+    payload: Record<string, unknown>;
   }>;
   createdAt: Timestamp;
 }
@@ -335,7 +335,7 @@ export interface HealthCheck {
   service: string;
   status: 'healthy' | 'unhealthy' | 'degraded';
   responseTime: number;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   timestamp: Timestamp;
 }
 
@@ -363,4 +363,401 @@ export interface LoadingProps extends BaseProps {
 export interface ErrorProps extends BaseProps {
   error?: Error | string | null;
   onRetry?: () => void;
+}
+
+// Enhanced TypeScript interfaces for enterprise-grade type safety
+
+// Admin and Management Types
+export interface AdminUser {
+  id: ID;
+  email: string;
+  firstName: string;
+  lastName: string;
+  imageUrl?: string;
+  lastActiveAt: Timestamp;
+  totalTasksCompleted: number;
+  streakDays: number;
+  onboardingCompleted: boolean;
+  subscription: 'free' | 'pro' | 'enterprise';
+  status: 'active' | 'suspended' | 'inactive';
+  permissions: string[];
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+export interface AdminActivity {
+  id: ID;
+  userId: ID;
+  action: string;
+  entityType: 'task' | 'goal' | 'habit' | 'user' | 'workspace';
+  entityId: ID;
+  details: Record<string, unknown>;
+  ipAddress?: string;
+  userAgent?: string;
+  timestamp: Timestamp;
+}
+
+export interface AdminStats {
+  totalUsers: number;
+  activeUsers: number;
+  newUsersToday: number;
+  totalTasks: number;
+  completedTasks: number;
+  systemHealth: 'healthy' | 'warning' | 'critical';
+  performanceMetrics: {
+    averageResponseTime: number;
+    requestsPerMinute: number;
+    errorRate: number;
+  };
+}
+
+// Real-time collaboration types
+export interface RealtimeMessage {
+  id: ID;
+  type: 'user_join' | 'user_leave' | 'task_update' | 'task_create' | 'task_delete' | 'notification';
+  userId: ID;
+  workspaceId?: ID;
+  data: Record<string, unknown>;
+  timestamp: Timestamp;
+}
+
+export interface PresenceUser {
+  id: ID;
+  email: string;
+  firstName: string;
+  lastName: string;
+  imageUrl?: string;
+  cursor?: { x: number; y: number };
+  isTyping?: boolean;
+  lastSeen: Timestamp;
+}
+
+export interface RealtimeNotification {
+  id: ID;
+  type: 'info' | 'success' | 'warning' | 'error';
+  title: string;
+  message: string;
+  icon?: string;
+  metadata?: Record<string, unknown>;
+  duration?: number;
+  actions?: Array<{
+    label: string;
+    action: () => void;
+  }>;
+  timestamp: Timestamp;
+}
+
+// Form and Validation Types
+export interface TaskFormData {
+  title: string;
+  description?: string;
+  status: TaskStatus;
+  priority: TaskPriority;
+  dueDate?: Date;
+  estimatedDuration?: number;
+  category?: string;
+  tags: string[];
+  assignedTo?: string;
+  subtasks: Array<{
+    title: string;
+    completed: boolean;
+  }>;
+  notes?: string;
+}
+
+export interface SpeechRecognitionResult {
+  transcript: string;
+  confidence: number;
+  isFinal: boolean;
+}
+
+export interface VoiceCommandResult {
+  command: string;
+  intent: string;
+  entities: Record<string, unknown>;
+  confidence: number;
+}
+
+// Template and Workspace Types
+export interface TemplateData {
+  name: string;
+  description?: string;
+  category: string;
+  workspaces?: Workspace[];
+  blocks?: Block[];
+  goals?: Goal[];
+  habits?: Habit[];
+  settings?: Record<string, unknown>;
+}
+
+export interface WorkspaceMember {
+  userId: ID;
+  email: string;
+  firstName: string;
+  lastName: string;
+  imageUrl?: string;
+  role: 'owner' | 'admin' | 'member' | 'viewer';
+  status: 'active' | 'pending' | 'suspended';
+  joinedAt: Timestamp;
+  lastActiveAt?: Timestamp;
+  permissions: string[];
+}
+
+export interface Block {
+  id: ID;
+  workspaceId: ID;
+  type: 'task' | 'project' | 'note' | 'event';
+  title: string;
+  description?: string;
+  status: 'todo' | 'in_progress' | 'completed' | 'cancelled';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  dueDate?: Timestamp;
+  completedAt?: Timestamp;
+  progress: number;
+  tags: string[];
+  assignedTo?: ID;
+  lastEditedBy?: ID;
+  version: number;
+  timeBlockStart?: Timestamp;
+  timeBlockEnd?: Timestamp;
+  actualDuration?: number;
+  estimatedDuration?: number;
+  isDeleted: boolean;
+  isArchived: boolean;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+// Performance and Analytics Types
+export interface PerformanceMetrics {
+  timing: {
+    domContentLoaded: number;
+    firstContentfulPaint: number;
+    largestContentfulPaint: number;
+    firstInputDelay: number;
+    cumulativeLayoutShift: number;
+  };
+  navigation: {
+    type: 'navigate' | 'reload' | 'back_forward' | 'prerender';
+    redirectCount: number;
+  };
+  memory?: {
+    usedJSHeapSize: number;
+    totalJSHeapSize: number;
+    jsHeapSizeLimit: number;
+  };
+  connection?: {
+    effectiveType: '2g' | '3g' | '4g' | 'slow-2g';
+    downlink: number;
+    rtt: number;
+  };
+}
+
+export interface UserPreferences {
+  theme: 'light' | 'dark' | 'system';
+  language: string;
+  timezone: string;
+  dateFormat: string;
+  timeFormat: '12h' | '24h';
+  startOfWeek: 0 | 1 | 6; // Sunday, Monday, Saturday
+  shortcuts: Record<string, string>;
+  notifications: {
+    email: boolean;
+    push: boolean;
+    desktop: boolean;
+    sound: boolean;
+    reminders: boolean;
+    marketing: boolean;
+  };
+  privacy: {
+    shareAnalytics: boolean;
+    publicProfile: boolean;
+    allowTracking: boolean;
+  };
+  dashboard: {
+    layout: 'grid' | 'list' | 'kanban';
+    widgets: string[];
+    autoRefresh: boolean;
+    refreshInterval: number;
+  };
+  calendar: {
+    defaultView: 'month' | 'week' | 'day' | 'agenda';
+    weekends: boolean;
+    businessHours: {
+      start: string;
+      end: string;
+    };
+  };
+}
+
+// Export and Import Types
+export interface ExportData {
+  format: 'json' | 'csv' | 'excel' | 'pdf';
+  type: 'tasks' | 'goals' | 'habits' | 'all';
+  dateRange?: {
+    start: Timestamp;
+    end: Timestamp;
+  };
+  includeCompleted?: boolean;
+  includeArchived?: boolean;
+  filters?: FilterParams;
+}
+
+export interface ImportResult {
+  success: boolean;
+  totalRecords: number;
+  importedRecords: number;
+  skippedRecords: number;
+  errors: Array<{
+    row: number;
+    field: string;
+    message: string;
+  }>;
+  data?: Record<string, unknown>[];
+}
+
+// Security and Authentication Types
+export interface SecurityHeaders {
+  'X-Content-Type-Options': string;
+  'X-Frame-Options': string;
+  'X-XSS-Protection': string;
+  'Referrer-Policy': string;
+  'Permissions-Policy': string;
+  'Strict-Transport-Security': string;
+  'Content-Security-Policy': string;
+}
+
+export interface RateLimitResult {
+  success: boolean;
+  error?: string;
+  headers?: Record<string, string>;
+}
+
+export interface JWTPayload {
+  userId: ID;
+  email: string;
+  role?: string;
+  permissions?: string[];
+  iat: number;
+  exp: number;
+}
+
+export interface AuthenticationResult {
+  success: boolean;
+  user?: AdminUser;
+  session?: {
+    id: string;
+    token: string;
+    expiresAt: Timestamp;
+  };
+  requiresMFA?: boolean;
+  error?: string;
+}
+
+// Command Palette and Shortcuts Types
+export interface Command {
+  id: string;
+  title: string;
+  description?: string;
+  icon: React.ComponentType<{ className?: string }>;
+  keywords: string[];
+  shortcut?: string;
+  action: () => void | Promise<void>;
+  category: 'navigation' | 'actions' | 'tools' | 'settings';
+  permission?: string;
+}
+
+export interface ShortcutGroup {
+  category: string;
+  shortcuts: Array<{
+    keys: string[];
+    description: string;
+    action?: () => void;
+  }>;
+}
+
+// AI and Machine Learning Types
+export interface AISchedulingSuggestion {
+  id: ID;
+  type: 'time_optimization' | 'task_scheduling' | 'break_suggestion' | 'priority_adjustment';
+  title: string;
+  description: string;
+  confidence: number;
+  estimatedImpact: 'low' | 'medium' | 'high';
+  data: {
+    originalTask?: Task;
+    suggestedTime?: Timestamp;
+    reasoning: string;
+    expectedBenefits: string[];
+  };
+  actions: Array<{
+    type: 'accept' | 'modify' | 'reject';
+    label: string;
+    callback: () => void;
+  }>;
+  createdAt: Timestamp;
+  expiresAt?: Timestamp;
+}
+
+export interface AIParsingResult {
+  intent: 'create_task' | 'create_event' | 'create_goal' | 'set_reminder' | 'unknown';
+  confidence: number;
+  entities: {
+    title?: string;
+    description?: string;
+    dueDate?: Date;
+    priority?: TaskPriority;
+    tags?: string[];
+    duration?: number;
+    location?: string;
+  };
+  rawText: string;
+  suggestions?: string[];
+}
+
+// Event and Calendar Types
+export interface CalendarView {
+  type: 'month' | 'week' | 'day' | 'agenda';
+  startDate: Date;
+  endDate: Date;
+  timezone: string;
+}
+
+export interface CalendarSettings {
+  defaultView: CalendarView['type'];
+  businessHours: {
+    start: string;
+    end: string;
+    days: number[]; // 0-6, Sunday-Saturday
+  };
+  timeSlotDuration: number; // in minutes
+  showWeekends: boolean;
+  firstDayOfWeek: 0 | 1 | 6;
+  timeZone: string;
+}
+
+// Database and Query Types
+export interface DatabaseOptimization {
+  indexName: string;
+  tableName: string;
+  columns: string[];
+  type: 'btree' | 'hash' | 'gin' | 'gist';
+  performance: {
+    estimatedImprovement: number;
+    queryTime: number;
+    scanCost: number;
+  };
+  recommendation: 'create' | 'drop' | 'rebuild' | 'analyze';
+}
+
+export interface QueryPerformance {
+  queryId: string;
+  query: string;
+  executionTime: number;
+  scanType: 'seq_scan' | 'index_scan' | 'bitmap_scan';
+  rowsReturned: number;
+  bufferHits: number;
+  bufferReads: number;
+  cacheHitRatio: number;
+  recommendation?: string;
 }

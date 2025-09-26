@@ -1,0 +1,514 @@
+# Quantum's Production-Grade Deployment - Zero Downtime with Auto-Scaling
+# High-availability deployment with comprehensive health checks and resource optimization
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: astral-planner-app
+  namespace: astral-planner-production
+  labels:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/instance: production
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/component: application
+    app.kubernetes.io/part-of: astral-planner
+    app.kubernetes.io/managed-by: quantum-devops
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    quantum.io/deployment-strategy: "rolling-update"
+    quantum.io/auto-scaling: "enabled"
+    quantum.io/monitoring: "enabled"
+spec:
+  replicas: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: astral-planner
+      app.kubernetes.io/instance: production
+      app.kubernetes.io/component: application
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: astral-planner
+        app.kubernetes.io/instance: production
+        app.kubernetes.io/version: "1.0.0"
+        app.kubernetes.io/component: application
+        app.kubernetes.io/part-of: astral-planner
+        quantum.io/monitor: "true"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+        linkerd.io/inject: "enabled"
+        quantum.io/last-deployed: "2024-01-01T00:00:00Z"
+    spec:
+      serviceAccountName: astral-planner-app
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      
+      # Pod Anti-Affinity for High Availability
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - astral-planner
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - application
+              topologyKey: kubernetes.io/hostname
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 50
+            preference:
+              matchExpressions:
+              - key: node.kubernetes.io/instance-type
+                operator: In
+                values:
+                - c6i.large
+                - c6i.xlarge
+                - c6i.2xlarge
+      
+      # Topology Spread Constraints
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: astral-planner
+            app.kubernetes.io/component: application
+      - maxSkew: 2
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: astral-planner
+            app.kubernetes.io/component: application
+      
+      # Init Container for Database Migrations
+      initContainers:
+      - name: db-migration
+        image: ghcr.io/astral-planner/astral-planner:latest
+        imagePullPolicy: Always
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          echo "Running database migrations..."
+          npm run db:migrate
+          echo "Database migrations completed"
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: astral-planner-secrets
+              key: DATABASE_URL
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      
+      containers:
+      # Main Application Container
+      - name: app
+        image: ghcr.io/astral-planner/astral-planner:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        
+        # Environment Variables from ConfigMap
+        envFrom:
+        - configMapRef:
+            name: astral-planner-config
+        - secretRef:
+            name: astral-planner-secrets
+        
+        # Additional Environment Variables
+        env:
+        - name: KUBERNETES_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: KUBERNETES_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: KUBERNETES_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: KUBERNETES_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        
+        # Resource Limits and Requests
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        
+        # Security Context
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+        
+        # Health Checks
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /api/ready
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        
+        startupProbe:
+          httpGet:
+            path: /api/health
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 12
+        
+        # Volume Mounts
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: cache
+          mountPath: /app/cache
+        - name: logs
+          mountPath: /app/logs
+        - name: next-cache
+          mountPath: /app/.next/cache
+        
+        # Lifecycle Hooks
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 15"]
+      
+      # Nginx Reverse Proxy Container
+      - name: nginx
+        image: nginx:1.25-alpine
+        ports:
+        - name: nginx-http
+          containerPort: 80
+          protocol: TCP
+        
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+        
+        livenessProbe:
+          httpGet:
+            path: /nginx-health
+            port: nginx-http
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+        
+        readinessProbe:
+          httpGet:
+            path: /nginx-health
+            port: nginx-http
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+        
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+          readOnly: true
+        - name: nginx-tmp
+          mountPath: /var/cache/nginx
+        - name: nginx-run
+          mountPath: /var/run
+        - name: nginx-logs
+          mountPath: /var/log/nginx
+      
+      # Volumes
+      volumes:
+      - name: tmp
+        emptyDir:
+          sizeLimit: 1Gi
+      - name: cache
+        emptyDir:
+          sizeLimit: 2Gi
+      - name: logs
+        emptyDir:
+          sizeLimit: 1Gi
+      - name: next-cache
+        emptyDir:
+          sizeLimit: 2Gi
+      - name: nginx-config
+        configMap:
+          name: nginx-config
+          defaultMode: 0644
+      - name: nginx-tmp
+        emptyDir:
+          sizeLimit: 100Mi
+      - name: nginx-run
+        emptyDir:
+          sizeLimit: 10Mi
+      - name: nginx-logs
+        emptyDir:
+          sizeLimit: 100Mi
+      
+      # DNS Configuration
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        options:
+        - name: ndots
+          value: "2"
+        - name: edns0
+      
+      # Termination Grace Period
+      terminationGracePeriodSeconds: 60
+      
+      # Image Pull Secrets
+      imagePullSecrets:
+      - name: ghcr-secret
+---
+# Staging Deployment with Reduced Resources
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: astral-planner-app
+  namespace: astral-planner-staging
+  labels:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/instance: staging
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/component: application
+    app.kubernetes.io/part-of: astral-planner
+    app.kubernetes.io/managed-by: quantum-devops
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: astral-planner
+      app.kubernetes.io/instance: staging
+      app.kubernetes.io/component: application
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: astral-planner
+        app.kubernetes.io/instance: staging
+        app.kubernetes.io/version: "1.0.0"
+        app.kubernetes.io/component: application
+        app.kubernetes.io/part-of: astral-planner
+        quantum.io/monitor: "true"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: astral-planner-app
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+      
+      initContainers:
+      - name: db-migration
+        image: ghcr.io/astral-planner/astral-planner:staging
+        imagePullPolicy: Always
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          echo "Running database migrations..."
+          npm run db:migrate
+          echo "Database migrations completed"
+        env:
+        - name: NODE_ENV
+          value: "staging"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: astral-planner-secrets
+              key: DATABASE_URL
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+      
+      containers:
+      - name: app
+        image: ghcr.io/astral-planner/astral-planner:staging
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        
+        envFrom:
+        - configMapRef:
+            name: astral-planner-config
+        - secretRef:
+            name: astral-planner-secrets
+        
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+        
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+        
+        readinessProbe:
+          httpGet:
+            path: /api/ready
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+        
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: cache
+          mountPath: /app/cache
+        - name: logs
+          mountPath: /app/logs
+      
+      volumes:
+      - name: tmp
+        emptyDir:
+          sizeLimit: 500Mi
+      - name: cache
+        emptyDir:
+          sizeLimit: 1Gi
+      - name: logs
+        emptyDir:
+          sizeLimit: 500Mi
+      
+      terminationGracePeriodSeconds: 30
+      
+      imagePullSecrets:
+      - name: ghcr-secret
+---
+# Service Account for Application
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: astral-planner-app
+  namespace: astral-planner-production
+  labels:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/component: service-account
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/astral-planner-production-app
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: astral-planner-app
+  namespace: astral-planner-staging
+  labels:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/component: service-account
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/astral-planner-staging-app

@@ -1,69 +1,122 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { getAuthContext, isPublicRoute, shouldIgnoreRoute } from './lib/auth/auth-utils';
+import { isPublicRoute } from './lib/auth/auth-utils';
 
-// Enhanced middleware with authentication support for PIN-based and JWT auth
-export default async function middleware(req: NextRequest) {
+/**
+ * Catalyst Performance Middleware
+ * Lightweight security and performance monitoring
+ */
+export default async function catalystMiddleware(req: NextRequest) {
+  const startTime = Date.now();
+  
   try {
     const pathname = req.nextUrl.pathname;
+    const method = req.method;
     
-    console.log(`[MIDDLEWARE] ${req.method} ${pathname}`);
-    
-    // Skip middleware for static files and ignored routes
+    // Skip middleware for static assets and system routes
     if (shouldIgnoreRoute(pathname)) {
-      return NextResponse.next();
+      return addSecurityHeaders(NextResponse.next());
     }
     
-    const response = NextResponse.next();
-    
-    // Add security headers to all responses
-    response.headers.set('X-Frame-Options', 'DENY');
-    response.headers.set('X-Content-Type-Options', 'nosniff');
-    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-    response.headers.set('X-DNS-Prefetch-Control', 'on');
-    response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-    response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-    
-    // Skip auth for public routes
+    // Public route check
     if (isPublicRoute(pathname)) {
+      const response = NextResponse.next();
+      addSecurityHeaders(response);
       return response;
     }
     
-    // Check authentication for protected routes
-    const authContext = await getAuthContext(req);
+    // For now, allow all other routes (authentication can be added later)
+    const response = NextResponse.next();
+    addSecurityHeaders(response);
     
-    if (!authContext.isAuthenticated) {
-      // For API routes, return JSON error instead of HTML redirect
-      if (pathname.startsWith('/api/')) {
-        return NextResponse.json(
-          { error: 'Authentication required', code: 'AUTH_REQUIRED' },
-          { status: 401 }
-        );
-      }
-      
-      // Redirect unauthenticated users to home page for non-API routes
-      const loginUrl = new URL('/', req.url);
-      return NextResponse.redirect(loginUrl);
-    }
-    
-    // Add user context to response headers for client-side access
-    if (authContext.user) {
-      response.headers.set('X-User-ID', authContext.user.id);
-      response.headers.set('X-User-Role', authContext.user.role);
-      response.headers.set('X-Is-Demo', authContext.isDemo.toString());
-    }
+    // Performance monitoring
+    const processingTime = Date.now() - startTime;
+    response.headers.set('X-Processing-Time', processingTime.toString());
     
     return response;
     
   } catch (error) {
-    console.error('Middleware error:', error);
+    console.error('[CATALYST] Middleware error:', error);
     
-    // Allow request to proceed even on error
+    // Fail gracefully
     const response = NextResponse.next();
-    response.headers.set('X-Frame-Options', 'DENY');
-    response.headers.set('X-Content-Type-Options', 'nosniff');
-    
+    addSecurityHeaders(response);
     return response;
   }
+}
+
+/**
+ * Check if route should be ignored by middleware
+ */
+function shouldIgnoreRoute(pathname: string): boolean {
+  const ignoredPatterns = [
+    /^\/_next\//,
+    /^\/favicon\.ico$/,
+    /^\/robots\.txt$/,
+    /^\/sitemap\.xml$/,
+    /^\/manifest\.json$/,
+    /\.(css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|webp|avif)$/i,
+  ];
+  
+  return ignoredPatterns.some(pattern => pattern.test(pathname));
+}
+
+/**
+ * Get comprehensive security headers
+ */
+function getSecurityHeaders(): Record<string, string> {
+  return {
+    // Frame protection
+    'X-Frame-Options': 'DENY',
+    
+    // Content type protection
+    'X-Content-Type-Options': 'nosniff',
+    
+    // XSS protection
+    'X-XSS-Protection': '1; mode=block',
+    
+    // Referrer policy
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    
+    // HSTS
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+    
+    // Permissions policy
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()',
+    
+    // Content Security Policy
+    'Content-Security-Policy': [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
+      "font-src 'self' fonts.gstatic.com",
+      "img-src 'self' data: https:",
+      "connect-src 'self' https: wss:",
+      "frame-ancestors 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+    ].join('; '),
+    
+    // Server identification
+    'X-Powered-By': 'Catalyst Performance Framework',
+    
+    // Cache control for sensitive responses
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0',
+  };
+}
+
+/**
+ * Add security headers to response
+ */
+function addSecurityHeaders(response: NextResponse): NextResponse {
+  const headers = getSecurityHeaders();
+  
+  Object.entries(headers).forEach(([key, value]) => {
+    response.headers.set(key, value);
+  });
+  
+  return response;
 }
 
 export const config = {

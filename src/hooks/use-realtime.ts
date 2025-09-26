@@ -2,23 +2,24 @@ import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '@clerk/nextjs'
 import { subscribeTo, getPusherClient } from '@/lib/pusher/client'
 import { useToast } from '@/hooks/use-toast'
+import type { Task, RealtimeMessage, PresenceUser, RealtimeNotification } from '@/types'
 
 interface RealtimeOptions {
   userId?: string
   workspaceId?: string
-  onTaskUpdate?: (data: any) => void
-  onTaskCreate?: (data: any) => void
-  onTaskDelete?: (data: any) => void
-  onUserJoin?: (data: any) => void
-  onUserLeave?: (data: any) => void
-  onNotification?: (data: any) => void
+  onTaskUpdate?: (data: Task) => void
+  onTaskCreate?: (data: Task) => void
+  onTaskDelete?: (data: { taskId: string }) => void
+  onUserJoin?: (data: PresenceUser) => void
+  onUserLeave?: (data: PresenceUser) => void
+  onNotification?: (data: RealtimeNotification) => void
 }
 
 export function useRealtime(options: RealtimeOptions = {}) {
   const { userId: authUserId } = useAuth()
   const { toast } = useToast()
   const [isConnected, setIsConnected] = useState(false)
-  const [presenceUsers, setPresenceUsers] = useState<any[]>([])
+  const [presenceUsers, setPresenceUsers] = useState<PresenceUser[]>([])
 
   const userId = options.userId || authUserId
 
@@ -58,23 +59,23 @@ export function useRealtime(options: RealtimeOptions = {}) {
       }
 
       // Presence events
-      const channel = pusher.subscribe(workspaceChannel) as any
+      const channel = pusher.subscribe(workspaceChannel)
       
-      channel.bind('pusher:subscription_succeeded', (members: any) => {
+      channel.bind('pusher:subscription_succeeded', (members: { members: Record<string, PresenceUser> }) => {
         setIsConnected(true)
         const users = Object.values(members.members)
         setPresenceUsers(users)
       })
 
-      channel.bind('pusher:member_added', (member: any) => {
+      channel.bind('pusher:member_added', (member: { info: PresenceUser }) => {
         setPresenceUsers((prev) => [...prev, member.info])
         if (options.onUserJoin) {
           options.onUserJoin(member.info)
         }
       })
 
-      channel.bind('pusher:member_removed', (member: any) => {
-        setPresenceUsers((prev) => prev.filter((u: any) => u.id !== member.id))
+      channel.bind('pusher:member_removed', (member: { id: string; info: PresenceUser }) => {
+        setPresenceUsers((prev) => prev.filter((u) => u.id !== member.id))
         if (options.onUserLeave) {
           options.onUserLeave(member.info)
         }
@@ -122,9 +123,17 @@ export function useRealtime(options: RealtimeOptions = {}) {
   }
 }
 
+interface TaskActivity {
+  type: 'comment' | 'update' | 'status_change' | 'assignment';
+  user: PresenceUser;
+  message: string;
+  createdAt: string;
+  metadata?: Record<string, unknown>;
+}
+
 export function useRealtimeTask(taskId: string) {
-  const [task, setTask] = useState<any>(null)
-  const [activities, setActivities] = useState<any[]>([])
+  const [task, setTask] = useState<Task | null>(null)
+  const [activities, setActivities] = useState<TaskActivity[]>([])
 
   useEffect(() => {
     if (!taskId) return

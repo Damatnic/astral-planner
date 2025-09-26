@@ -142,12 +142,9 @@ class WebVitalsReporter {
     if (typeof window === 'undefined' || !window.va) return
 
     metrics.forEach(metric => {
-      window.va?.('event', {
-        event_name: 'Web Vitals',
-        metric_name: metric.name,
-        metric_value: metric.value,
-        metric_rating: metric.rating,
-        metric_id: metric.id,
+      window.va?.('track', `web-vitals-${metric.name}`, {
+        value: metric.value,
+        rating: metric.rating,
       })
     })
   }

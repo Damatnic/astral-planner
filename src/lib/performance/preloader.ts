@@ -35,11 +35,7 @@ export class ComponentPreloader {
     if (typeof window === 'undefined') return
 
     const interactionComponents = [
-      () => import('@/components/ai/AISuggestions'),
-      () => import('@/components/analytics/AnalyticsDashboard'),
       () => import('@/components/calendar/Calendar'),
-      () => import('@/components/export/ExportDialog'),
-      () => import('@/components/backup/BackupDialog'),
     ]
 
     const preloadOnFirstInteraction = () => {
@@ -101,13 +97,7 @@ export class ComponentPreloader {
   preloadForRoute(route: string) {
     const routeComponentMap: Record<string, () => Promise<any>> = {
       '/tasks': () => import('@/features/tasks/TaskManager'),
-      '/goals': () => import('@/features/goals/GoalManager'),
-      '/habits': () => import('@/features/habits/HabitTracker'),
       '/calendar': () => import('@/components/calendar/Calendar'),
-      '/analytics': () => import('@/components/analytics/AnalyticsDashboard'),
-      '/ai': () => import('@/components/ai/AISuggestions'),
-      '/admin': () => import('@/app/admin/page'),
-      '/settings': () => import('@/components/settings/SettingsPanel'),
     }
 
     const componentLoader = routeComponentMap[route]

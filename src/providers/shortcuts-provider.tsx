@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState } from 'react';
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
-import { DynamicCommandPalette } from '@/lib/performance/optimization';
+// import { DynamicCommandPalette } from '@/lib/performance/optimization';
 import { ShortcutsDialog } from '@/components/shortcuts/ShortcutsDialog';
 import { QuickAdd } from '@/components/quick-add/QuickAdd';
 
@@ -76,10 +76,10 @@ export function ShortcutsProvider({ children }: { children: React.ReactNode }) {
       {children}
       
       {/* Global modals */}
-      <DynamicCommandPalette
+      {/* <DynamicCommandPalette
         open={showCommandPalette}
         onOpenChange={contextValue.setShowCommandPalette}
-      />
+      /> */}
       
       <ShortcutsDialog
         open={showShortcuts}

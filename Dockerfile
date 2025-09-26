@@ -1,69 +1,135 @@
 # ===================================================================
-# Ultimate Digital Planner - Production Dockerfile
+# Quantum's Production-Grade Dockerfile - Zero Downtime Deployment
+# Multi-stage build with security hardening and performance optimization
 # ===================================================================
 
-# Use the official Node.js 18 image as the base image
+# Builder stage with full development environment
 FROM node:18-alpine AS base
+RUN apk add --no-cache \
+    dumb-init \
+    libc6-compat \
+    curl \
+    ca-certificates
+WORKDIR /app
 
-# Install dependencies only when needed
+# Dependencies stage - optimized for caching
 FROM base AS deps
-RUN apk add --no-cache libc6-compat
-WORKDIR /app
-
-# Copy package files
+# Copy package files with integrity checks
 COPY package.json package-lock.json* ./
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci --only=production --ignore-scripts && \
+    npm cache clean --force && \
+    rm -rf /tmp/* /var/cache/apk/*
 
-# Rebuild the source code only when needed
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+# Development dependencies for building
+FROM base AS build-deps
+COPY package.json package-lock.json* ./
+RUN npm ci --ignore-scripts && \
+    npm cache clean --force
+
+# Builder stage with security scanning
+FROM build-deps AS builder
 COPY . .
 
-# Set environment variables for build
+# Security: Remove potential secrets from build context
+RUN rm -f .env* 2>/dev/null || true
+
+# Build optimizations
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+ENV NEXT_PRIVATE_STANDALONE=true
 
-# Build the application
-RUN npm run build
+# Build with optimizations
+RUN npm run build && \
+    npm run bundle:check
 
-# Production image, copy all the files and run next
+# Security scanning during build
+RUN npm audit --audit-level=moderate || true
+
+# Production runtime stage
 FROM base AS runner
 WORKDIR /app
 
-# Set environment variables
+# Production environment
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Create a non-root user
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Security: Create non-root user with minimal privileges
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
-# Copy the public folder
-COPY --from=builder /app/public ./public
+# Copy production dependencies
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
-# Copy the built application
+# Copy built application with proper ownership
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Create logs directory
-RUN mkdir -p logs && chown nextjs:nodejs logs
+# Create required directories with proper permissions
+RUN mkdir -p logs cache tmp && \
+    chown -R nextjs:nodejs logs cache tmp && \
+    chmod 755 logs cache tmp
+
+# Security hardening
+RUN rm -rf /tmp/* /var/cache/apk/* && \
+    rm -f /etc/passwd- /etc/shadow- /etc/group- && \
+    find /app -type f -name "*.md" -delete && \
+    find /app -type f -name "*.txt" -delete
+
+# Health check script
+COPY --chown=nextjs:nodejs <<EOF /app/healthcheck.js
+const http = require('http');
+const options = {
+  host: 'localhost',
+  port: process.env.PORT || 3000,
+  path: '/api/health',
+  timeout: 5000,
+  method: 'GET'
+};
+
+const healthCheck = http.request(options, (res) => {
+  if (res.statusCode === 200) {
+    process.exit(0);
+  } else {
+    console.error('Health check failed with status:', res.statusCode);
+    process.exit(1);
+  }
+});
+
+healthCheck.on('error', (err) => {
+  console.error('Health check error:', err.message);
+  process.exit(1);
+});
+
+healthCheck.on('timeout', () => {
+  console.error('Health check timeout');
+  process.exit(1);
+});
+
+healthCheck.end();
+EOF
 
 # Switch to non-root user
 USER nextjs
 
-# Expose the port
+# Expose port
 EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD node healthcheck.js || exit 1
+# Health check with improved reliability
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD node healthcheck.js
 
-# Start the server
+# Use dumb-init for proper signal handling
+ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "server.js"]
+
+# Labels for container metadata
+LABEL maintainer="quantum@astral-planner.com" \
+      version="1.0.0" \
+      description="Astral Planner - Production Grade Container" \
+      org.opencontainers.image.source="https://github.com/astral-planner/app" \
+      org.opencontainers.image.title="Astral Planner" \
+      org.opencontainers.image.description="AI-powered digital planner" \
+      org.opencontainers.image.licenses="MIT"

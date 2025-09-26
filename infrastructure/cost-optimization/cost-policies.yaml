@@ -1,0 +1,732 @@
+# Quantum's Cost Optimization - Intelligent Resource Management
+# Advanced cost optimization with automatic scaling and resource rightsizing
+
+# Cluster Autoscaler Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-autoscaler-status
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/name: cluster-autoscaler
+    app.kubernetes.io/component: cost-optimization
+data:
+  nodes.max: "100"
+  nodes.min: "3"
+  scale-down-enabled: "true"
+  scale-down-delay-after-add: "10m"
+  scale-down-delay-after-delete: "10s"
+  scale-down-delay-after-failure: "3m"
+  scale-down-unneeded-time: "10m"
+  scale-down-utilization-threshold: "0.5"
+  skip-nodes-with-local-storage: "false"
+  skip-nodes-with-system-pods: "false"
+  max-node-provision-time: "15m"
+  scan-interval: "10s"
+  expendable-pods-priority-cutoff: "-10"
+  new-pod-scale-up-delay: "0s"
+  max-empty-bulk-delete: "10"
+  max-graceful-termination-sec: "600"
+---
+# Vertical Pod Autoscaler for Cost Optimization
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: astral-planner-vpa-cost-optimizer
+  namespace: astral-planner-production
+  labels:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/component: cost-optimization
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: astral-planner-app
+  updatePolicy:
+    updateMode: "Auto"
+    minReplicas: 3
+  resourcePolicy:
+    containerPolicies:
+    - containerName: app
+      minAllowed:
+        cpu: 100m
+        memory: 256Mi
+      maxAllowed:
+        cpu: 2000m
+        memory: 4Gi
+      controlledResources: ["cpu", "memory"]
+      controlledValues: RequestsAndLimits
+      mode: Auto
+    - containerName: nginx
+      minAllowed:
+        cpu: 50m
+        memory: 64Mi
+      maxAllowed:
+        cpu: 200m
+        memory: 256Mi
+      controlledResources: ["cpu", "memory"]
+      controlledValues: RequestsAndLimits
+      mode: Auto
+---
+# Descheduler for Resource Optimization
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: descheduler-policy
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/name: descheduler
+    app.kubernetes.io/component: cost-optimization
+data:
+  policy.yaml: |
+    apiVersion: "descheduler/v1alpha1"
+    kind: "DeschedulerPolicy"
+    strategies:
+      "RemoveDuplicates":
+        enabled: true
+        params:
+          removeDuplicates:
+            excludeOwnerKinds:
+            - "ReplicaSet"
+      "RemovePodsViolatingInterPodAntiAffinity":
+        enabled: true
+      "RemovePodsViolatingNodeAffinity":
+        enabled: true
+        params:
+          nodeAffinityType:
+          - "requiredDuringSchedulingIgnoredDuringExecution"
+      "RemovePodsViolatingNodeTaints":
+        enabled: true
+      "RemovePodsViolatingTopologySpreadConstraint":
+        enabled: true
+      "RemovePodsHavingTooManyRestarts":
+        enabled: true
+        params:
+          podsHavingTooManyRestarts:
+            podRestartThreshold: 100
+            includingInitContainers: true
+      "LowNodeUtilization":
+        enabled: true
+        params:
+          nodeResourceUtilizationThresholds:
+            thresholds:
+              "cpu": 20
+              "memory": 20
+              "pods": 20
+            targetThresholds:
+              "cpu": 50
+              "memory": 50
+              "pods": 50
+      "HighNodeUtilization":
+        enabled: true
+        params:
+          nodeResourceUtilizationThresholds:
+            thresholds:
+              "cpu": 80
+              "memory": 80
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: descheduler
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/name: descheduler
+    app.kubernetes.io/component: cost-optimization
+spec:
+  schedule: "0 */2 * * *"  # Every 2 hours
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: descheduler
+          restartPolicy: OnFailure
+          containers:
+          - name: descheduler
+            image: k8s.gcr.io/descheduler/descheduler:v0.27.1
+            command:
+            - "/bin/descheduler"
+            args:
+            - "--policy-config-file=/policy/policy.yaml"
+            - "--v=3"
+            - "--dry-run=false"
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: 500m
+                memory: 512Mi
+            volumeMounts:
+            - name: policy
+              mountPath: /policy
+              readOnly: true
+          volumes:
+          - name: policy
+            configMap:
+              name: descheduler-policy
+---
+# Service Account for Descheduler
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: descheduler
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: descheduler
+rules:
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create"]
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "watch", "list", "delete"]
+- apiGroups: [""]
+  resources: ["pods/eviction"]
+  verbs: ["create"]
+- apiGroups: ["scheduling.k8s.io"]
+  resources: ["priorityclasses"]
+  verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: descheduler
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: descheduler
+subjects:
+- name: descheduler
+  kind: ServiceAccount
+  namespace: kube-system
+---
+# Karpenter NodePool for Cost-Optimized Nodes
+apiVersion: karpenter.sh/v1beta1
+kind: NodePool
+metadata:
+  name: cost-optimized
+  labels:
+    app.kubernetes.io/component: cost-optimization
+spec:
+  template:
+    metadata:
+      labels:
+        node-type: cost-optimized
+        quantum.io/cost-tier: optimized
+    spec:
+      # Prefer spot instances for cost savings
+      requirements:
+      - key: karpenter.sh/capacity-type
+        operator: In
+        values: ["spot", "on-demand"]
+      - key: kubernetes.io/arch
+        operator: In
+        values: ["amd64"]
+      - key: node.kubernetes.io/instance-type
+        operator: In
+        values: 
+        - c6i.large
+        - c6i.xlarge
+        - c6i.2xlarge
+        - c5.large
+        - c5.xlarge
+        - c5.2xlarge
+        - m6i.large
+        - m6i.xlarge
+        - m6i.2xlarge
+        - m5.large
+        - m5.xlarge
+        - m5.2xlarge
+      
+      # Node class reference
+      nodeClassRef:
+        apiVersion: karpenter.k8s.aws/v1beta1
+        kind: EC2NodeClass
+        name: cost-optimized
+      
+      # Taints for cost-optimized workloads
+      taints:
+      - key: "cost-optimized"
+        value: "true"
+        effect: NoSchedule
+      
+      # Startup and shutdown taints for graceful handling
+      startupTaints:
+      - key: "node.kubernetes.io/unschedulable"
+        value: "true"
+        effect: NoSchedule
+  
+  # Disruption settings for cost optimization
+  disruption:
+    consolidationPolicy: WhenEmpty
+    consolidateAfter: 30s
+    expireAfter: 30m
+  
+  # Limits
+  limits:
+    cpu: 1000
+    memory: 1000Gi
+---
+# EC2NodeClass for Cost-Optimized Instances
+apiVersion: karpenter.k8s.aws/v1beta1
+kind: EC2NodeClass
+metadata:
+  name: cost-optimized
+  labels:
+    app.kubernetes.io/component: cost-optimization
+spec:
+  # AMI selection
+  amiFamily: AL2
+  
+  # Instance profile
+  role: "KarpenterInstanceProfile"
+  
+  # Subnets - private only for security
+  subnetSelectorTerms:
+  - tags:
+      karpenter.sh/discovery: "astral-planner-production"
+      kubernetes.io/role/internal-elb: "1"
+  
+  # Security groups
+  securityGroupSelectorTerms:
+  - tags:
+      karpenter.sh/discovery: "astral-planner-production"
+  
+  # Instance store policy
+  instanceStorePolicy: NVME
+  
+  # EBS optimization
+  blockDeviceMappings:
+  - deviceName: /dev/xvda
+    ebs:
+      volumeSize: 20Gi
+      volumeType: gp3
+      iops: 3000
+      throughput: 125
+      encrypted: true
+      deleteOnTermination: true
+  
+  # User data for cost monitoring
+  userData: |
+    #!/bin/bash
+    /etc/eks/bootstrap.sh astral-planner-production
+    
+    # Install cost monitoring agent
+    yum update -y
+    yum install -y amazon-cloudwatch-agent
+    
+    # Configure CloudWatch agent for cost monitoring
+    cat > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json <<EOF
+    {
+      "metrics": {
+        "namespace": "CostOptimization/EC2",
+        "metrics_collected": {
+          "cpu": {
+            "measurement": ["cpu_usage_idle", "cpu_usage_iowait", "cpu_usage_user", "cpu_usage_system"],
+            "metrics_collection_interval": 60
+          },
+          "disk": {
+            "measurement": ["used_percent"],
+            "metrics_collection_interval": 60,
+            "resources": ["*"]
+          },
+          "mem": {
+            "measurement": ["mem_used_percent"],
+            "metrics_collection_interval": 60
+          }
+        }
+      }
+    }
+    EOF
+    
+    # Start CloudWatch agent
+    /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+      -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s
+    
+    # Install node exporter for Prometheus metrics
+    wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+    tar xvfz node_exporter-1.6.1.linux-amd64.tar.gz
+    cp node_exporter-1.6.1.linux-amd64/node_exporter /usr/local/bin/
+    
+    # Create systemd service for node exporter
+    cat > /etc/systemd/system/node_exporter.service <<EOF
+    [Unit]
+    Description=Node Exporter
+    After=network.target
+    
+    [Service]
+    Type=simple
+    ExecStart=/usr/local/bin/node_exporter
+    Restart=always
+    
+    [Install]
+    WantedBy=multi-user.target
+    EOF
+    
+    systemctl daemon-reload
+    systemctl enable node_exporter
+    systemctl start node_exporter
+  
+  # Tags for cost allocation
+  tags:
+    CostCenter: "engineering"
+    Project: "astral-planner"
+    Environment: "production"
+    ManagedBy: "karpenter"
+    CostOptimized: "true"
+    
+  # Metadata options
+  metadataOptions:
+    httpEndpoint: enabled
+    httpProtocolIPv6: disabled
+    httpPutResponseHopLimit: 2
+    httpTokens: required
+---
+# Cost Monitoring ServiceMonitor
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cost-monitoring
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: cost-monitoring
+    app.kubernetes.io/component: cost-optimization
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cost-monitoring
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+---
+# Cost Monitoring Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: cost-monitoring
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: cost-monitoring
+    app.kubernetes.io/component: cost-optimization
+spec:
+  type: ClusterIP
+  ports:
+  - name: metrics
+    port: 8080
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: cost-monitoring
+---
+# Cost Monitoring Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cost-monitoring
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: cost-monitoring
+    app.kubernetes.io/component: cost-optimization
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cost-monitoring
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cost-monitoring
+        app.kubernetes.io/component: cost-optimization
+    spec:
+      serviceAccountName: cost-monitoring
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 65534
+      containers:
+      - name: cost-monitoring
+        image: kubecost/cost-analyzer:latest
+        ports:
+        - name: metrics
+          containerPort: 8080
+        env:
+        - name: PROMETHEUS_SERVER_ENDPOINT
+          value: "http://prometheus:9090"
+        - name: CLUSTER_ID
+          value: "astral-planner-production"
+        - name: AWS_REGION
+          value: "us-east-1"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: tmp
+        emptyDir:
+          sizeLimit: 1Gi
+---
+# Service Account for Cost Monitoring
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cost-monitoring
+  namespace: monitoring
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/cost-monitoring-role
+---
+# Resource Quotas for Cost Control
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: cost-control-quota
+  namespace: astral-planner-production
+  labels:
+    app.kubernetes.io/component: cost-optimization
+spec:
+  hard:
+    # Compute resources
+    requests.cpu: "50"
+    requests.memory: 100Gi
+    limits.cpu: "100"
+    limits.memory: 200Gi
+    
+    # Storage
+    requests.storage: 1Ti
+    persistentvolumeclaims: "20"
+    
+    # Network
+    services: "50"
+    services.loadbalancers: "5"
+    services.nodeports: "10"
+    
+    # Objects
+    count/deployments.apps: "50"
+    count/replicasets.apps: "100"
+    count/pods: "200"
+    count/secrets: "100"
+    count/configmaps: "100"
+---
+# Limit Range for Cost Control
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: cost-control-limits
+  namespace: astral-planner-production
+  labels:
+    app.kubernetes.io/component: cost-optimization
+spec:
+  limits:
+  # Container limits
+  - type: Container
+    default:
+      cpu: "500m"
+      memory: "512Mi"
+    defaultRequest:
+      cpu: "100m"
+      memory: "128Mi"
+    max:
+      cpu: "4"
+      memory: "8Gi"
+    min:
+      cpu: "50m"
+      memory: "64Mi"
+  
+  # Pod limits
+  - type: Pod
+    max:
+      cpu: "8"
+      memory: "16Gi"
+    min:
+      cpu: "50m"
+      memory: "64Mi"
+  
+  # PVC limits
+  - type: PersistentVolumeClaim
+    max:
+      storage: "100Gi"
+    min:
+      storage: "1Gi"
+---
+# Cost Optimization CronJob for Analysis
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cost-optimization-analysis
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: cost-optimization
+    app.kubernetes.io/component: analysis
+spec:
+  schedule: "0 6 * * *"  # Daily at 6 AM
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: cost-monitoring
+          restartPolicy: OnFailure
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            fsGroup: 65534
+          containers:
+          - name: cost-analyzer
+            image: alpine/curl:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              echo "Starting daily cost optimization analysis..."
+              
+              # Get current date
+              CURRENT_DATE=$(date +%Y-%m-%d)
+              
+              # Query Prometheus for resource utilization
+              PROMETHEUS_URL="http://prometheus:9090"
+              
+              # CPU utilization query
+              CPU_QUERY="avg(rate(container_cpu_usage_seconds_total[24h])) by (namespace,pod)"
+              CPU_UTIL=$(curl -s "${PROMETHEUS_URL}/api/v1/query?query=${CPU_QUERY}" | jq -r '.data.result[].value[1]')
+              
+              # Memory utilization query
+              MEM_QUERY="avg(container_memory_working_set_bytes) by (namespace,pod)"
+              MEM_UTIL=$(curl -s "${PROMETHEUS_URL}/api/v1/query?query=${MEM_QUERY}" | jq -r '.data.result[].value[1]')
+              
+              # Generate cost optimization recommendations
+              echo "=== Cost Optimization Report - ${CURRENT_DATE} ===" > /tmp/cost-report.txt
+              echo "" >> /tmp/cost-report.txt
+              echo "1. Resource Utilization Analysis:" >> /tmp/cost-report.txt
+              echo "   - Average CPU utilization: ${CPU_UTIL}%" >> /tmp/cost-report.txt
+              echo "   - Average Memory utilization: ${MEM_UTIL}MB" >> /tmp/cost-report.txt
+              echo "" >> /tmp/cost-report.txt
+              
+              # Check for underutilized resources
+              echo "2. Optimization Opportunities:" >> /tmp/cost-report.txt
+              
+              # Query for pods with low CPU utilization
+              LOW_CPU_QUERY="avg_over_time(rate(container_cpu_usage_seconds_total[24h])[24h:1h]) < 0.1"
+              LOW_CPU_PODS=$(curl -s "${PROMETHEUS_URL}/api/v1/query?query=${LOW_CPU_QUERY}" | jq -r '.data.result[].metric.pod // empty')
+              
+              if [ ! -z "$LOW_CPU_PODS" ]; then
+                echo "   - Underutilized pods (CPU < 10%): $LOW_CPU_PODS" >> /tmp/cost-report.txt
+                echo "     Recommendation: Consider reducing CPU requests" >> /tmp/cost-report.txt
+              fi
+              
+              # Query for over-provisioned memory
+              HIGH_MEM_QUERY="(container_memory_working_set_bytes / container_spec_memory_limit_bytes) < 0.5"
+              OVER_MEM_PODS=$(curl -s "${PROMETHEUS_URL}/api/v1/query?query=${HIGH_MEM_QUERY}" | jq -r '.data.result[].metric.pod // empty')
+              
+              if [ ! -z "$OVER_MEM_PODS" ]; then
+                echo "   - Over-provisioned memory (< 50% used): $OVER_MEM_PODS" >> /tmp/cost-report.txt
+                echo "     Recommendation: Consider reducing memory requests" >> /tmp/cost-report.txt
+              fi
+              
+              echo "" >> /tmp/cost-report.txt
+              echo "3. Node Optimization:" >> /tmp/cost-report.txt
+              
+              # Check node utilization
+              NODE_CPU_QUERY="(1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[24h]))) * 100"
+              NODE_CPU_UTIL=$(curl -s "${PROMETHEUS_URL}/api/v1/query?query=${NODE_CPU_QUERY}" | jq -r '.data.result[].value[1]')
+              
+              echo "   - Average node CPU utilization: ${NODE_CPU_UTIL}%" >> /tmp/cost-report.txt
+              
+              if [ "${NODE_CPU_UTIL}" -lt "50" ]; then
+                echo "     Recommendation: Consider using smaller instance types or fewer nodes" >> /tmp/cost-report.txt
+              fi
+              
+              echo "" >> /tmp/cost-report.txt
+              echo "4. Storage Optimization:" >> /tmp/cost-report.txt
+              
+              # Check PVC utilization
+              PVC_QUERY="(kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes) * 100"
+              PVC_UTIL=$(curl -s "${PROMETHEUS_URL}/api/v1/query?query=${PVC_QUERY}" | jq -r '.data.result[].value[1]')
+              
+              echo "   - Average PVC utilization: ${PVC_UTIL}%" >> /tmp/cost-report.txt
+              
+              if [ "${PVC_UTIL}" -lt "30" ]; then
+                echo "     Recommendation: Consider reducing PVC sizes or using dynamic provisioning" >> /tmp/cost-report.txt
+              fi
+              
+              echo "" >> /tmp/cost-report.txt
+              echo "Report generated on: $(date)" >> /tmp/cost-report.txt
+              
+              # Output report
+              cat /tmp/cost-report.txt
+              
+              # Send report to monitoring system (webhook or API)
+              if [ ! -z "${SLACK_WEBHOOK_URL}" ]; then
+                curl -X POST -H 'Content-type: application/json' \
+                  --data "{\"text\":\"Daily Cost Optimization Report - ${CURRENT_DATE}\n\`\`\`$(cat /tmp/cost-report.txt)\`\`\`\"}" \
+                  "${SLACK_WEBHOOK_URL}"
+              fi
+              
+              echo "Cost optimization analysis completed"
+            
+            env:
+            - name: SLACK_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: monitoring-secrets
+                  key: slack-webhook-url
+                  optional: true
+            
+            resources:
+              requests:
+                memory: "64Mi"
+                cpu: "50m"
+              limits:
+                memory: "256Mi"
+                cpu: "200m"
+            
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                - ALL
+            
+            volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+          
+          volumes:
+          - name: tmp
+            emptyDir:
+              sizeLimit: 100Mi

@@ -69,7 +69,10 @@
       "Bash(PORT=3040 npm run dev)",
       "Bash(git log:*)",
       "Bash(npm run bundle:analyze:*)",
-      "Bash(set ANALYZE=true)"
+      "Bash(set ANALYZE=true)",
+      "Bash(npm run bundle:check:*)",
+      "Bash(npm run test:*)",
+      "Bash(dir scripts)"
     ],
     "deny": [],
     "ask": []

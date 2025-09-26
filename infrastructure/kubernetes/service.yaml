@@ -1,0 +1,258 @@
+# Quantum's Service Configuration - Load Balancing and Service Discovery
+# High-performance service mesh integration with advanced traffic management
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: astral-planner-app
+  namespace: astral-planner-production
+  labels:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/instance: production
+    app.kubernetes.io/component: service
+    app.kubernetes.io/part-of: astral-planner
+    app.kubernetes.io/managed-by: quantum-devops
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-protocol: "http"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: "/api/health"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-interval: "30"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-timeout: "10"
+    service.beta.kubernetes.io/aws-load-balancer-healthy-threshold: "2"
+    service.beta.kubernetes.io/aws-load-balancer-unhealthy-threshold: "3"
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9090"
+    prometheus.io/path: "/metrics"
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+    targetPort: nginx-http
+    protocol: TCP
+  - name: https
+    port: 443
+    targetPort: nginx-http
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: metrics
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/instance: production
+    app.kubernetes.io/component: application
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 3600
+---
+# Internal Service for App-to-App Communication
+apiVersion: v1
+kind: Service
+metadata:
+  name: astral-planner-app-internal
+  namespace: astral-planner-production
+  labels:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/instance: production
+    app.kubernetes.io/component: service-internal
+    app.kubernetes.io/part-of: astral-planner
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3000"
+    prometheus.io/path: "/api/metrics"
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 3000
+    targetPort: http
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: metrics
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/instance: production
+    app.kubernetes.io/component: application
+---
+# Headless Service for StatefulSet Components
+apiVersion: v1
+kind: Service
+metadata:
+  name: astral-planner-app-headless
+  namespace: astral-planner-production
+  labels:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/instance: production
+    app.kubernetes.io/component: service-headless
+    app.kubernetes.io/part-of: astral-planner
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - name: http
+    port: 3000
+    targetPort: http
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/instance: production
+    app.kubernetes.io/component: application
+---
+# Staging Environment Services
+apiVersion: v1
+kind: Service
+metadata:
+  name: astral-planner-app
+  namespace: astral-planner-staging
+  labels:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/instance: staging
+    app.kubernetes.io/component: service
+    app.kubernetes.io/part-of: astral-planner
+    app.kubernetes.io/managed-by: quantum-devops
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-protocol: "http"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: "/api/health"
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9090"
+    prometheus.io/path: "/metrics"
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+    protocol: TCP
+  - name: https
+    port: 443
+    targetPort: http
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: metrics
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/instance: staging
+    app.kubernetes.io/component: application
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: astral-planner-app-internal
+  namespace: astral-planner-staging
+  labels:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/instance: staging
+    app.kubernetes.io/component: service-internal
+    app.kubernetes.io/part-of: astral-planner
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 3000
+    targetPort: http
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: metrics
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/instance: staging
+    app.kubernetes.io/component: application
+---
+# Service Monitor for Prometheus Integration
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: astral-planner-app
+  namespace: astral-planner-production
+  labels:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/instance: production
+    app.kubernetes.io/component: monitoring
+    app.kubernetes.io/part-of: astral-planner
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: astral-planner
+      app.kubernetes.io/instance: production
+      app.kubernetes.io/component: service
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+    scheme: http
+    honorLabels: true
+    scrapeTimeout: 10s
+    metricRelabelings:
+    - sourceLabels: [__name__]
+      regex: 'go_.*'
+      action: drop
+    - sourceLabels: [__name__]
+      regex: 'promhttp_.*'
+      action: drop
+    relabelings:
+    - sourceLabels: [__meta_kubernetes_pod_name]
+      targetLabel: pod
+    - sourceLabels: [__meta_kubernetes_pod_node_name]
+      targetLabel: node
+    - sourceLabels: [__meta_kubernetes_namespace]
+      targetLabel: namespace
+    - sourceLabels: [__meta_kubernetes_service_name]
+      targetLabel: service
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: astral-planner-app
+  namespace: astral-planner-staging
+  labels:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/instance: staging
+    app.kubernetes.io/component: monitoring
+    app.kubernetes.io/part-of: astral-planner
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: astral-planner
+      app.kubernetes.io/instance: staging
+      app.kubernetes.io/component: service
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+    scheme: http
+    honorLabels: true
+---
+# Endpoint Slice for Advanced Load Balancing
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: astral-planner-app-endpoints
+  namespace: astral-planner-production
+  labels:
+    app.kubernetes.io/name: astral-planner
+    app.kubernetes.io/instance: production
+    app.kubernetes.io/component: endpoints
+    kubernetes.io/service-name: astral-planner-app
+addressType: IPv4
+ports:
+- name: http
+  port: 3000
+  protocol: TCP
+- name: metrics
+  port: 9090
+  protocol: TCP

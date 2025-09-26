@@ -1,0 +1,566 @@
+# Quantum's Security Hardening - Enterprise-Grade Security Policies
+# Zero-trust security with comprehensive policy enforcement
+
+# Pod Security Standards
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: astral-planner-production
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
+    security.quantum.io/zone: restricted
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: astral-planner-staging
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
+    security.quantum.io/zone: restricted
+---
+# Network Security Policy - Production
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: astral-planner-network-policy
+  namespace: astral-planner-production
+  labels:
+    app.kubernetes.io/name: astral-planner
+    security.quantum.io/policy: strict
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: astral-planner
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  ingress:
+  # Allow ingress from ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 3000
+    - protocol: TCP
+      port: 80
+  
+  # Allow monitoring scraping
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+      port: 9090
+  
+  # Allow service mesh communication
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: istio-system
+    ports:
+    - protocol: TCP
+      port: 15090
+  
+  # Allow pod-to-pod communication within namespace
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/part-of: astral-planner
+    ports:
+    - protocol: TCP
+      port: 3000
+    - protocol: TCP
+      port: 9090
+  
+  egress:
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  
+  # Allow HTTPS traffic for external APIs
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+  
+  # Allow database connections
+  - to:
+    - namespaceSelector: {}
+    ports:
+    - protocol: TCP
+      port: 5432
+  
+  # Allow Redis connections
+  - to:
+    - namespaceSelector: {}
+    ports:
+    - protocol: TCP
+      port: 6379
+  
+  # Allow monitoring and logging
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+      port: 9090
+    - protocol: TCP
+      port: 3100
+  
+  # Allow service mesh communication
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: istio-system
+    ports:
+    - protocol: TCP
+      port: 15010
+    - protocol: TCP
+      port: 15011
+    - protocol: TCP
+      port: 15090
+---
+# Open Policy Agent (OPA) Gatekeeper Constraints
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: requiredlabels
+  annotations:
+    metadata.gatekeeper.sh/title: "Required Labels"
+    metadata.gatekeeper.sh/version: 1.0.0
+    description: "Requires all resources to have specified labels."
+spec:
+  crd:
+    spec:
+      names:
+        kind: RequiredLabels
+      validation:
+        type: object
+        properties:
+          labels:
+            type: array
+            items:
+              type: string
+          message:
+            type: string
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package requiredlabels
+        
+        violation[{"msg": msg}] {
+          required := input.parameters.labels
+          provided := input.review.object.metadata.labels
+          missing := required[_]
+          not provided[missing]
+          msg := sprintf("Missing required label: %v", [missing])
+        }
+---
+apiVersion: config.gatekeeper.sh/v1alpha1
+kind: RequiredLabels
+metadata:
+  name: must-have-app-labels
+spec:
+  match:
+    - apiGroups: ["apps"]
+      kinds: ["Deployment", "StatefulSet", "DaemonSet"]
+    - apiGroups: [""]
+      kinds: ["Service", "ConfigMap", "Secret"]
+  parameters:
+    labels: ["app.kubernetes.io/name", "app.kubernetes.io/instance", "app.kubernetes.io/component"]
+    message: "All resources must have required app labels"
+---
+# Security Context Constraints
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: securitycontextconstraints
+  annotations:
+    description: "Enforces security context requirements for pods"
+spec:
+  crd:
+    spec:
+      names:
+        kind: SecurityContextConstraints
+      validation:
+        type: object
+        properties:
+          runAsUser:
+            type: object
+            properties:
+              rule:
+                type: string
+              ranges:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    min:
+                      type: integer
+                    max:
+                      type: integer
+          runAsGroup:
+            type: object
+            properties:
+              rule:
+                type: string
+              ranges:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    min:
+                      type: integer
+                    max:
+                      type: integer
+          fsGroup:
+            type: object
+            properties:
+              rule:
+                type: string
+              ranges:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    min:
+                      type: integer
+                    max:
+                      type: integer
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package securitycontextconstraints
+        
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.containers[_]
+          not container.securityContext.runAsNonRoot
+          msg := "Container must run as non-root user"
+        }
+        
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.containers[_]
+          container.securityContext.allowPrivilegeEscalation == true
+          msg := "Container must not allow privilege escalation"
+        }
+        
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.containers[_]
+          not container.securityContext.readOnlyRootFilesystem
+          msg := "Container must use read-only root filesystem"
+        }
+        
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.containers[_]
+          "ALL" in container.securityContext.capabilities.drop
+          count(container.securityContext.capabilities.add) > 0
+          msg := "Container should not add capabilities when dropping ALL"
+        }
+---
+apiVersion: config.gatekeeper.sh/v1alpha1
+kind: SecurityContextConstraints
+metadata:
+  name: enforce-security-context
+spec:
+  match:
+    - apiGroups: ["apps"]
+      kinds: ["Deployment", "StatefulSet", "DaemonSet"]
+    - apiGroups: [""]
+      kinds: ["Pod"]
+  parameters:
+    runAsUser:
+      rule: "MustRunAs"
+      ranges:
+      - min: 1000
+        max: 65535
+    runAsGroup:
+      rule: "MustRunAs"
+      ranges:
+      - min: 1000
+        max: 65535
+    fsGroup:
+      rule: "MustRunAs"
+      ranges:
+      - min: 1000
+        max: 65535
+---
+# Image Security Policy
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: allowedregistries
+  annotations:
+    description: "Restricts container images to allowed registries"
+spec:
+  crd:
+    spec:
+      names:
+        kind: AllowedRegistries
+      validation:
+        type: object
+        properties:
+          registries:
+            type: array
+            items:
+              type: string
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package allowedregistries
+        
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.containers[_]
+          registry := split(container.image, "/")[0]
+          not registry_allowed(registry)
+          msg := sprintf("Container image %v is not from an allowed registry. Allowed registries: %v", [container.image, input.parameters.registries])
+        }
+        
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.initContainers[_]
+          registry := split(container.image, "/")[0]
+          not registry_allowed(registry)
+          msg := sprintf("Init container image %v is not from an allowed registry. Allowed registries: %v", [container.image, input.parameters.registries])
+        }
+        
+        registry_allowed(registry) {
+          input.parameters.registries[_] == registry
+        }
+---
+apiVersion: config.gatekeeper.sh/v1alpha1
+kind: AllowedRegistries
+metadata:
+  name: allowed-container-registries
+spec:
+  match:
+    - apiGroups: ["apps"]
+      kinds: ["Deployment", "StatefulSet", "DaemonSet"]
+    - apiGroups: [""]
+      kinds: ["Pod"]
+  parameters:
+    registries:
+    - "ghcr.io"
+    - "quay.io"
+    - "docker.io"
+    - "gcr.io"
+    - "k8s.gcr.io"
+    - "registry.k8s.io"
+---
+# Resource Limits Policy
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: containerresourcelimits
+  annotations:
+    description: "Requires containers to have resource limits set"
+spec:
+  crd:
+    spec:
+      names:
+        kind: ContainerResourceLimits
+      validation:
+        type: object
+        properties:
+          cpu:
+            type: string
+          memory:
+            type: string
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package containerresourcelimits
+        
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.containers[_]
+          not container.resources.limits.cpu
+          msg := "Container must have CPU limit set"
+        }
+        
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.containers[_]
+          not container.resources.limits.memory
+          msg := "Container must have memory limit set"
+        }
+        
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.containers[_]
+          not container.resources.requests.cpu
+          msg := "Container must have CPU request set"
+        }
+        
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.containers[_]
+          not container.resources.requests.memory
+          msg := "Container must have memory request set"
+        }
+---
+apiVersion: config.gatekeeper.sh/v1alpha1
+kind: ContainerResourceLimits
+metadata:
+  name: require-resource-limits
+spec:
+  match:
+    - apiGroups: ["apps"]
+      kinds: ["Deployment", "StatefulSet", "DaemonSet"]
+  parameters:
+    cpu: "2000m"
+    memory: "4Gi"
+---
+# Pod Security Policy (for clusters that support it)
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: astral-planner-restricted
+  annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'runtime/default'
+    seccomp.security.alpha.kubernetes.io/defaultProfileName: 'runtime/default'
+    apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+    apparmor.security.beta.kubernetes.io/defaultProfileName: 'runtime/default'
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+    - ALL
+  volumes:
+    - 'configMap'
+    - 'emptyDir'
+    - 'projected'
+    - 'secret'
+    - 'downwardAPI'
+    - 'persistentVolumeClaim'
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  runAsUser:
+    rule: 'MustRunAsNonRoot'
+  supplementalGroups:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1000
+        max: 65535
+  fsGroup:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1000
+        max: 65535
+  readOnlyRootFilesystem: true
+  seLinux:
+    rule: 'RunAsAny'
+---
+# RBAC for Pod Security Policy
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: astral-planner-psp-user
+rules:
+- apiGroups: ['policy']
+  resources: ['podsecuritypolicies']
+  verbs: ['use']
+  resourceNames:
+  - astral-planner-restricted
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: astral-planner-psp-binding
+roleRef:
+  kind: ClusterRole
+  name: astral-planner-psp-user
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: astral-planner-app
+  namespace: astral-planner-production
+- kind: ServiceAccount
+  name: astral-planner-app
+  namespace: astral-planner-staging
+---
+# Falco Runtime Security Rules
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: falco-rules
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/component: security
+data:
+  astral_planner_rules.yaml: |
+    - rule: Astral Planner Suspicious File Access
+      desc: Detect suspicious file access in Astral Planner containers
+      condition: >
+        open_read and container and
+        k8s.ns.name in (astral-planner-production, astral-planner-staging) and
+        (fd.name contains /etc/passwd or
+         fd.name contains /etc/shadow or
+         fd.name contains /etc/hosts or
+         fd.name startswith /proc/ or
+         fd.name startswith /sys/)
+      output: >
+        Suspicious file access in Astral Planner
+        (user=%user.name command=%proc.cmdline file=%fd.name
+         container_id=%container.id container_name=%container.name
+         pod_name=%k8s.pod.name namespace=%k8s.ns.name)
+      priority: WARNING
+      tags: [astral-planner, file-access, security]
+    
+    - rule: Astral Planner Network Connection to Unexpected Port
+      desc: Detect network connections to unexpected ports from Astral Planner
+      condition: >
+        outbound and container and
+        k8s.ns.name in (astral-planner-production, astral-planner-staging) and
+        not fd.sport in (3000, 9090, 5432, 6379, 443, 80, 53) and
+        not fd.dport in (3000, 9090, 5432, 6379, 443, 80, 53)
+      output: >
+        Unexpected network connection from Astral Planner
+        (user=%user.name command=%proc.cmdline connection=%fd.name
+         container_id=%container.id container_name=%container.name
+         pod_name=%k8s.pod.name namespace=%k8s.ns.name)
+      priority: WARNING
+      tags: [astral-planner, network, security]
+    
+    - rule: Astral Planner Process Execution
+      desc: Detect unexpected process execution in Astral Planner containers
+      condition: >
+        spawned_process and container and
+        k8s.ns.name in (astral-planner-production, astral-planner-staging) and
+        not proc.name in (node, npm, sh, bash, sleep, curl, wget) and
+        not proc.pname in (node, npm, sh, bash)
+      output: >
+        Unexpected process execution in Astral Planner
+        (user=%user.name command=%proc.cmdline parent=%proc.pname
+         container_id=%container.id container_name=%container.name
+         pod_name=%k8s.pod.name namespace=%k8s.ns.name)
+      priority: WARNING
+      tags: [astral-planner, process, security]
+    
+    - rule: Astral Planner Privilege Escalation Attempt
+      desc: Detect privilege escalation attempts in Astral Planner
+      condition: >
+        spawned_process and container and
+        k8s.ns.name in (astral-planner-production, astral-planner-staging) and
+        (proc.name in (su, sudo, passwd, chpasswd, usermod, useradd, userdel) or
+         proc.cmdline contains "chmod +s" or
+         proc.cmdline contains "setuid" or
+         proc.cmdline contains "setgid")
+      output: >
+        Privilege escalation attempt in Astral Planner
+        (user=%user.name command=%proc.cmdline
+         container_id=%container.id container_name=%container.name
+         pod_name=%k8s.pod.name namespace=%k8s.ns.name)
+      priority: HIGH
+      tags: [astral-planner, privilege-escalation, security]

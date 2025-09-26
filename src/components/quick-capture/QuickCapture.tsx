@@ -18,7 +18,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { useAIParser } from '@/hooks/useAIParser';
+// import { useAIParser } from '@/hooks/useAIParser';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 
 interface QuickCaptureProps {
@@ -58,7 +58,8 @@ export function QuickCapture({
   const [aiSuggestion, setAiSuggestion] = useState('');
   
   const inputRef = useRef<HTMLInputElement>(null);
-  const { parseInput, isLoading: isParsing } = useAIParser();
+  // const { parseInput, isLoading: isParsing } = useAIParser();
+  const isParsing = false;
   const { 
     isListening, 
     transcript, 
@@ -95,7 +96,8 @@ export function QuickCapture({
   useEffect(() => {
     if (input.length > 5 && !input.startsWith('/') && showSuggestions) {
       const debounceTimer = setTimeout(async () => {
-        const suggestion = await parseInput(input, { preview: true });
+        // const suggestion = await parseInput(input, { preview: true });
+        const suggestion = null;
         if (suggestion && typeof suggestion === 'string') {
           setAiSuggestion(suggestion);
         }
@@ -104,7 +106,7 @@ export function QuickCapture({
     } else {
       setAiSuggestion('');
     }
-  }, [input, parseInput, showSuggestions]);
+  }, [input, showSuggestions]);
 
   const handleKeyDown = async (e: KeyboardEvent<HTMLInputElement>) => {
     // Accept AI suggestion with Tab
@@ -158,12 +160,14 @@ export function QuickCapture({
         type = selectedType.replace('/', '');
         processedInput = input.replace(selectedType, '').trim();
       } else if (!input.startsWith('/')) {
-        // Use AI to parse natural language
-        const parsed = await parseInput(input);
-        if (parsed && typeof parsed === 'object') {
-          type = parsed.type || 'task';
-          processedInput = parsed.title || input;
-        }
+        // Use AI to parse natural language (disabled for now)
+        // const parsed = await parseInput(input);
+        // if (parsed && typeof parsed === 'object') {
+        //   type = parsed.type || 'task';
+        //   processedInput = parsed.title || input;
+        // }
+        type = 'task';
+        processedInput = input;
       }
 
       await onSubmit(processedInput, type);

@@ -22,6 +22,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 import Logger from '@/lib/logger'
+import type { AdminUser, AdminActivity, AdminStats } from '@/types'
 
 interface DashboardStats {
   totalUsers: number
@@ -44,8 +45,8 @@ interface SystemHealth {
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [health, setHealth] = useState<SystemHealth | null>(null)
-  const [users, setUsers] = useState<any[]>([])
-  const [activities, setActivities] = useState<any[]>([])
+  const [users, setUsers] = useState<AdminUser[]>([])
+  const [activities, setActivities] = useState<AdminActivity[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   // const { toast } = useToast()

@@ -72,22 +72,53 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
         success: {
-          DEFAULT: "hsl(142, 76%, 36%)",
-          foreground: "hsl(355, 7%, 97%)",
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+          subtle: "hsl(var(--success-subtle))",
         },
         warning: {
-          DEFAULT: "hsl(38, 92%, 50%)",
-          foreground: "hsl(48, 96%, 89%)",
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+          subtle: "hsl(var(--warning-subtle))",
         },
         info: {
-          DEFAULT: "hsl(200, 98%, 39%)",
-          foreground: "hsl(204, 94%, 94%)",
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+          subtle: "hsl(var(--info-subtle))",
+        },
+        error: {
+          DEFAULT: "hsl(var(--error))",
+          foreground: "hsl(var(--error-foreground))",
+          subtle: "hsl(var(--error-subtle))",
+        },
+        surface: {
+          1: "hsl(var(--surface-1))",
+          2: "hsl(var(--surface-2))",
+          3: "hsl(var(--surface-3))",
+          overlay: "hsl(var(--surface-overlay))",
         },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        'enhanced-sm': 'var(--shadow-sm)',
+        'enhanced-md': 'var(--shadow-md)',
+        'enhanced-lg': 'var(--shadow-lg)',
+        'enhanced-xl': 'var(--shadow-xl)',
+        'enhanced-2xl': 'var(--shadow-2xl)',
+      },
+      transitionDuration: {
+        'fast': '150ms',
+        'base': '250ms',
+        'slow': '350ms',
+      },
+      transitionTimingFunction: {
+        'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
+        'bounce-in': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+        'ease-spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
       },
       spacing: {
         'safe-top': 'env(safe-area-inset-top)',
@@ -197,6 +228,11 @@ module.exports = {
         "slide-out-to-right": "slide-out-to-right 0.2s ease-in",
         "pulse-ring": "pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite",
         "bounce-subtle": "bounce-subtle 1s infinite",
+        "float": "float 3s ease-in-out infinite",
+        "glow": "glow 2s ease-in-out infinite alternate",
+        "shimmer": "shimmer 2s linear infinite",
+        "scale-in": "scale-in 0.2s ease-out",
+        "scale-out": "scale-out 0.2s ease-in",
       },
       typography: {
         DEFAULT: {

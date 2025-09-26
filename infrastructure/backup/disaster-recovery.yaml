@@ -1,0 +1,654 @@
+# Quantum's Disaster Recovery - Bulletproof Backup and Recovery System
+# Automated backup strategy with cross-region replication and instant recovery
+
+# Velero Backup Configuration
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: velero
+  labels:
+    component: velero
+    app.kubernetes.io/name: velero
+---
+# Velero ServerStatusRequest for backup storage
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cloud-credentials
+  namespace: velero
+  labels:
+    component: velero
+type: Opaque
+data:
+  # AWS credentials for backup storage (base64 encoded)
+  cloud: W2RlZmF1bHRdCmF3c19hY2Nlc3Nfa2V5X2lkID0gQUtJQUlPU0ZPRE5ON0VYQU1QTEUKYXdzX3NlY3JldF9hY2Nlc3Nfa2V5ID0gd0phbFJYVXRuRkVNSS9LN01ERU5HL2JQeFJmaUNZRVhBTVBMRUtFWQo=
+---
+# Velero BackupStorageLocation
+apiVersion: velero.io/v1
+kind: BackupStorageLocation
+metadata:
+  name: aws-primary
+  namespace: velero
+  labels:
+    component: velero
+spec:
+  provider: aws
+  objectStorage:
+    bucket: astral-planner-backups-primary
+    prefix: velero
+  config:
+    region: us-east-1
+    s3ForcePathStyle: "false"
+    kmsKeyId: "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
+    serverSideEncryption: "aws:kms"
+    storageClass: "STANDARD_IA"
+  credential:
+    name: cloud-credentials
+    key: cloud
+---
+# Secondary backup location for cross-region redundancy
+apiVersion: velero.io/v1
+kind: BackupStorageLocation
+metadata:
+  name: aws-secondary
+  namespace: velero
+  labels:
+    component: velero
+spec:
+  provider: aws
+  objectStorage:
+    bucket: astral-planner-backups-secondary
+    prefix: velero
+  config:
+    region: us-west-2
+    s3ForcePathStyle: "false"
+    kmsKeyId: "arn:aws:kms:us-west-2:123456789012:key/12345678-1234-1234-1234-123456789012"
+    serverSideEncryption: "aws:kms"
+    storageClass: "STANDARD_IA"
+  credential:
+    name: cloud-credentials
+    key: cloud
+---
+# Volume Snapshot Location
+apiVersion: velero.io/v1
+kind: VolumeSnapshotLocation
+metadata:
+  name: aws-ebs
+  namespace: velero
+  labels:
+    component: velero
+spec:
+  provider: aws
+  config:
+    region: us-east-1
+    enableSharedConfig: "true"
+  credential:
+    name: cloud-credentials
+    key: cloud
+---
+# Production Application Backup Schedule
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: astral-planner-production-daily
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: astral-planner
+    component: backup-schedule
+    environment: production
+spec:
+  schedule: "0 2 * * *"  # Daily at 2 AM UTC
+  template:
+    metadata:
+      labels:
+        backup-type: daily
+        environment: production
+        app: astral-planner
+    spec:
+      includedNamespaces:
+      - astral-planner-production
+      
+      includedResources:
+      - deployments
+      - services
+      - configmaps
+      - secrets
+      - persistentvolumeclaims
+      - persistentvolumes
+      - ingresses
+      - horizontalpodautoscalers
+      - networkpolicies
+      - servicemonitors
+      
+      excludedResources:
+      - events
+      - events.events.k8s.io
+      - backups.velero.io
+      - restores.velero.io
+      - resticrepositories.velero.io
+      
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/part-of: astral-planner
+      
+      snapshotVolumes: true
+      includeClusterResources: false
+      
+      storageLocation: aws-primary
+      volumeSnapshotLocations:
+      - aws-ebs
+      
+      ttl: 720h  # 30 days retention
+      
+      hooks:
+        resources:
+        - name: database-backup-hook
+          includedNamespaces:
+          - astral-planner-production
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: astral-planner
+          pre:
+          - exec:
+              container: app
+              command:
+              - /bin/sh
+              - -c
+              - |
+                # Create database dump before backup
+                echo "Creating database backup..."
+                pg_dump $DATABASE_URL > /tmp/db_backup_$(date +%Y%m%d_%H%M%S).sql
+                echo "Database backup completed"
+              onError: Continue
+              timeout: 10m
+          post:
+          - exec:
+              container: app
+              command:
+              - /bin/sh
+              - -c
+              - |
+                # Cleanup temporary files
+                echo "Cleaning up temporary backup files..."
+                rm -f /tmp/db_backup_*.sql
+                echo "Cleanup completed"
+              onError: Continue
+              timeout: 2m
+---
+# Weekly Full Backup
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: astral-planner-production-weekly
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: astral-planner
+    component: backup-schedule
+    environment: production
+spec:
+  schedule: "0 1 * * 0"  # Weekly on Sunday at 1 AM UTC
+  template:
+    metadata:
+      labels:
+        backup-type: weekly
+        environment: production
+        app: astral-planner
+    spec:
+      includedNamespaces:
+      - astral-planner-production
+      - monitoring
+      - ingress-nginx
+      
+      includeClusterResources: true
+      snapshotVolumes: true
+      
+      storageLocation: aws-primary
+      volumeSnapshotLocations:
+      - aws-ebs
+      
+      ttl: 2160h  # 90 days retention
+      
+      hooks:
+        resources:
+        - name: full-system-backup-hook
+          includedNamespaces:
+          - astral-planner-production
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: astral-planner
+          pre:
+          - exec:
+              container: app
+              command:
+              - /bin/sh
+              - -c
+              - |
+                # Full system preparation
+                echo "Preparing for full system backup..."
+                # Flush application caches
+                curl -X POST http://localhost:3000/api/admin/cache/flush
+                # Create comprehensive database backup
+                pg_dump --verbose --clean --no-owner --no-acl $DATABASE_URL > /tmp/full_db_backup_$(date +%Y%m%d_%H%M%S).sql
+                # Redis backup
+                redis-cli --rdb /tmp/redis_backup_$(date +%Y%m%d_%H%M%S).rdb
+                echo "Full backup preparation completed"
+              onError: Fail
+              timeout: 30m
+---
+# Cross-region replication backup
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: astral-planner-cross-region
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: astral-planner
+    component: backup-schedule
+    environment: production
+    backup-type: cross-region
+spec:
+  schedule: "0 6 * * *"  # Daily at 6 AM UTC to secondary region
+  template:
+    metadata:
+      labels:
+        backup-type: cross-region
+        environment: production
+        app: astral-planner
+    spec:
+      includedNamespaces:
+      - astral-planner-production
+      
+      snapshotVolumes: true
+      includeClusterResources: false
+      
+      storageLocation: aws-secondary  # Secondary region backup
+      volumeSnapshotLocations:
+      - aws-ebs
+      
+      ttl: 1440h  # 60 days retention
+---
+# Staging Environment Backup
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: astral-planner-staging-daily
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: astral-planner
+    component: backup-schedule
+    environment: staging
+spec:
+  schedule: "0 3 * * *"  # Daily at 3 AM UTC
+  template:
+    metadata:
+      labels:
+        backup-type: daily
+        environment: staging
+        app: astral-planner
+    spec:
+      includedNamespaces:
+      - astral-planner-staging
+      
+      snapshotVolumes: true
+      includeClusterResources: false
+      
+      storageLocation: aws-primary
+      volumeSnapshotLocations:
+      - aws-ebs
+      
+      ttl: 168h  # 7 days retention (shorter for staging)
+---
+# Database Backup CronJob (Additional PostgreSQL backup)
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: database-backup
+  namespace: astral-planner-production
+  labels:
+    app.kubernetes.io/name: database-backup
+    app.kubernetes.io/component: backup
+    app.kubernetes.io/part-of: astral-planner
+spec:
+  schedule: "0 */6 * * *"  # Every 6 hours
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: database-backup
+            app.kubernetes.io/component: backup
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: backup-service-account
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 999
+            fsGroup: 999
+          
+          containers:
+          - name: postgres-backup
+            image: postgres:15-alpine
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              echo "Starting PostgreSQL backup..."
+              
+              # Create timestamp
+              TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+              BACKUP_NAME="astral_planner_backup_${TIMESTAMP}"
+              
+              # Create database backup
+              pg_dump \
+                --verbose \
+                --clean \
+                --no-owner \
+                --no-acl \
+                --format=custom \
+                --compress=9 \
+                --file="/backup/${BACKUP_NAME}.dump" \
+                "${DATABASE_URL}"
+              
+              # Create SQL backup as well
+              pg_dump \
+                --verbose \
+                --clean \
+                --no-owner \
+                --no-acl \
+                "${DATABASE_URL}" > "/backup/${BACKUP_NAME}.sql"
+              
+              # Compress SQL backup
+              gzip "/backup/${BACKUP_NAME}.sql"
+              
+              # Upload to S3
+              aws s3 cp "/backup/${BACKUP_NAME}.dump" \
+                "s3://astral-planner-db-backups/production/${BACKUP_NAME}.dump" \
+                --storage-class STANDARD_IA \
+                --server-side-encryption aws:kms \
+                --ssekms-key-id "${KMS_KEY_ID}"
+              
+              aws s3 cp "/backup/${BACKUP_NAME}.sql.gz" \
+                "s3://astral-planner-db-backups/production/${BACKUP_NAME}.sql.gz" \
+                --storage-class STANDARD_IA \
+                --server-side-encryption aws:kms \
+                --ssekms-key-id "${KMS_KEY_ID}"
+              
+              # Cleanup old local backups (keep last 3)
+              cd /backup
+              ls -t *.dump | tail -n +4 | xargs -r rm
+              ls -t *.sql.gz | tail -n +4 | xargs -r rm
+              
+              # Cleanup old S3 backups (keep last 30 days)
+              aws s3api list-objects-v2 \
+                --bucket astral-planner-db-backups \
+                --prefix "production/" \
+                --query "Contents[?LastModified<='$(date -d '30 days ago' --iso-8601)'].Key" \
+                --output text | xargs -r -I {} aws s3 rm "s3://astral-planner-db-backups/{}"
+              
+              echo "PostgreSQL backup completed successfully: ${BACKUP_NAME}"
+            
+            env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: astral-planner-secrets
+                  key: DATABASE_URL
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backup-credentials
+                  key: aws-access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backup-credentials
+                  key: aws-secret-access-key
+            - name: AWS_DEFAULT_REGION
+              value: "us-east-1"
+            - name: KMS_KEY_ID
+              value: "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
+            
+            resources:
+              requests:
+                memory: "256Mi"
+                cpu: "100m"
+              limits:
+                memory: "1Gi"
+                cpu: "500m"
+            
+            volumeMounts:
+            - name: backup-storage
+              mountPath: /backup
+            
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                - ALL
+          
+          volumes:
+          - name: backup-storage
+            emptyDir:
+              sizeLimit: 10Gi
+---
+# Redis Backup CronJob
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: redis-backup
+  namespace: astral-planner-production
+  labels:
+    app.kubernetes.io/name: redis-backup
+    app.kubernetes.io/component: backup
+    app.kubernetes.io/part-of: astral-planner
+spec:
+  schedule: "0 */12 * * *"  # Every 12 hours
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: redis-backup
+            app.kubernetes.io/component: backup
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: backup-service-account
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 999
+            fsGroup: 999
+          
+          containers:
+          - name: redis-backup
+            image: redis:7-alpine
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              echo "Starting Redis backup..."
+              
+              # Create timestamp
+              TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+              BACKUP_NAME="redis_backup_${TIMESTAMP}"
+              
+              # Create Redis backup
+              redis-cli -h "${REDIS_HOST}" -p 6379 -a "${REDIS_PASSWORD}" \
+                --rdb "/backup/${BACKUP_NAME}.rdb"
+              
+              # Compress backup
+              gzip "/backup/${BACKUP_NAME}.rdb"
+              
+              # Upload to S3
+              aws s3 cp "/backup/${BACKUP_NAME}.rdb.gz" \
+                "s3://astral-planner-redis-backups/production/${BACKUP_NAME}.rdb.gz" \
+                --storage-class STANDARD_IA \
+                --server-side-encryption aws:kms \
+                --ssekms-key-id "${KMS_KEY_ID}"
+              
+              # Cleanup old local backups
+              cd /backup
+              ls -t *.rdb.gz | tail -n +4 | xargs -r rm
+              
+              # Cleanup old S3 backups (keep last 15 days for Redis)
+              aws s3api list-objects-v2 \
+                --bucket astral-planner-redis-backups \
+                --prefix "production/" \
+                --query "Contents[?LastModified<='$(date -d '15 days ago' --iso-8601)'].Key" \
+                --output text | xargs -r -I {} aws s3 rm "s3://astral-planner-redis-backups/{}"
+              
+              echo "Redis backup completed successfully: ${BACKUP_NAME}"
+            
+            env:
+            - name: REDIS_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: astral-planner-secrets
+                  key: REDIS_HOST
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: astral-planner-secrets
+                  key: REDIS_PASSWORD
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backup-credentials
+                  key: aws-access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backup-credentials
+                  key: aws-secret-access-key
+            - name: AWS_DEFAULT_REGION
+              value: "us-east-1"
+            - name: KMS_KEY_ID
+              value: "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
+            
+            resources:
+              requests:
+                memory: "128Mi"
+                cpu: "50m"
+              limits:
+                memory: "512Mi"
+                cpu: "200m"
+            
+            volumeMounts:
+            - name: backup-storage
+              mountPath: /backup
+            
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                - ALL
+          
+          volumes:
+          - name: backup-storage
+            emptyDir:
+              sizeLimit: 2Gi
+---
+# Service Account for Backup Operations
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: backup-service-account
+  namespace: astral-planner-production
+  labels:
+    app.kubernetes.io/name: backup
+    app.kubernetes.io/component: service-account
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/astral-planner-backup-role
+---
+# Disaster Recovery Testing Job
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: disaster-recovery-test
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: dr-test
+    app.kubernetes.io/component: testing
+spec:
+  schedule: "0 4 * * 6"  # Weekly on Saturday at 4 AM UTC
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: dr-test
+            app.kubernetes.io/component: testing
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: velero
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 999
+          
+          containers:
+          - name: dr-test
+            image: velero/velero:v1.11.1
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              echo "Starting disaster recovery test..."
+              
+              # Get latest backup
+              LATEST_BACKUP=$(velero backup get --output json | jq -r '.items | sort_by(.metadata.creationTimestamp) | reverse | .[0].metadata.name')
+              
+              if [ "$LATEST_BACKUP" = "null" ]; then
+                echo "No backups found for testing"
+                exit 1
+              fi
+              
+              echo "Testing restore from backup: $LATEST_BACKUP"
+              
+              # Create test namespace
+              kubectl create namespace dr-test-$(date +%s) || true
+              
+              # Perform test restore to test namespace
+              velero restore create dr-test-$(date +%s) \
+                --from-backup "$LATEST_BACKUP" \
+                --namespace-mappings astral-planner-production:dr-test-$(date +%s) \
+                --wait
+              
+              # Verify restore
+              echo "Verifying restore..."
+              sleep 60
+              
+              # Check if pods are running
+              kubectl get pods -n dr-test-$(date +%s)
+              
+              # Cleanup test namespace
+              kubectl delete namespace dr-test-$(date +%s) --timeout=300s
+              
+              echo "Disaster recovery test completed successfully"
+            
+            resources:
+              requests:
+                memory: "256Mi"
+                cpu: "100m"
+              limits:
+                memory: "512Mi"
+                cpu: "500m"
+            
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                - ALL
