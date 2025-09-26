@@ -8,26 +8,19 @@ export async function GET(req: NextRequest) {
 // This service worker unregisters itself and cleans up old caches
 
 self.addEventListener('install', (event) => {
-  console.log('Cleanup service worker installing...');
-  // Skip waiting to activate immediately
+  // Skip waiting to activate immediately (silent)
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-  console.log('Cleanup service worker activating...');
-  
   event.waitUntil(
     (async () => {
       try {
-        // Delete all caches
+        // Delete all caches (silent cleanup)
         const cacheNames = await caches.keys();
-        console.log('Found caches to delete:', cacheNames);
         
         await Promise.all(
-          cacheNames.map(cacheName => {
-            console.log('Deleting cache:', cacheName);
-            return caches.delete(cacheName);
-          })
+          cacheNames.map(cacheName => caches.delete(cacheName))
         );
 
         // Claim all clients
@@ -39,17 +32,15 @@ self.addEventListener('activate', (event) => {
           client.postMessage({ type: 'CACHE_CLEARED' });
         });
 
-        console.log('Cache cleanup completed');
-
-        // Unregister this service worker after cleanup
+        // Unregister this service worker after cleanup (silent)
         setTimeout(() => {
-          self.registration.unregister().then(() => {
-            console.log('Service worker unregistered successfully');
+          self.registration.unregister().catch(() => {
+            // Silent error handling
           });
         }, 1000);
 
       } catch (error) {
-        console.error('Error during cache cleanup:', error);
+        // Silent error handling for production
       }
     })()
   );

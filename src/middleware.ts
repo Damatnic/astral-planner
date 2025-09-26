@@ -32,7 +32,15 @@ export default async function middleware(req: NextRequest) {
     const authContext = await getAuthContext(req);
     
     if (!authContext.isAuthenticated) {
-      // Redirect unauthenticated users to home page
+      // For API routes, return JSON error instead of HTML redirect
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json(
+          { error: 'Authentication required', code: 'AUTH_REQUIRED' },
+          { status: 401 }
+        );
+      }
+      
+      // Redirect unauthenticated users to home page for non-API routes
       const loginUrl = new URL('/', req.url);
       return NextResponse.redirect(loginUrl);
     }

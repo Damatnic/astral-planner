@@ -8,7 +8,10 @@ export function getPusherClient() {
     const pusherKey = process.env.NEXT_PUBLIC_PUSHER_KEY;
     
     if (!pusherKey) {
-      console.warn('Pusher key not configured - real-time features disabled');
+      // Only log in development mode to reduce console noise in production
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Pusher key not configured - real-time features disabled');
+      }
       return null;
     }
     
@@ -195,7 +198,10 @@ export function useRealtimePresence(channelName: string) {
   useEffect(() => {
     const pusher = getPusherClient();
     if (!pusher) {
-      console.warn('Pusher not available for presence channel:', channelName);
+      // Only log in development mode
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Pusher not available for presence channel:', channelName);
+      }
       return;
     }
 

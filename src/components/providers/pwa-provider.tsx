@@ -14,7 +14,7 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
-          // Service Worker registered successfully
+          // Service Worker registered successfully (silent)
           
           // Check for updates
           registration.addEventListener('updatefound', () => {
@@ -30,9 +30,26 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
               })
             }
           })
+          
+          // Handle service worker lifecycle events silently
+          registration.addEventListener('installing', () => {
+            // Service worker is installing (silent)
+          })
+          
+          registration.addEventListener('waiting', () => {
+            // Service worker is waiting (silent)
+          })
+          
+          registration.addEventListener('active', () => {
+            // Service worker is active (silent)
+          })
         })
-        .catch(() => {
-          // Service Worker registration failed - continue without PWA features
+        .catch((error) => {
+          // Service Worker registration failed - continue without PWA features (silent)
+          // Only log in development
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Service Worker registration failed:', error)
+          }
         })
     }
 
