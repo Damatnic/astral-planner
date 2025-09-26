@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// GET /api/habits - List habits with logs (Demo version)
+// GET /api/habits - List habits with logs (Demo version) 
 export async function GET(req: NextRequest) {
   try {
-    console.log('Fetching habits with demo data');
+    console.log('Fetching habits with demo data - updated version');
 
     // Return demo habits data for production demo
     const demoHabits = [
