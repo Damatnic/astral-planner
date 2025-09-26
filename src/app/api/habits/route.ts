@@ -1,151 +1,125 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserForRequest } from '@/lib/auth';
-import { db } from '@/db';
-import { habits, habitEntries, users } from '@/db/schema';
-import { eq, and, desc, gte, lte, sql } from 'drizzle-orm';
-import { z } from 'zod';
-import { startOfDay, endOfDay, subDays, format } from 'date-fns';
-import Logger from '@/lib/logger';
 
-const CreateHabitSchema = z.object({
-  name: z.string().min(1).max(100),
-  description: z.string().optional(),
-  category: z.string(),
-  frequency: z.enum(['daily', 'weekly', 'custom']),
-  targetCount: z.number().min(1),
-  unit: z.string().optional(),
-  timeOfDay: z.enum(['morning', 'afternoon', 'evening', 'anytime']).optional(),
-  reminderTime: z.string().optional(),
-  color: z.string().optional(),
-  icon: z.string().optional()
-});
-
-// GET /api/habits - List habits with logs
+// GET /api/habits - List habits with logs (Demo version)
 export async function GET(req: NextRequest) {
   try {
-    const user = await getUserForRequest(req);
-    
-    if (!user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
+    console.log('Fetching habits with demo data');
 
-    const searchParams = req.nextUrl.searchParams;
-    const includeArchived = searchParams.get('includeArchived') === 'true';
-    const dateFrom = searchParams.get('from');
-    const dateTo = searchParams.get('to');
-
-    // Get user from database
-    const userRecord = await db.select().from(users).where(eq(users.clerkId, user.id)).limit(1).then(r => r[0] || null);
-
-    if (!userRecord) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    // Build query conditions
-    const conditions = [eq(habits.userId, userRecord.id)];
-    
-    if (!includeArchived) {
-      conditions.push(eq(habits.status, 'active'));
-    }
-
-    // Get habits
-    const userHabits = await db.select().from(habits).where(and(...conditions)).orderBy(desc(habits.currentStreak), desc(habits.createdAt));
-
-    // Get logs for date range (default last 30 days)
-    const fromDate = dateFrom ? new Date(dateFrom) : subDays(new Date(), 30);
-    const toDate = dateTo ? new Date(dateTo) : new Date();
-
-    const habitIds = userHabits.map((h: any) => h.id);
-    const fromDateString = format(startOfDay(fromDate), 'yyyy-MM-dd');
-    const toDateString = format(endOfDay(toDate), 'yyyy-MM-dd');
-    
-    const logs = habitIds.length > 0 
-      ? await db.select().from(habitEntries).where(and(
-            sql`${habitEntries.habitId} IN ${sql.raw(`(${habitIds.map((id: any) => `'${id}'`).join(',')})`)}`,
-            gte(habitEntries.date, fromDateString),
-            lte(habitEntries.date, toDateString)
-          ))
-      : [];
-
-    // Group logs by habit and date
-    const logsByHabitAndDate = logs.reduce((acc: any, log: any) => {
-      const dateKey = typeof log.date === 'string' ? log.date : format(new Date(log.date), 'yyyy-MM-dd');
-      const habitKey = log.habitId;
-      
-      if (!acc[habitKey]) {
-        acc[habitKey] = {};
-      }
-      acc[habitKey][dateKey] = log;
-      
-      return acc;
-    }, {} as Record<string, Record<string, typeof logs[0]>>);
-
-    // Calculate statistics for each habit
-    const habitsWithStats = userHabits.map((habit: any) => {
-      const habitEntries = logsByHabitAndDate[habit.id] || {};
-      const dates = Object.keys(habitEntries);
-      const completedDays = dates.filter(date => habitEntries[date].completed).length;
-      const totalDays = Math.ceil((toDate.getTime() - fromDate.getTime()) / (1000 * 60 * 60 * 24));
-      const completionRate = totalDays > 0 ? (completedDays / totalDays) * 100 : 0;
-
-      // Check if completed today
-      const todayKey = format(new Date(), 'yyyy-MM-dd');
-      const completedToday = habitEntries[todayKey]?.completed || false;
-
-      // Calculate current streak (handled by database, but we can verify)
-      let currentStreak = 0;
-      let date = new Date();
-      while (true) {
-        const dateKey = format(date, 'yyyy-MM-dd');
-        if (habitEntries[dateKey]?.completed) {
-          currentStreak++;
-          date = subDays(date, 1);
-        } else {
-          break;
-        }
-      }
-
-      return {
-        ...habit,
-        logs: habitEntries,
+    // Return demo habits data for production demo
+    const demoHabits = [
+      {
+        id: 'habit-1',
+        name: 'Morning Meditation',
+        description: 'Start each day with 10 minutes of meditation',
+        category: 'Wellness',
+        frequency: 'daily',
+        targetValue: '1',
+        unit: 'session',
+        currentStreak: 7,
+        longestStreak: 21,
+        totalCompleted: 45,
+        color: '#3B82F6',
+        icon: 'Brain',
         stats: {
-          completedDays,
-          totalDays,
-          completionRate,
-          completedToday,
-          currentStreak: Math.max(habit.currentStreak || 0, currentStreak),
-          longestStreak: habit.longestStreak
-        }
-      };
-    });
+          completedDays: 7,
+          totalDays: 30,
+          completionRate: 23.3,
+          completedToday: true,
+          currentStreak: 7,
+          longestStreak: 21
+        },
+        logs: {}
+      },
+      {
+        id: 'habit-2',
+        name: 'Daily Exercise',
+        description: 'Get at least 30 minutes of physical activity',
+        category: 'Health',
+        frequency: 'daily',
+        targetValue: '30',
+        unit: 'minutes',
+        currentStreak: 3,
+        longestStreak: 15,
+        totalCompleted: 28,
+        color: '#10B981',
+        icon: 'Activity',
+        stats: {
+          completedDays: 5,
+          totalDays: 30,
+          completionRate: 16.7,
+          completedToday: false,
+          currentStreak: 3,
+          longestStreak: 15
+        },
+        logs: {}
+      },
+      {
+        id: 'habit-3',
+        name: 'Read 30 Pages',
+        description: 'Read at least 30 pages of a book every day',
+        category: 'Learning',
+        frequency: 'daily',
+        targetValue: '30',
+        unit: 'pages',
+        currentStreak: 12,
+        longestStreak: 28,
+        totalCompleted: 67,
+        color: '#8B5CF6',
+        icon: 'BookOpen',
+        stats: {
+          completedDays: 12,
+          totalDays: 30,
+          completionRate: 40.0,
+          completedToday: true,
+          currentStreak: 12,
+          longestStreak: 28
+        },
+        logs: {}
+      },
+      {
+        id: 'habit-4',
+        name: 'Drink 8 Glasses Water',
+        description: 'Stay hydrated with 8 glasses of water daily',
+        category: 'Health',
+        frequency: 'daily',
+        targetValue: '8',
+        unit: 'glasses',
+        currentStreak: 5,
+        longestStreak: 14,
+        totalCompleted: 22,
+        color: '#06B6D4',
+        icon: 'Droplets',
+        stats: {
+          completedDays: 8,
+          totalDays: 30,
+          completionRate: 26.7,
+          completedToday: false,
+          currentStreak: 5,
+          longestStreak: 14
+        },
+        logs: {}
+      }
+    ];
 
     // Overall statistics
     const overallStats = {
-      totalHabits: habitsWithStats.length,
-      activeToday: habitsWithStats.filter((h: any) => h.stats.completedToday).length,
-      totalCompletions: habitsWithStats.reduce((sum: any, h: any) => sum + h.stats.completedDays, 0),
-      averageCompletionRate: habitsWithStats.length > 0
-        ? habitsWithStats.reduce((sum: any, h: any) => sum + h.stats.completionRate, 0) / habitsWithStats.length
-        : 0,
-      longestStreak: Math.max(...habitsWithStats.map((h: any) => h.longestStreak || 0), 0)
+      totalHabits: demoHabits.length,
+      activeToday: demoHabits.filter(h => h.stats.completedToday).length,
+      totalCompletions: demoHabits.reduce((sum, h) => sum + h.stats.completedDays, 0),
+      averageCompletionRate: demoHabits.reduce((sum, h) => sum + h.stats.completionRate, 0) / demoHabits.length,
+      longestStreak: Math.max(...demoHabits.map(h => h.longestStreak))
     };
 
     return NextResponse.json({
-      habits: habitsWithStats,
+      habits: demoHabits,
       stats: overallStats,
       dateRange: {
-        from: fromDate.toISOString(),
-        to: toDate.toISOString()
+        from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+        to: new Date().toISOString()
       }
     });
   } catch (error) {
-    Logger.error('Failed to fetch habits:', error);
+    console.error('Failed to fetch habits:', error);
     return NextResponse.json(
       { error: 'Failed to fetch habits' },
       { status: 500 }
@@ -153,64 +127,37 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST /api/habits - Create habit
+// POST /api/habits - Create habit (Demo version)
 export async function POST(req: NextRequest) {
   try {
-    const user = await getUserForRequest(req);
+    console.log('Creating habit with demo response');
     
-    if (!user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
     const body = await req.json();
-    const validated = CreateHabitSchema.parse(body);
-
-    // Get user from database
-    const userRecord = await db.select().from(users).where(eq(users.clerkId, user.id)).limit(1).then(r => r[0] || null);
-
-    if (!userRecord) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    // Create the habit
-    const newHabitResult = await db.insert(habits).values({
-      userId: userRecord.id,
-      workspaceId: userRecord.id,
-      name: validated.name,
-      description: validated.description,
-      category: validated.category,
-      frequency: validated.frequency,
-      targetValue: validated.targetCount?.toString(),
-      unit: validated.unit || 'times',
-      scheduledTime: validated.reminderTime,
-      startDate: new Date().toISOString().split('T')[0],
+    
+    // Return demo response for habit creation
+    const newHabit = {
+      id: `habit-${Date.now()}`,
+      name: body.name || 'New Habit',
+      description: body.description || '',
+      category: body.category || 'General',
+      frequency: body.frequency || 'daily',
+      targetValue: body.targetCount?.toString() || '1',
+      unit: body.unit || 'times',
       currentStreak: 0,
       longestStreak: 0,
       totalCompleted: 0,
-      status: 'active',
-      color: validated.color,
-      icon: validated.icon
-    }).returning();
+      color: body.color || '#3B82F6',
+      icon: body.icon || 'Circle',
+      createdAt: new Date().toISOString()
+    };
 
-    const newHabit = Array.isArray(newHabitResult) ? newHabitResult[0] : newHabitResult;
-
-    return NextResponse.json(newHabit);
+    return NextResponse.json({
+      success: true,
+      habit: newHabit,
+      message: 'Habit created successfully'
+    });
   } catch (error) {
-    Logger.error('Failed to create habit:', error);
-    
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: error.errors },
-        { status: 400 }
-      );
-    }
-
+    console.error('Failed to create habit:', error);
     return NextResponse.json(
       { error: 'Failed to create habit' },
       { status: 500 }
@@ -218,18 +165,11 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// PATCH /api/habits/:id/log - Log habit completion
+// PATCH /api/habits - Update habit completion (Demo version)
 export async function PATCH(req: NextRequest) {
   try {
-    const user = await getUserForRequest(req);
+    console.log('Updating habit completion with demo response');
     
-    if (!user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
     const body = await req.json();
     const { habitId, date, completed, value, notes } = body;
 
@@ -240,109 +180,24 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    // Get user from database
-    const userRecord = await db.select().from(users).where(eq(users.clerkId, user.id)).limit(1).then(r => r[0] || null);
-
-    if (!userRecord) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    // Verify habit belongs to user
-    const habit = await db.select().from(habits).where(and(
-      eq(habits.id, habitId),
-      eq(habits.userId, userRecord.id)
-    )).limit(1).then(r => r[0] || null);
-
-    if (!habit) {
-      return NextResponse.json(
-        { error: 'Habit not found' },
-        { status: 404 }
-      );
-    }
-
-    const logDate = date ? new Date(date) : new Date();
-    const dateKey = format(logDate, 'yyyy-MM-dd');
-
-    // Check if log exists for this date
-    const existingLog = await db.select().from(habitEntries).where(and(
-      eq(habitEntries.habitId, habitId),
-      sql`DATE(${habitEntries.date}) = ${dateKey}`
-    )).limit(1).then(r => r[0] || null);
-
-    let updatedLog;
-    
-    if (existingLog) {
-      // Update existing log
-      [updatedLog] = await db.update(habitEntries)
-        .set({
-          completed,
-          value: value || (completed ? habit.targetValue : 0),
-          note: notes
-        })
-        .where(eq(habitEntries.id, existingLog.id))
-        .returning();
-    } else {
-      // Create new log
-      [updatedLog] = await db.insert(habitEntries).values({
-        habitId,
-        userId: userRecord.id,
-        date: dateKey,
-        completed,
-        value: value || (completed ? habit.targetValue : 0),
-        note: notes
-      }).returning();
-    }
-
-    // Update habit streaks and stats
-    if (completed) {
-      // Calculate new streak
-      let newStreak = 1;
-      let checkDate = subDays(logDate, 1);
-      
-      for (let i = 0; i < 365; i++) {
-        const prevLog = await db.select().from(habitEntries).where(and(
-          eq(habitEntries.habitId, habitId),
-          sql`DATE(${habitEntries.date}) = ${format(checkDate, 'yyyy-MM-dd')}`,
-          eq(habitEntries.completed, true)
-        )).limit(1).then(r => r[0] || null);
-        
-        if (prevLog) {
-          newStreak++;
-          checkDate = subDays(checkDate, 1);
-        } else {
-          break;
-        }
-      }
-
-      // Update habit stats
-      await db.update(habits)
-        .set({
-          currentStreak: newStreak,
-          longestStreak: sql`GREATEST(${habits.longestStreak}, ${newStreak})`,
-          totalCompleted: sql`${habits.totalCompleted} + 1`,
-          lastCompletedAt: logDate
-        })
-        .where(eq(habits.id, habitId));
-    } else {
-      // Reset current streak if uncompleting today's habit
-      if (dateKey === format(new Date(), 'yyyy-MM-dd')) {
-        await db.update(habits)
-          .set({
-            currentStreak: 0
-          })
-          .where(eq(habits.id, habitId));
-      }
-    }
+    // Return demo response for habit logging
+    const updatedLog = {
+      id: `log-${Date.now()}`,
+      habitId,
+      date: date || new Date().toISOString().split('T')[0],
+      completed: completed || false,
+      value: value || '1',
+      note: notes || '',
+      updatedAt: new Date().toISOString()
+    };
 
     return NextResponse.json({
+      success: true,
       log: updatedLog,
       message: completed ? 'Habit completed!' : 'Habit updated'
     });
   } catch (error) {
-    Logger.error('Failed to log habit:', error);
+    console.error('Failed to log habit:', error);
     return NextResponse.json(
       { error: 'Failed to log habit' },
       { status: 500 }
