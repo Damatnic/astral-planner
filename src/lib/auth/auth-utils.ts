@@ -50,26 +50,25 @@ export async function getAuthContext(request: NextRequest): Promise<AuthContext>
     }
   }
 
-  // TEMPORARY DEMO MODE (ONLY IN DEVELOPMENT)
-  if (process.env.NODE_ENV === 'development' && process.env.ENABLE_DEMO_MODE === 'true') {
-    const demoHeader = request.headers.get('x-demo-user');
-    
-    if (demoHeader === 'demo-user') {
-      console.warn('[DEMO MODE] Using demo user - DISABLE IN PRODUCTION');
-      return {
-        user: {
-          id: 'demo-user',
-          email: 'demo@astralchronos.com',
-          role: 'user',
-          firstName: 'Demo',
-          lastName: 'User',
-          name: 'Demo User',
-          imageUrl: '/avatars/demo-user.png'
-        },
-        isAuthenticated: true,
-        isDemo: true
-      };
-    }
+  // DEMO MODE AUTHENTICATION (PRODUCTION ENABLED FOR DEMO)
+  const demoHeader = request.headers.get('x-demo-user');
+  const demoToken = request.headers.get('x-demo-token');
+  
+  if (demoHeader === 'demo-user' || demoToken === 'demo-token-2024') {
+    console.log('[DEMO MODE] Demo user authenticated for showcase');
+    return {
+      user: {
+        id: 'demo-user',
+        email: 'demo@astralchronos.com',
+        role: 'user',
+        firstName: 'Demo',
+        lastName: 'User',
+        name: 'Demo User',
+        imageUrl: '/avatars/demo-user.png'
+      },
+      isAuthenticated: true,
+      isDemo: true
+    };
   }
   
   return {

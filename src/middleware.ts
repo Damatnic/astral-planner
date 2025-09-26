@@ -88,7 +88,7 @@ function getSecurityHeaders(): Record<string, string> {
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
       "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
-      "font-src 'self' fonts.gstatic.com",
+      "font-src 'self' fonts.gstatic.com https://r2cdn.perplexity.ai",
       "img-src 'self' data: https:",
       "connect-src 'self' https: wss:",
       "frame-ancestors 'none'",

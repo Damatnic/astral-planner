@@ -112,6 +112,18 @@ export default function LoginClient() {
         autoSave: true
       }));
 
+      // Set authentication for backend API calls
+      if (selectedAccount.id === 'demo-user') {
+        // Set demo authentication header for all future API calls
+        localStorage.setItem('demo-auth', 'true');
+        
+        // Set up default headers for fetch requests
+        if (typeof window !== 'undefined') {
+          // Store demo auth state for API calls
+          (window as any).demoAuthEnabled = true;
+        }
+      }
+
       router.push('/dashboard');
     } else {
       setError('Invalid PIN. Please try again.');

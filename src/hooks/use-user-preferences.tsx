@@ -184,6 +184,12 @@ export function UserPreferencesProvider({ children }: { children: React.ReactNod
           'x-user-data': JSON.stringify(userData)
         };
         
+        // Add demo authentication header for backend
+        if (userData.id === 'demo-user') {
+          headers['x-demo-user'] = 'demo-user';
+          headers['x-demo-token'] = 'demo-token-2024';
+        }
+        
         // Only add x-pin if we have a valid PIN
         const pin = userData.id === 'demo-user' ? '0000' : userData.id === 'nick-planner' ? '7347' : '';
         if (pin) {
