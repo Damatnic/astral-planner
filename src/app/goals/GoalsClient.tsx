@@ -34,6 +34,7 @@ import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
 import { format, parseISO, isAfter, isBefore } from 'date-fns';
 import MobileNavigation from '@/components/mobile/MobileNavigation';
+import { useAuth } from '@/components/providers/auth-provider';
 // import Logger from '@/lib/logger'; // Removed to prevent 500 errors in production
 
 interface Goal {
@@ -87,7 +88,7 @@ const MOCK_USER = { id: 'test-user', firstName: 'Test', lastName: 'User' };
 
 export default function GoalsPage() {
   // Mock user for development without authentication
-  const user = MOCK_USER;
+  const { user } = useAuth();
   const [data, setData] = useState<GoalsData>({
     goals: [],
     stats: { total: 0, completed: 0, inProgress: 0, notStarted: 0, overdue: 0 },
@@ -121,7 +122,8 @@ export default function GoalsPage() {
       try {
         setData(prev => ({ ...prev, loading: true }));
 
-        const response = await fetch('/api/goals');
+        const userId = user?.id || 'demo-user';
+        const response = await fetch(`/api/goals?userId=${userId}`);
         const result = await response.json();
 
         if (response.ok) {

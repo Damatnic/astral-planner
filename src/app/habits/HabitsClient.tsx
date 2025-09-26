@@ -36,6 +36,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { format, startOfWeek, addDays, isSameDay, parseISO } from 'date-fns';
 import MobileNavigation from '@/components/mobile/MobileNavigation';
+import { useAuth } from '@/components/providers/auth-provider';
 // import Logger from '@/lib/logger'; // Removed to prevent 500 errors in production
 
 interface Habit {
@@ -107,7 +108,7 @@ const frequencyOptions = [
 const MOCK_USER = { id: 'test-user', firstName: 'Test', lastName: 'User' };
 
 export default function HabitsPage() {
-  const user = MOCK_USER;
+  const { user } = useAuth();
   const [data, setData] = useState<HabitsData>({
     habits: [],
     stats: { totalHabits: 0, activeToday: 0, totalCompletions: 0, averageCompletionRate: 0, longestStreak: 0 },
@@ -146,7 +147,8 @@ export default function HabitsPage() {
       try {
         setData(prev => ({ ...prev, loading: true }));
 
-        const response = await fetch('/api/habits');
+        const userId = user?.id || 'demo-user';
+        const response = await fetch(`/api/habits?userId=${userId}`);
         const result = await response.json();
 
         if (response.ok) {
@@ -1033,8 +1035,7 @@ export default function HabitsPage() {
             New Habit
           </Button>
         </div>
-        </main>
-      </div>
-    </>
+      </main>
+    </div>
   );
 }

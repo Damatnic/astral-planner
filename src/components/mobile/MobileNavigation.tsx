@@ -14,11 +14,14 @@ import {
   Menu,
   X,
   BookOpen,
-  Activity
+  Activity,
+  LogOut,
+  User
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/components/providers/auth-provider'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -39,6 +42,7 @@ export function MobileNavigation({ className }: MobileNavigationProps) {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const { user, signOut } = useAuth()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -74,6 +78,25 @@ export function MobileNavigation({ className }: MobileNavigationProps) {
               <SheetHeader className="p-4 border-b">
                 <SheetTitle className="text-left">Navigation</SheetTitle>
               </SheetHeader>
+
+              {/* User Info Section */}
+              {user && (
+                <div className="p-4 border-b bg-gray-50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                      {user.avatar ? (
+                        <span className="text-lg">{user.avatar}</span>
+                      ) : (
+                        <User className="h-5 w-5 text-primary" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-900">{user.name}</p>
+                      <p className="text-sm text-gray-600">Welcome back, {user.displayName}!</p>
+                    </div>
+                  </div>
+                </div>
+              )}
               
               <nav className="flex flex-col p-2">
                 {navigation.map((item) => {
@@ -97,7 +120,7 @@ export function MobileNavigation({ className }: MobileNavigationProps) {
                 })}
               </nav>
 
-              <div className="mt-auto p-4">
+              <div className="mt-auto p-4 space-y-2">
                 <Button 
                   className="w-full" 
                   onClick={() => setIsOpen(false)}
@@ -105,6 +128,19 @@ export function MobileNavigation({ className }: MobileNavigationProps) {
                   <Plus className="h-4 w-4 mr-2" />
                   Quick Add
                 </Button>
+                {user && (
+                  <Button 
+                    variant="outline"
+                    className="w-full text-red-600 hover:text-red-700 hover:bg-red-50" 
+                    onClick={() => {
+                      setIsOpen(false);
+                      signOut();
+                    }}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                )}
               </div>
             </SheetContent>
           </Sheet>
