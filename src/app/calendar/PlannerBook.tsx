@@ -1,23 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format, startOfWeek, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay } from 'date-fns';
 import { ChevronLeft, ChevronRight, Calendar, Clock, Target, CheckCircle2, Heart, Sun, Moon, Cloud, Coffee, BookOpen, PenTool, Bookmark, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function PlannerBook() {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
+  
+  // Initialize date on client-side only
+  useEffect(() => {
+    setCurrentDate(new Date());
+  }, []);
   const [currentView, setCurrentView] = useState<'monthly' | 'weekly' | 'daily'>('daily');
   const [pageFlip, setPageFlip] = useState(0);
 
   // Weekly view data
   const getWeekDays = () => {
+    if (!currentDate) return [];
     const start = startOfWeek(currentDate, { weekStartsOn: 0 });
     return [...Array(7)].map((_, i) => addDays(start, i));
   };
 
   // Monthly view data
   const getMonthDays = () => {
+    if (!currentDate) return [];
     const start = startOfMonth(currentDate);
     const end = endOfMonth(currentDate);
     const days = eachDayOfInterval({ start, end });
@@ -25,8 +32,10 @@ export default function PlannerBook() {
   };
 
   const handlePrevious = () => {
+    if (!currentDate) return;
     setPageFlip(-1);
     setTimeout(() => {
+      if (!currentDate) return;
       if (currentView === 'daily') {
         setCurrentDate(addDays(currentDate, -1));
       } else if (currentView === 'weekly') {
@@ -39,8 +48,10 @@ export default function PlannerBook() {
   };
 
   const handleNext = () => {
+    if (!currentDate) return;
     setPageFlip(1);
     setTimeout(() => {
+      if (!currentDate) return;
       if (currentView === 'daily') {
         setCurrentDate(addDays(currentDate, 1));
       } else if (currentView === 'weekly') {
@@ -51,6 +62,15 @@ export default function PlannerBook() {
       setPageFlip(0);
     }, 150);
   };
+
+  // Don't render until currentDate is initialized
+  if (!currentDate) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4">
+        <div className="text-lg text-gray-600">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4">
