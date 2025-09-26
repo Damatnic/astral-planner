@@ -43,7 +43,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           </UserPreferencesProvider>
         </AuthProvider>
       </ThemeProvider>
-      {process.env.NODE_ENV === 'development' && (
+      {typeof window !== 'undefined' && window.location.hostname === 'localhost' && (
         <ReactQueryDevtools initialIsOpen={false} />
       )}
     </QueryClientProvider>

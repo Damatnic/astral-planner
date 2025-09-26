@@ -67,12 +67,12 @@ export default function RootLayout({
                 navigator.serviceWorker.register('/sw.js')
                   .then(() => {
                     // Silently register - only log if needed for debugging
-                    if (process.env.NODE_ENV === 'development') {
+                    if (window.location.hostname === 'localhost') {
                       console.log('Cleanup service worker registered');
                     }
                   })
                   .catch(err => {
-                    if (process.env.NODE_ENV === 'development') {
+                    if (window.location.hostname === 'localhost') {
                       console.log('Service worker registration failed:', err);
                     }
                   });

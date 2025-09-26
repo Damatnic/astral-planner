@@ -109,8 +109,13 @@ export default function DashboardClientFixed() {
     );
   }
   
-  // Calendar state management
-  const [currentDate, setCurrentDate] = useState(new Date());
+  // Calendar state management - initialize with null to prevent hydration issues
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
+  
+  // Initialize date on client-side only
+  useEffect(() => {
+    setCurrentDate(new Date());
+  }, []);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [calendarView, setCalendarView] = useState<'month' | 'week' | 'day' | 'agenda'>('month');
   
@@ -160,10 +165,14 @@ export default function DashboardClientFixed() {
   
   // Calendar helper functions
   const navigateMonth = (direction: 'prev' | 'next') => {
-    setCurrentDate(prev => direction === 'next' ? addMonths(prev, 1) : subMonths(prev, 1));
+    setCurrentDate(prev => {
+      if (!prev) return new Date();
+      return direction === 'next' ? addMonths(prev, 1) : subMonths(prev, 1);
+    });
   };
 
   const getCalendarDays = () => {
+    if (!currentDate) return [];
     const monthStart = startOfMonth(currentDate);
     const monthEnd = endOfMonth(currentDate);
     const calendarStart = startOfWeek(monthStart);
@@ -718,7 +727,7 @@ export default function DashboardClientFixed() {
                           <ChevronLeft className="h-4 w-4" />
                         </Button>
                         <div className="text-sm font-medium min-w-[120px] text-center">
-                          {format(currentDate, 'MMMM yyyy')}
+                          {currentDate ? format(currentDate, 'MMMM yyyy') : 'Loading...'}
                         </div>
                         <Button variant="outline" size="sm" onClick={() => navigateMonth('next')}>
                           <ChevronRight className="h-4 w-4" />
@@ -741,7 +750,7 @@ export default function DashboardClientFixed() {
                       <div className="grid grid-cols-7 gap-1">
                         {getCalendarDays().map((date, i) => {
                           const dayEvents = getEventsForDate(date);
-                          const isCurrentMonthDay = isSameMonth(date, currentDate);
+                          const isCurrentMonthDay = currentDate ? isSameMonth(date, currentDate) : false;
                           const isTodayDate = isToday(date);
                           const isSelectedDate = selectedDate && isSameDay(date, selectedDate);
                           
@@ -817,7 +826,7 @@ export default function DashboardClientFixed() {
                       </div>
                       <div className="grid grid-cols-7 gap-1">
                         {getCalendarDays().slice(0, 35).map((date, i) => {
-                          const isCurrentMonthDay = isSameMonth(date, currentDate);
+                          const isCurrentMonthDay = currentDate ? isSameMonth(date, currentDate) : false;
                           const isTodayDate = isToday(date);
                           const isSelectedDate = selectedDate && isSameDay(date, selectedDate);
                           
