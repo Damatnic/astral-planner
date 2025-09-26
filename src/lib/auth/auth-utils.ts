@@ -33,11 +33,27 @@ export async function verifyToken(token: string): Promise<AuthUser | null> {
 }
 
 export async function getAuthContext(request: NextRequest): Promise<AuthContext> {
-  // Check for PIN-based demo authentication first
+  // Check for PIN-based demo authentication first (cookies)
   const demoPin = request.cookies.get('demo_pin')?.value;
   const sessionPin = request.cookies.get('session_pin')?.value;
   
-  if (demoPin === '0000' || sessionPin === '0000') {
+  // Also check for custom header-based authentication
+  const userDataHeader = request.headers.get('x-user-data');
+  const pinHeader = request.headers.get('x-pin');
+  
+  // Parse user data from header if present
+  let headerUserData = null;
+  if (userDataHeader) {
+    try {
+      headerUserData = JSON.parse(userDataHeader);
+    } catch (error) {
+      console.warn('Invalid user data header:', error);
+    }
+  }
+  
+  // Check demo user (PIN: 0000)
+  if (demoPin === '0000' || sessionPin === '0000' || pinHeader === '0000' || 
+      (headerUserData && (headerUserData.id === 'demo-user' || headerUserData.pin === '0000'))) {
     return {
       user: {
         id: 'demo-user',
@@ -54,7 +70,9 @@ export async function getAuthContext(request: NextRequest): Promise<AuthContext>
     };
   }
   
-  if (demoPin === '7347' || sessionPin === '7347') {
+  // Check Nick's account (PIN: 7347)
+  if (demoPin === '7347' || sessionPin === '7347' || pinHeader === '7347' || 
+      (headerUserData && (headerUserData.id === 'nick-planner' || headerUserData.pin === '7347'))) {
     return {
       user: {
         id: 'nick-user',

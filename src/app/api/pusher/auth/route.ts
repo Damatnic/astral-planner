@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPusherServer } from '@/lib/pusher/server';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
+import { isWorkspaceMember } from '@/lib/auth/permissions';
 import Logger from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
@@ -38,8 +39,18 @@ export async function POST(req: NextRequest) {
 
     if (channel_name.startsWith('presence-workspace-')) {
       const workspaceId = channel_name.replace('presence-workspace-', '');
-      // TODO: Add workspace membership check here
-      // For now, allow all authenticated users
+      
+      // Check if user is a member of the workspace
+      const isMember = await isWorkspaceMember(req, workspaceId);
+      
+      if (!isMember) {
+        Logger.warn('Unauthorized workspace access attempt', { 
+          userId: user.id, 
+          workspaceId, 
+          channel: channel_name 
+        });
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+      }
     }
 
     // For presence channels, provide user info

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getAuthContext } from '@/lib/auth/auth-utils';
 
 const defaultSettings = {
   appearance: {
@@ -25,16 +26,44 @@ const defaultSettings = {
   }
 };
 
+// User-specific settings storage (in production this would be in a database)
+const userSettings: { [userId: string]: any } = {
+  'demo-user': {
+    ...defaultSettings,
+    appearance: { ...defaultSettings.appearance, theme: 'light', accentColor: '#22c55e' }
+  },
+  'nick-user': {
+    ...defaultSettings,
+    appearance: { ...defaultSettings.appearance, theme: 'dark', accentColor: '#3b82f6' }
+  }
+};
+
 async function handlePUT(req: NextRequest) {
   try {
-    console.log('Settings update - authentication disabled, returning success');
+    // Get authenticated user
+    const authContext = await getAuthContext(req);
+    
+    if (!authContext.isAuthenticated || !authContext.user) {
+      return NextResponse.json(
+        { error: 'Authentication required', code: 'AUTH_REQUIRED' },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
+    const userId = authContext.user.id;
+    
+    // Store user settings (in production this would go to database)
+    userSettings[userId] = {
+      ...userSettings[userId],
+      ...body.settings
+    };
     
     return NextResponse.json({
       success: true,
-      settings: body.settings || defaultSettings,
-      aiSettings: body.aiSettings || { enabled: false },
-      message: 'Settings saved locally (authentication disabled)'
+      settings: userSettings[userId],
+      aiSettings: body.aiSettings || { enabled: authContext.user.role === 'premium' },
+      message: 'Settings updated successfully'
     });
   } catch (error) {
     console.error('Settings update error:', error);
@@ -47,13 +76,30 @@ async function handlePUT(req: NextRequest) {
 
 async function handleGET(req: NextRequest) {
   try {
-    console.log('Settings fetch - authentication disabled, returning defaults');
+    // Get authenticated user
+    const authContext = await getAuthContext(req);
+    
+    if (!authContext.isAuthenticated || !authContext.user) {
+      return NextResponse.json(
+        { error: 'Authentication required', code: 'AUTH_REQUIRED' },
+        { status: 401 }
+      );
+    }
+
+    const userId = authContext.user.id;
+    const userPrefs = userSettings[userId] || defaultSettings;
     
     return NextResponse.json({
-      settings: defaultSettings,
-      aiSettings: { enabled: false },
-      timezone: 'UTC',
+      settings: userPrefs,
+      aiSettings: { enabled: authContext.user.role === 'premium' },
+      timezone: authContext.isDemo ? 'America/New_York' : 'UTC',
       locale: 'en-US',
+      user: {
+        id: authContext.user.id,
+        name: authContext.user.name,
+        role: authContext.user.role,
+        isDemo: authContext.isDemo
+      }
     });
   } catch (error) {
     console.error('Settings fetch error:', error);

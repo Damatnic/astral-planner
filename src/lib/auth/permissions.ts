@@ -1,4 +1,4 @@
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
 import { NextRequest } from 'next/server';
 import { permissions, featureFlags, type Permission, type Role } from './config';
 import { db } from '@/db';

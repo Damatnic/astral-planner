@@ -89,10 +89,37 @@ export default function SettingsPage() {
     loadSettings();
   }, []);
 
+  // Helper function to get authentication headers from localStorage
+  const getAuthHeaders = (): Record<string, string> => {
+    try {
+      const currentUser = localStorage.getItem('current-user');
+      if (currentUser) {
+        const userData = JSON.parse(currentUser);
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+          'x-user-data': JSON.stringify(userData)
+        };
+        
+        // Only add x-pin if we have a valid PIN
+        const pin = userData.id === 'demo-user' ? '0000' : userData.id === 'nick-planner' ? '7347' : '';
+        if (pin) {
+          headers['x-pin'] = pin;
+        }
+        
+        return headers;
+      }
+    } catch (error) {
+      console.warn('Failed to get auth headers:', error);
+    }
+    return { 'Content-Type': 'application/json' };
+  };
+
   const loadSettings = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/user/settings');
+      const response = await fetch('/api/user/settings', {
+        headers: getAuthHeaders()
+      });
       
       if (response.ok) {
         const data = await response.json();
@@ -131,9 +158,7 @@ export default function SettingsPage() {
     try {
       const response = await fetch('/api/user/settings', {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           settings: {
             [section]: sectionData

@@ -7,7 +7,9 @@ import { db } from '@/db';
 import { goals } from '@/db/schema/goals';
 import { habits } from '@/db/schema/habits';
 import { workspaces } from '@/db/schema/workspaces';
-import { eq } from 'drizzle-orm';
+import { users } from '@/db/schema/users';
+import { events } from '@/db/schema/analytics';
+import { eq, desc } from 'drizzle-orm';
 
 // Types for AI suggestions
 interface TaskSuggestion {
@@ -146,8 +148,12 @@ async function generateProductivityInsights(userId: string, context: any): Promi
  */
 async function buildUserContext(userId: string) {
   try {
+    // Get user with preferences and settings
+    const userRecord = await db.select().from(users).where(eq(users.clerkId, userId)).limit(1);
+    const user = userRecord[0];
+    
     // Get user's workspaces
-    const userWorkspaces = await db.select().from(workspaces).where(eq(workspaces.ownerId, userId));
+    const userWorkspaces = await db.select().from(workspaces).where(eq(workspaces.ownerId, user?.id || userId));
     const workspaceIds = userWorkspaces.map(w => w.id);
     
     // Get user's goals
@@ -159,14 +165,41 @@ async function buildUserContext(userId: string) {
     }
     
     // Get user's habits
-    const userHabits = await db.select().from(habits).where(eq(habits.userId, userId));
+    const userHabits = await db.select().from(habits).where(eq(habits.userId, user?.id || userId));
+    
+    // Get recent activity (last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const recentActivity = await db.select()
+      .from(events)
+      .where(eq(events.userId, user?.id || userId))
+      .orderBy(desc(events.timestamp))
+      .limit(100);
+    
+    // Extract user preferences from settings
+    const userPreferences = user?.settings || {
+      theme: 'system',
+      workingHours: { start: '09:00', end: '17:00', days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] },
+      notifications: { email: true, push: true, desktop: true, reminders: true, digest: 'daily' },
+      defaultView: 'day',
+      timeFormat: '24h'
+    };
     
     return {
       userId,
       userGoals,
       userHabits,
-      recentActivity: [], // TODO: Add recent activity tracking
-      userPreferences: null // TODO: Add user preference loading
+      recentActivity,
+      userPreferences,
+      aiSettings: user?.aiSettings || {
+        enabled: true,
+        autoSuggestions: true,
+        planningAssistant: true,
+        naturalLanguage: true,
+        smartScheduling: true,
+        insights: true
+      }
     };
   } catch (error) {
     console.error('Error building user context for AI:', error);
@@ -175,7 +208,21 @@ async function buildUserContext(userId: string) {
       userGoals: [],
       userHabits: [],
       recentActivity: [],
-      userPreferences: null
+      userPreferences: {
+        theme: 'system',
+        workingHours: { start: '09:00', end: '17:00', days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] },
+        notifications: { email: true, push: true, desktop: true, reminders: true, digest: 'daily' },
+        defaultView: 'day',
+        timeFormat: '24h'
+      },
+      aiSettings: {
+        enabled: true,
+        autoSuggestions: true,
+        planningAssistant: true,
+        naturalLanguage: true,
+        smartScheduling: true,
+        insights: true
+      }
     };
   }
 }

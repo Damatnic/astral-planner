@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserForRequest } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth/auth-utils';
 import { db } from '@/db';
 import { goals, goalProgress, users } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
@@ -25,7 +25,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getUserForRequest(req);
+    const user = await getUserFromRequest(req);
     
     if (!user?.id) {
       return NextResponse.json(
@@ -98,7 +98,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getUserForRequest(req);
+    const user = await getUserFromRequest(req);
     
     if (!user?.id) {
       return NextResponse.json(
@@ -192,7 +192,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getUserForRequest(req);
+    const user = await getUserFromRequest(req);
     
     if (!user?.id) {
       return NextResponse.json(

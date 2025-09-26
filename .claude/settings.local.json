@@ -66,7 +66,10 @@
       "WebFetch(domain:ultimate-digital-planner-aex6l2hdw-astral-productions.vercel.app)",
       "Bash(PORT=3030 npm run dev)",
       "WebFetch(domain:ultimate-digital-planner-2phex823x-astral-productions.vercel.app)",
-      "Bash(PORT=3040 npm run dev)"
+      "Bash(PORT=3040 npm run dev)",
+      "Bash(git log:*)",
+      "Bash(npm run bundle:analyze:*)",
+      "Bash(set ANALYZE=true)"
     ],
     "deny": [],
     "ask": []
