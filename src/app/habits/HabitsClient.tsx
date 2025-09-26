@@ -35,7 +35,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { format, startOfWeek, addDays, isSameDay, parseISO } from 'date-fns';
-import Logger from '@/lib/logger';
+// import Logger from '@/lib/logger'; // Removed to prevent 500 errors in production
 
 interface Habit {
   id: string;
@@ -156,7 +156,7 @@ export default function HabitsPage() {
           throw new Error(result.error || 'Failed to fetch habits');
         }
       } catch (error) {
-        Logger.error('Failed to fetch habits:', error);
+        console.error('Failed to fetch habits:', error);
         setData(prev => ({
           ...prev,
           loading: false,
@@ -202,10 +202,10 @@ export default function HabitsPage() {
         window.location.reload();
       } else {
         const error = await response.json();
-        Logger.error('Failed to save habit:', error);
+        console.error('Failed to save habit:', error);
       }
     } catch (error) {
-      Logger.error('Failed to save habit:', error);
+      console.error('Failed to save habit:', error);
     }
   }
 
@@ -237,7 +237,7 @@ export default function HabitsPage() {
         }));
       }
     } catch (error) {
-      Logger.error('Failed to toggle habit:', error);
+      console.error('Failed to toggle habit:', error);
     }
   }
 
@@ -251,7 +251,7 @@ export default function HabitsPage() {
         window.location.reload();
       }
     } catch (error) {
-      Logger.error('Failed to delete habit:', error);
+      console.error('Failed to delete habit:', error);
     }
   }
 
