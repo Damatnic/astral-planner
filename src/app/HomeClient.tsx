@@ -78,14 +78,10 @@ export default function HomeClient() {
   const { isCompleted, onboardingData, isClient } = useOnboarding();
   
   const handleGetStarted = () => {
-    if (isCompleted === false) {
-      router.push('/onboarding');
-    } else {
-      router.push('/dashboard');
-    }
+    router.push('/login');
   };
 
-  const getStartedText = !isClient ? 'Loading...' : (isCompleted === false ? 'Get Started' : 'Go to Dashboard');
+  const getStartedText = 'Get Started';
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
@@ -99,19 +95,10 @@ export default function HomeClient() {
           
           <div className="ml-auto flex items-center gap-4">
             <Button asChild variant="ghost">
-              <Link href="/dashboard">Dashboard</Link>
-            </Button>
-            <Button asChild variant="ghost">
-              <Link href="/planner">Physical Planner</Link>
-            </Button>
-            <Button asChild variant="ghost">
-              <Link href="/goals">Goals</Link>
-            </Button>
-            <Button asChild variant="ghost">
-              <Link href="/habits">Habits</Link>
+              <Link href="/login">Sign In</Link>
             </Button>
             <Button asChild>
-              <Link href="/templates">Templates</Link>
+              <Link href="/login">Get Started</Link>
             </Button>
           </div>
         </div>
@@ -127,7 +114,7 @@ export default function HomeClient() {
           <p className="mb-8 text-xl text-muted-foreground">
             The world's most advanced digital planner that combines time blocking, 
             goal tracking, and habit formation with cutting-edge AI to help you 
-            achieve more with less effort.
+            achieve more with less effort. Try our demo or create your personalized account.
           </p>
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
             <Button size="lg" onClick={handleGetStarted} className="gap-2">
@@ -135,7 +122,7 @@ export default function HomeClient() {
               <ChevronRight className="h-4 w-4" />
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link href="/goals">View Goals</Link>
+              <Link href="/login">Try Demo</Link>
             </Button>
           </div>
         </div>
