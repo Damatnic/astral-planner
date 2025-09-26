@@ -63,7 +63,8 @@
       "Bash(gh repo list:*)",
       "WebFetch(domain:ultimate-digital-planner-i65uo4x3d-astral-productions.vercel.app)",
       "WebFetch(domain:ultimate-digital-planner-k8hjldemd-astral-productions.vercel.app)",
-      "WebFetch(domain:ultimate-digital-planner-aex6l2hdw-astral-productions.vercel.app)"
+      "WebFetch(domain:ultimate-digital-planner-aex6l2hdw-astral-productions.vercel.app)",
+      "Bash(PORT=3030 npm run dev)"
     ],
     "deny": [],
     "ask": []

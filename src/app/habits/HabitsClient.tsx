@@ -293,28 +293,44 @@ export default function HabitsPage() {
     const completionRate = habit.stats?.completionRate || 0;
 
     return (
-      <Card key={habit.id} className={`transition-all hover:shadow-md ${completedToday ? 'ring-2 ring-green-200 bg-green-50/50' : ''}`}>
-        <CardContent className="p-4">
-          <div className="flex items-start justify-between mb-3">
-            <div className="flex items-center gap-3">
+      <Card key={habit.id} className={`group relative overflow-hidden transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+        completedToday 
+          ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200' 
+          : 'bg-white hover:bg-gray-50/80'
+      }`}>
+        <CardContent className="p-6">
+          {/* Header with Icon, Name, and Menu */}
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center gap-3 flex-1">
               <div 
-                className="w-10 h-10 rounded-full flex items-center justify-center text-lg"
-                style={{ backgroundColor: habit.color + '20', color: habit.color }}
+                className="w-12 h-12 rounded-xl flex items-center justify-center text-xl font-medium shadow-sm"
+                style={{ 
+                  backgroundColor: habit.color + '15', 
+                  color: habit.color,
+                  border: `2px solid ${habit.color}20`
+                }}
               >
                 {habit.icon || '⭐'}
               </div>
-              <div>
-                <h3 className="font-medium">{habit.name}</h3>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-lg text-gray-900 mb-1 truncate">{habit.name}</h3>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline">{habit.category}</Badge>
-                  <Badge variant="secondary">{habit.frequency}</Badge>
+                  <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-gray-100 text-gray-700">
+                    {habit.category}
+                  </Badge>
+                  {habit.timeOfDay && habit.timeOfDay !== 'anytime' && (
+                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                      <Clock className="h-3 w-3" />
+                      {timeOptions.find(t => t.value === habit.timeOfDay)?.icon} {timeOptions.find(t => t.value === habit.timeOfDay)?.label}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -352,70 +368,76 @@ export default function HabitsPage() {
             </DropdownMenu>
           </div>
 
+          {/* Description */}
           {habit.description && (
-            <p className="text-sm text-muted-foreground mb-3">{habit.description}</p>
+            <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">{habit.description}</p>
           )}
 
-          {/* Today's Progress */}
-          <div className="flex items-center justify-between mb-3">
-            <Label className="text-sm">Today's Progress</Label>
-            <button
-              onClick={() => handleToggleHabit(habit.id, completedToday)}
-              className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium transition-all ${
-                completedToday 
-                  ? 'bg-green-100 text-green-700 hover:bg-green-200' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              <CheckCircle2 className={`h-4 w-4 ${completedToday ? 'text-green-600' : 'text-gray-400'}`} />
-              {completedToday ? 'Completed' : 'Mark Complete'}
-            </button>
+          {/* Progress Section */}
+          <div className="mb-5">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-gray-700">Today's Goal: {habit.targetCount} {habit.unit}</span>
+              <button
+                onClick={() => handleToggleHabit(habit.id, completedToday)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                  completedToday 
+                    ? 'bg-green-500 text-white shadow-md hover:bg-green-600 hover:shadow-lg' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
+                }`}
+              >
+                {completedToday ? (
+                  <>
+                    <CheckCircle2 className="h-4 w-4" />
+                    <span>Completed</span>
+                  </>
+                ) : (
+                  <>
+                    <Circle className="h-4 w-4" />
+                    <span>Mark Done</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Completion Rate Bar */}
+            <div className="space-y-1">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-medium text-gray-600">Success Rate</span>
+                <span className={`text-sm font-bold ${getCompletionRateColor(completionRate)}`}>
+                  {Math.round(completionRate)}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                <div 
+                  className="h-full rounded-full transition-all duration-500 ease-out"
+                  style={{ 
+                    width: `${completionRate}%`,
+                    background: completionRate >= 80 ? 'linear-gradient(90deg, #10b981, #059669)' :
+                              completionRate >= 60 ? 'linear-gradient(90deg, #3b82f6, #1d4ed8)' :
+                              completionRate >= 40 ? 'linear-gradient(90deg, #f59e0b, #d97706)' :
+                              'linear-gradient(90deg, #ef4444, #dc2626)'
+                  }}
+                />
+              </div>
+            </div>
           </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            <div className="text-center p-2 bg-muted/50 rounded">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <Flame className="h-4 w-4 text-orange-500" />
-                <span className="text-lg font-bold">{habit.currentStreak}</span>
-                {habit.currentStreak > 0 && (
-                  <span className="text-sm">{getStreakEmoji(habit.currentStreak)}</span>
-                )}
-              </div>
-              <Label className="text-xs text-muted-foreground">Current Streak</Label>
+          {/* Stats Row */}
+          <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+            <div className="flex items-center gap-1">
+              <Flame className="h-4 w-4 text-orange-500" />
+              <span className="text-sm font-semibold text-gray-900">{habit.currentStreak}</span>
+              <span className="text-xs text-gray-500">day streak</span>
+              {habit.currentStreak > 0 && (
+                <span className="text-sm ml-1">{getStreakEmoji(habit.currentStreak)}</span>
+              )}
             </div>
             
-            <div className="text-center p-2 bg-muted/50 rounded">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <Star className="h-4 w-4 text-yellow-500" />
-                <span className="text-lg font-bold">{habit.bestStreak}</span>
-              </div>
-              <Label className="text-xs text-muted-foreground">Best Streak</Label>
+            <div className="flex items-center gap-1">
+              <Star className="h-4 w-4 text-yellow-500" />
+              <span className="text-sm font-semibold text-gray-900">{habit.bestStreak}</span>
+              <span className="text-xs text-gray-500">best</span>
             </div>
-          </div>
-
-          {/* Completion Rate */}
-          <div className="mb-3">
-            <div className="flex justify-between items-center mb-1">
-              <Label className="text-sm">Completion Rate</Label>
-              <span className={`text-sm font-medium ${getCompletionRateColor(completionRate)}`}>
-                {Math.round(completionRate)}%
-              </span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-gradient-to-r from-blue-500 to-green-500 h-2 rounded-full transition-all"
-                style={{ width: `${completionRate}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Target and Time */}
-          <div className="flex justify-between text-xs text-muted-foreground">
-            <span>Target: {habit.targetCount} {habit.unit}</span>
-            {habit.timeOfDay && habit.timeOfDay !== 'anytime' && (
-              <span>{timeOptions.find(t => t.value === habit.timeOfDay)?.label}</span>
-            )}
           </div>
         </CardContent>
       </Card>
@@ -637,9 +659,9 @@ export default function HabitsPage() {
 
           <TabsContent value="grid" className="space-y-4">
             {data.loading ? (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="h-64 bg-muted rounded animate-pulse" />
+                  <div key={i} className="h-80 bg-muted rounded-lg animate-pulse" />
                 ))}
               </div>
             ) : data.error ? (
@@ -649,7 +671,7 @@ export default function HabitsPage() {
                 </CardContent>
               </Card>
             ) : filteredHabits.length > 0 ? (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                 {filteredHabits.map(habit => renderHabitCard(habit))}
               </div>
             ) : (
