@@ -91,7 +91,14 @@ const inkColors = [
 ];
 
 export default function PhysicalPlannerView() {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  // Initialize with null to prevent hydration issues
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
+  
+  // Initialize date on client-side only
+  useEffect(() => {
+    setCurrentDate(new Date());
+  }, []);
+  
   const [currentView, setCurrentView] = useState<'daily' | 'weekly' | 'monthly'>('daily');
   const [entries, setEntries] = useState<PlannerEntry[]>([]);
   const [isWriting, setIsWriting] = useState(false);
@@ -186,8 +193,10 @@ export default function PhysicalPlannerView() {
   };
 
   const handlePageTurn = (direction: 'prev' | 'next') => {
+    if (!currentDate) return;
     setPageFlipping(true);
     setTimeout(() => {
+      if (!currentDate) return;
       if (currentView === 'daily') {
         setCurrentDate(direction === 'next' ? addDays(currentDate, 1) : subDays(currentDate, 1));
       } else if (currentView === 'weekly') {
@@ -526,7 +535,7 @@ export default function PhysicalPlannerView() {
                 textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
               }}
             >
-              {format(currentDate, 'EEEE')}
+              {currentDate ? format(currentDate, 'EEEE') : ''}
             </div>
             <div 
               className="text-lg mb-4"
@@ -536,7 +545,7 @@ export default function PhysicalPlannerView() {
                 transform: 'rotate(0.5deg)'
               }}
             >
-              {format(currentDate, 'MMMM d, yyyy')}
+              {currentDate ? format(currentDate, 'MMMM d, yyyy') : ''}
             </div>
             
             {/* Weather mood */}
@@ -1047,6 +1056,13 @@ export default function PhysicalPlannerView() {
     </div>
   );
 
+  // Don't render until currentDate is initialized to prevent hydration mismatch
+  if (!currentDate) {
+    return <div className="relative w-full h-full bg-gradient-to-br from-amber-100 via-yellow-50 to-orange-100 p-4 flex items-center justify-center">
+      <div className="text-lg text-gray-600">Loading...</div>
+    </div>;
+  }
+
   return (
     <div className="relative w-full h-full bg-gradient-to-br from-amber-100 via-yellow-50 to-orange-100 p-4 overflow-auto">
       {/* Desk environment */}
@@ -1086,10 +1102,10 @@ export default function PhysicalPlannerView() {
             
             <div className="text-center">
               <div className="text-lg font-semibold text-gray-800">
-                {format(currentDate, 'MMMM d, yyyy')}
+                {currentDate ? format(currentDate, 'MMMM d, yyyy') : ''}
               </div>
               <div className="text-xs text-gray-500">
-                {format(currentDate, 'EEEE')}
+                {currentDate ? format(currentDate, 'EEEE') : ''}
               </div>
             </div>
             
@@ -1396,7 +1412,7 @@ export default function PhysicalPlannerView() {
           >
             <AnimatePresence mode="wait">
               <motion.div
-                key={`${currentView}-${currentDate.toISOString()}`}
+                key={`${currentView}-${currentDate?.toISOString()}`}
                 initial={{ opacity: 0, x: pageFlipping ? 100 : 0 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: pageFlipping ? -100 : 0 }}
@@ -1443,7 +1459,7 @@ export default function PhysicalPlannerView() {
             transform: 'translateX(-50%) rotate(-1deg)'
           }}
         >
-          Day {format(currentDate, 'DDD')} of {format(new Date(currentDate.getFullYear(), 11, 31), 'DDD')}
+          {currentDate ? `Day ${format(currentDate, 'DDD')} of ${format(new Date(currentDate.getFullYear(), 11, 31), 'DDD')}` : ''}
         </div>
       </div>
       
@@ -1497,16 +1513,16 @@ export default function PhysicalPlannerView() {
       {showMiniCalendar && (
         <div className="absolute top-36 right-4 z-30 bg-white rounded-lg shadow-xl border p-4 w-80 max-w-[calc(100vw-2rem)]">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">{format(currentDate, 'MMMM yyyy')}</h3>
+            <h3 className="text-lg font-semibold">{currentDate ? format(currentDate, 'MMMM yyyy') : ''}</h3>
             <div className="flex gap-2">
               <button
-                onClick={() => setCurrentDate(subWeeks(currentDate, 1))}
+                onClick={() => currentDate && setCurrentDate(subWeeks(currentDate, 1))}
                 className="p-1 rounded hover:bg-gray-100"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
-                onClick={() => setCurrentDate(addWeeks(currentDate, 1))}
+                onClick={() => currentDate && setCurrentDate(addWeeks(currentDate, 1))}
                 className="p-1 rounded hover:bg-gray-100"
               >
                 <ChevronRight className="w-4 h-4" />
@@ -1519,7 +1535,7 @@ export default function PhysicalPlannerView() {
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
               <div key={day} className="text-xs font-medium text-gray-500 p-1">{day}</div>
             ))}
-            {eachDayOfInterval({
+            {currentDate && eachDayOfInterval({
               start: startOfWeek(startOfMonth(currentDate)),
               end: endOfMonth(currentDate)
             }).map(day => (
