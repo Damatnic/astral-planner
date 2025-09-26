@@ -15,33 +15,43 @@ interface OnboardingData {
 export function useOnboarding() {
   const [isCompleted, setIsCompleted] = useState<boolean | null>(null);
   const [onboardingData, setOnboardingData] = useState<OnboardingData | null>(null);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    // Mark that we're on the client side
+    setIsClient(true);
+    
     // Check if onboarding is completed
-    const completed = localStorage.getItem('onboarding-completed');
-    const data = localStorage.getItem('onboarding-data');
-    
-    setIsCompleted(completed === 'true');
-    
-    if (data) {
-      try {
-        setOnboardingData(JSON.parse(data));
-      } catch (error) {
-        console.error('Failed to parse onboarding data:', error);
+    if (typeof window !== 'undefined') {
+      const completed = localStorage.getItem('onboarding-completed');
+      const data = localStorage.getItem('onboarding-data');
+      
+      setIsCompleted(completed === 'true');
+      
+      if (data) {
+        try {
+          setOnboardingData(JSON.parse(data));
+        } catch (error) {
+          console.error('Failed to parse onboarding data:', error);
+        }
       }
     }
   }, []);
 
   const completeOnboarding = (data: OnboardingData) => {
-    localStorage.setItem('onboarding-completed', 'true');
-    localStorage.setItem('onboarding-data', JSON.stringify(data));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('onboarding-completed', 'true');
+      localStorage.setItem('onboarding-data', JSON.stringify(data));
+    }
     setIsCompleted(true);
     setOnboardingData(data);
   };
 
   const resetOnboarding = () => {
-    localStorage.removeItem('onboarding-completed');
-    localStorage.removeItem('onboarding-data');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('onboarding-completed');
+      localStorage.removeItem('onboarding-data');
+    }
     setIsCompleted(false);
     setOnboardingData(null);
   };
@@ -51,5 +61,6 @@ export function useOnboarding() {
     onboardingData,
     completeOnboarding,
     resetOnboarding,
+    isClient,
   };
 }

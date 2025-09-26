@@ -75,7 +75,7 @@ const benefits = [
 
 export default function HomeClient() {
   const router = useRouter();
-  const { isCompleted, onboardingData } = useOnboarding();
+  const { isCompleted, onboardingData, isClient } = useOnboarding();
   
   const handleGetStarted = () => {
     if (isCompleted === false) {
@@ -85,7 +85,7 @@ export default function HomeClient() {
     }
   };
 
-  const getStartedText = isCompleted === false ? 'Get Started' : 'Go to Dashboard';
+  const getStartedText = !isClient ? 'Loading...' : (isCompleted === false ? 'Get Started' : 'Go to Dashboard');
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">

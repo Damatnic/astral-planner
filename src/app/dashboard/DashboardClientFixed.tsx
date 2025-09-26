@@ -81,21 +81,21 @@ interface DashboardData {
 
 export default function DashboardClientFixed() {
   const router = useRouter();
-  const { isCompleted, onboardingData } = useOnboarding();
+  const { isCompleted, onboardingData, isClient } = useOnboarding();
   
   // Check if onboarding is completed, redirect if not
   useEffect(() => {
-    if (isCompleted === false) {
+    if (isClient && isCompleted === false) {
       router.push('/onboarding');
     }
-  }, [isCompleted, router]);
+  }, [isCompleted, router, isClient]);
   
   // Mock user for development without authentication
   const user = { id: 'test-user', firstName: 'Test', lastName: 'User' };
   const [view, setView] = useState('overview');
   
-  // Show loading while checking onboarding status
-  if (isCompleted === null) {
+  // Show loading while checking onboarding status or during hydration
+  if (!isClient || isCompleted === null) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
