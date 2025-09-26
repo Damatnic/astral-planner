@@ -30,4 +30,381 @@ const layoutVariants = cva(
       spacing: "default",
     },
   }
-)\n\n// Breadcrumb component\nexport interface BreadcrumbItem {\n  href?: string\n  label: string\n  current?: boolean\n}\n\nexport interface BreadcrumbProps {\n  items: BreadcrumbItem[]\n  className?: string\n  separator?: React.ReactNode\n}\n\nexport function Breadcrumb({ items, className, separator }: BreadcrumbProps) {\n  const pathname = usePathname()\n  \n  return (\n    <nav aria-label=\"Breadcrumb\" className={cn(\"flex items-center space-x-1 text-sm text-muted-foreground\", className)}>\n      {items.map((item, index) => (\n        <React.Fragment key={index}>\n          {index > 0 && (\n            <span className=\"mx-2 text-muted-foreground/60\">\n              {separator || <ChevronRight className=\"h-3 w-3\" />}\n            </span>\n          )}\n          {item.href && !item.current ? (\n            <Link \n              href={item.href} \n              className=\"hover:text-foreground transition-colors font-medium\"\n            >\n              {item.label}\n            </Link>\n          ) : (\n            <span className={cn(\n              \"font-medium\",\n              item.current || pathname === item.href ? \"text-foreground\" : \"text-muted-foreground\"\n            )}>\n              {item.label}\n            </span>\n          )}\n        </React.Fragment>\n      ))}\n    </nav>\n  )\n}\n\n// Page header component\nexport interface PageHeaderProps {\n  title: string\n  description?: string\n  action?: React.ReactNode\n  breadcrumb?: BreadcrumbItem[]\n  className?: string\n  size?: \"default\" | \"lg\" | \"xl\"\n  gradient?: boolean\n}\n\nexport function PageHeader({\n  title,\n  description,\n  action,\n  breadcrumb,\n  className,\n  size = \"default\",\n  gradient = false,\n}: PageHeaderProps) {\n  return (\n    <div className={cn(\"space-y-4\", className)}>\n      {breadcrumb && breadcrumb.length > 0 && (\n        <Breadcrumb items={breadcrumb} />\n      )}\n      \n      <div className=\"flex items-start justify-between gap-4\">\n        <div className=\"space-y-2 flex-1\">\n          <h1 className={cn(\n            \"font-bold tracking-tight\",\n            {\n              \"text-2xl md:text-3xl\": size === \"default\",\n              \"text-3xl md:text-4xl\": size === \"lg\",\n              \"text-4xl md:text-5xl\": size === \"xl\",\n              \"gradient-text\": gradient,\n            }\n          )}>\n            {title}\n          </h1>\n          \n          {description && (\n            <p className={cn(\n              \"text-muted-foreground leading-relaxed\",\n              {\n                \"text-base\": size === \"default\",\n                \"text-lg\": size === \"lg\",\n                \"text-xl\": size === \"xl\",\n              }\n            )}>\n              {description}\n            </p>\n          )}\n        </div>\n        \n        {action && (\n          <div className=\"flex-shrink-0\">\n            {action}\n          </div>\n        )}\n      </div>\n    </div>\n  )\n}\n\n// Enhanced container component\nexport interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {\n  size?: \"sm\" | \"default\" | \"lg\" | \"xl\" | \"full\"\n  center?: boolean\n}\n\nexport function Container({ \n  className, \n  size = \"default\", \n  center = true, \n  children, \n  ...props \n}: ContainerProps) {\n  return (\n    <div\n      className={cn(\n        \"w-full px-4 md:px-6 lg:px-8\",\n        center && \"mx-auto\",\n        {\n          \"max-w-2xl\": size === \"sm\",\n          \"max-w-6xl\": size === \"default\",\n          \"max-w-7xl\": size === \"lg\",\n          \"max-w-none\": size === \"xl\" || size === \"full\",\n        },\n        className\n      )}\n      {...props}\n    >\n      {children}\n    </div>\n  )\n}\n\n// Main layout component\nexport interface EnhancedLayoutProps extends VariantProps<typeof layoutVariants> {\n  children: React.ReactNode\n  header?: React.ReactNode\n  sidebar?: React.ReactNode\n  footer?: React.ReactNode\n  className?: string\n  containerSize?: \"sm\" | \"default\" | \"lg\" | \"xl\" | \"full\"\n  showBackground?: boolean\n}\n\nexport function EnhancedLayout({\n  children,\n  header,\n  sidebar,\n  footer,\n  variant,\n  spacing,\n  className,\n  containerSize = \"default\",\n  showBackground = true,\n}: EnhancedLayoutProps) {\n  return (\n    <div className={cn(\n      layoutVariants({ variant, spacing }),\n      !showBackground && \"bg-background\",\n      className\n    )}>\n      {/* Global header */}\n      {header && (\n        <header className=\"sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60\">\n          <Container size={containerSize}>\n            <div className=\"flex h-16 items-center justify-between\">\n              {header}\n            </div>\n          </Container>\n        </header>\n      )}\n      \n      {/* Main content area */}\n      <div className={cn(\n        \"flex-1 flex\",\n        variant === \"sidebar\" && \"relative\"\n      )}>\n        {/* Sidebar */}\n        {sidebar && variant === \"sidebar\" && (\n          <aside className=\"hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 lg:z-30 lg:border-r lg:bg-background/95 lg:backdrop-blur\">\n            <div className=\"flex-1 flex flex-col pt-20 pb-4 overflow-y-auto\">\n              {sidebar}\n            </div>\n          </aside>\n        )}\n        \n        {/* Main content */}\n        <main className={cn(\n          \"flex-1 flex flex-col\",\n          variant === \"sidebar\" && \"lg:pl-64\"\n        )}>\n          <Container \n            size={containerSize} \n            className={cn(\n              \"flex-1 py-8\",\n              spacing === \"none\" && \"py-0\",\n              spacing === \"compact\" && \"py-4\",\n              spacing === \"comfortable\" && \"py-12\"\n            )}\n          >\n            {children}\n          </Container>\n        </main>\n      </div>\n      \n      {/* Global footer */}\n      {footer && (\n        <footer className=\"border-t bg-background/95 backdrop-blur\">\n          <Container size={containerSize}>\n            <div className=\"py-8\">\n              {footer}\n            </div>\n          </Container>\n        </footer>\n      )}\n    </div>\n  )\n}\n\n// Quick action floating button\nexport interface QuickActionProps {\n  actions: Array<{\n    icon: React.ReactNode\n    label: string\n    onClick: () => void\n    disabled?: boolean\n  }>\n  className?: string\n  position?: \"bottom-right\" | \"bottom-left\" | \"top-right\" | \"top-left\"\n}\n\nexport function QuickAction({ actions, className, position = \"bottom-right\" }: QuickActionProps) {\n  const [isOpen, setIsOpen] = React.useState(false)\n  \n  const positionClasses = {\n    \"bottom-right\": \"bottom-6 right-6\",\n    \"bottom-left\": \"bottom-6 left-6\",\n    \"top-right\": \"top-6 right-6\",\n    \"top-left\": \"top-6 left-6\",\n  }\n  \n  return (\n    <div className={cn(\n      \"fixed z-50\",\n      positionClasses[position],\n      className\n    )}>\n      <div className=\"flex flex-col items-center space-y-2\">\n        {/* Action buttons */}\n        {isOpen && (\n          <div className=\"flex flex-col space-y-2 animate-in slide-in-from-bottom-2\">\n            {actions.map((action, index) => (\n              <EnhancedButton\n                key={index}\n                variant=\"floating\"\n                size=\"icon-lg\"\n                onClick={action.onClick}\n                disabled={action.disabled}\n                className=\"shadow-enhanced-xl hover:shadow-enhanced-2xl\"\n                tooltip={action.label}\n              >\n                {action.icon}\n              </EnhancedButton>\n            ))}\n          </div>\n        )}\n        \n        {/* Main toggle button */}\n        <EnhancedButton\n          variant=\"gradient\"\n          size=\"icon-xl\"\n          onClick={() => setIsOpen(!isOpen)}\n          className={cn(\n            \"shadow-enhanced-xl hover:shadow-enhanced-2xl transition-transform\",\n            isOpen && \"rotate-45\"\n          )}\n        >\n          {isOpen ? (\n            <span className=\"text-lg\">×</span>\n          ) : (\n            <span className=\"text-lg\">+</span>\n          )}\n        </EnhancedButton>\n      </div>\n    </div>\n  )\n}\n\n// Section component for better content organization\nexport interface SectionProps {\n  title?: string\n  description?: string\n  action?: React.ReactNode\n  children: React.ReactNode\n  className?: string\n  spacing?: \"none\" | \"sm\" | \"default\" | \"lg\"\n  variant?: \"default\" | \"card\" | \"featured\"\n}\n\nexport function Section({\n  title,\n  description,\n  action,\n  children,\n  className,\n  spacing = \"default\",\n  variant = \"default\",\n}: SectionProps) {\n  const spacingClasses = {\n    none: \"space-y-0\",\n    sm: \"space-y-4\",\n    default: \"space-y-6\",\n    lg: \"space-y-8\",\n  }\n  \n  const content = (\n    <div className={cn(spacingClasses[spacing], className)}>\n      {(title || description || action) && (\n        <div className=\"flex items-start justify-between gap-4\">\n          <div className=\"space-y-1 flex-1\">\n            {title && (\n              <h2 className=\"text-xl font-semibold tracking-tight\">\n                {title}\n              </h2>\n            )}\n            {description && (\n              <p className=\"text-muted-foreground\">\n                {description}\n              </p>\n            )}\n          </div>\n          \n          {action && (\n            <div className=\"flex-shrink-0\">\n              {action}\n            </div>\n          )}\n        </div>\n      )}\n      \n      <div>\n        {children}\n      </div>\n    </div>\n  )\n  \n  if (variant === \"card\") {\n    return (\n      <Card className=\"p-6\">\n        {content}\n      </Card>\n    )\n  }\n  \n  if (variant === \"featured\") {\n    return (\n      <Card variant=\"gradient\" className=\"p-8\">\n        {content}\n      </Card>\n    )\n  }\n  \n  return content\n}\n\nexport { layoutVariants }
+)
+
+// Breadcrumb component
+export interface BreadcrumbItem {
+  href?: string
+  label: string
+  current?: boolean
+}
+
+export interface BreadcrumbProps {
+  items: BreadcrumbItem[]
+  className?: string
+  separator?: React.ReactNode
+}
+
+export function Breadcrumb({ items, className, separator }: BreadcrumbProps) {
+  const pathname = usePathname()
+  
+  return (
+    <nav aria-label="Breadcrumb" className={cn("flex items-center space-x-1 text-sm text-muted-foreground", className)}>
+      {items.map((item, index) => (
+        <React.Fragment key={index}>
+          {index > 0 && (
+            <span className="mx-2 text-muted-foreground/60">
+              {separator || <ChevronRight className="h-3 w-3" />}
+            </span>
+          )}
+          {item.href && !item.current ? (
+            <Link 
+              href={item.href} 
+              className="hover:text-foreground transition-colors font-medium"
+            >
+              {item.label}
+            </Link>
+          ) : (
+            <span className={cn(
+              "font-medium",
+              item.current || pathname === item.href ? "text-foreground" : "text-muted-foreground"
+            )}>
+              {item.label}
+            </span>
+          )}
+        </React.Fragment>
+      ))}
+    </nav>
+  )
+}
+
+// Page header component
+export interface PageHeaderProps {
+  title: string
+  description?: string
+  action?: React.ReactNode
+  breadcrumb?: BreadcrumbItem[]
+  className?: string
+  size?: "default" | "lg" | "xl"
+  gradient?: boolean
+}
+
+export function PageHeader({
+  title,
+  description,
+  action,
+  breadcrumb,
+  className,
+  size = "default",
+  gradient = false,
+}: PageHeaderProps) {
+  return (
+    <div className={cn("space-y-4", className)}>
+      {breadcrumb && breadcrumb.length > 0 && (
+        <Breadcrumb items={breadcrumb} />
+      )}
+      
+      <div className="flex items-start justify-between gap-4">
+        <div className="space-y-2 flex-1">
+          <h1 className={cn(
+            "font-bold tracking-tight",
+            {
+              "text-2xl md:text-3xl": size === "default",
+              "text-3xl md:text-4xl": size === "lg",
+              "text-4xl md:text-5xl": size === "xl",
+              "gradient-text": gradient,
+            }
+          )}>
+            {title}
+          </h1>
+          
+          {description && (
+            <p className={cn(
+              "text-muted-foreground leading-relaxed",
+              {
+                "text-base": size === "default",
+                "text-lg": size === "lg",
+                "text-xl": size === "xl",
+              }
+            )}>
+              {description}
+            </p>
+          )}
+        </div>
+        
+        {action && (
+          <div className="flex-shrink-0">
+            {action}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// Enhanced container component
+export interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
+  size?: "sm" | "default" | "lg" | "xl" | "full"
+  center?: boolean
+}
+
+export function Container({ 
+  className, 
+  size = "default", 
+  center = true, 
+  children, 
+  ...props 
+}: ContainerProps) {
+  return (
+    <div
+      className={cn(
+        "w-full px-4 md:px-6 lg:px-8",
+        center && "mx-auto",
+        {
+          "max-w-2xl": size === "sm",
+          "max-w-6xl": size === "default",
+          "max-w-7xl": size === "lg",
+          "max-w-none": size === "xl" || size === "full",
+        },
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  )
+}
+
+// Main layout component
+export interface EnhancedLayoutProps extends VariantProps<typeof layoutVariants> {
+  children: React.ReactNode
+  header?: React.ReactNode
+  sidebar?: React.ReactNode
+  footer?: React.ReactNode
+  className?: string
+  containerSize?: "sm" | "default" | "lg" | "xl" | "full"
+  showBackground?: boolean
+}
+
+export function EnhancedLayout({
+  children,
+  header,
+  sidebar,
+  footer,
+  variant,
+  spacing,
+  className,
+  containerSize = "default",
+  showBackground = true,
+}: EnhancedLayoutProps) {
+  return (
+    <div className={cn(
+      layoutVariants({ variant, spacing }),
+      !showBackground && "bg-background",
+      className
+    )}>
+      {/* Global header */}
+      {header && (
+        <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <Container size={containerSize}>
+            <div className="flex h-16 items-center justify-between">
+              {header}
+            </div>
+          </Container>
+        </header>
+      )}
+      
+      {/* Main content area */}
+      <div className={cn(
+        "flex-1 flex",
+        variant === "sidebar" && "relative"
+      )}>
+        {/* Sidebar */}
+        {sidebar && variant === "sidebar" && (
+          <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 lg:z-30 lg:border-r lg:bg-background/95 lg:backdrop-blur">
+            <div className="flex-1 flex flex-col pt-20 pb-4 overflow-y-auto">
+              {sidebar}
+            </div>
+          </aside>
+        )}
+        
+        {/* Main content */}
+        <main className={cn(
+          "flex-1 flex flex-col",
+          variant === "sidebar" && "lg:pl-64"
+        )}>
+          <Container 
+            size={containerSize} 
+            className={cn(
+              "flex-1 py-8",
+              spacing === "none" && "py-0",
+              spacing === "compact" && "py-4",
+              spacing === "comfortable" && "py-12"
+            )}
+          >
+            {children}
+          </Container>
+        </main>
+      </div>
+      
+      {/* Global footer */}
+      {footer && (
+        <footer className="border-t bg-background/95 backdrop-blur">
+          <Container size={containerSize}>
+            <div className="py-8">
+              {footer}
+            </div>
+          </Container>
+        </footer>
+      )}
+    </div>
+  )
+}
+
+// Quick action floating button
+export interface QuickActionProps {
+  actions: Array<{
+    icon: React.ReactNode
+    label: string
+    onClick: () => void
+    disabled?: boolean
+  }>
+  className?: string
+  position?: "bottom-right" | "bottom-left" | "top-right" | "top-left"
+}
+
+export function QuickAction({ actions, className, position = "bottom-right" }: QuickActionProps) {
+  const [isOpen, setIsOpen] = React.useState(false)
+  
+  const positionClasses = {
+    "bottom-right": "bottom-6 right-6",
+    "bottom-left": "bottom-6 left-6",
+    "top-right": "top-6 right-6",
+    "top-left": "top-6 left-6",
+  }
+  
+  return (
+    <div className={cn(
+      "fixed z-50",
+      positionClasses[position],
+      className
+    )}>
+      <div className="flex flex-col items-center space-y-2">
+        {/* Action buttons */}
+        {isOpen && (
+          <div className="flex flex-col space-y-2 animate-in slide-in-from-bottom-2">
+            {actions.map((action, index) => (
+              <EnhancedButton
+                key={index}
+                variant="floating"
+                size="icon-lg"
+                onClick={action.onClick}
+                disabled={action.disabled}
+                className="shadow-enhanced-xl hover:shadow-enhanced-2xl"
+                tooltip={action.label}
+              >
+                {action.icon}
+              </EnhancedButton>
+            ))}
+          </div>
+        )}
+        
+        {/* Main toggle button */}
+        <EnhancedButton
+          variant="gradient"
+          size="icon-xl"
+          onClick={() => setIsOpen(!isOpen)}
+          className={cn(
+            "shadow-enhanced-xl hover:shadow-enhanced-2xl transition-transform",
+            isOpen && "rotate-45"
+          )}
+        >
+          {isOpen ? (
+            <span className="text-lg">×</span>
+          ) : (
+            <span className="text-lg">+</span>
+          )}
+        </EnhancedButton>
+      </div>
+    </div>
+  )
+}
+
+// Section component for better content organization
+export interface SectionProps {
+  title?: string
+  description?: string
+  action?: React.ReactNode
+  children: React.ReactNode
+  className?: string
+  spacing?: "none" | "sm" | "default" | "lg"
+  variant?: "default" | "card" | "featured"
+}
+
+export function Section({
+  title,
+  description,
+  action,
+  children,
+  className,
+  spacing = "default",
+  variant = "default",
+}: SectionProps) {
+  const spacingClasses = {
+    none: "space-y-0",
+    sm: "space-y-4",
+    default: "space-y-6",
+    lg: "space-y-8",
+  }
+  
+  const content = (
+    <div className={cn(spacingClasses[spacing], className)}>
+      {(title || description || action) && (
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-1 flex-1">
+            {title && (
+              <h2 className="text-xl font-semibold tracking-tight">
+                {title}
+              </h2>
+            )}
+            {description && (
+              <p className="text-muted-foreground">
+                {description}
+              </p>
+            )}
+          </div>
+          
+          {action && (
+            <div className="flex-shrink-0">
+              {action}
+            </div>
+          )}
+        </div>
+      )}
+      
+      <div>
+        {children}
+      </div>
+    </div>
+  )
+  
+  if (variant === "card") {
+    return (
+      <Card className="p-6">
+        {content}
+      </Card>
+    )
+  }
+  
+  if (variant === "featured") {
+    return (
+      <Card variant="gradient" className="p-8">
+        {content}
+      </Card>
+    )
+  }
+  
+  return content
+}
+
+export { layoutVariants }

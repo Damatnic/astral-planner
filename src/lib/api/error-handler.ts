@@ -421,7 +421,7 @@ export class APIErrorHandler {
     const errorsByEndpoint: Record<string, number> = {};
     const recentErrors: Array<{ endpoint: string; count: number; lastError: string }> = [];
     
-    for (const [key, count] of this.errorCounts.entries()) {
+    for (const [key, count] of Array.from(this.errorCounts.entries())) {
       const [endpoint] = key.split(':');
       errorsByEndpoint[endpoint] = (errorsByEndpoint[endpoint] || 0) + count;
       

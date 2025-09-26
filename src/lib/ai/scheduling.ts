@@ -459,7 +459,7 @@ export class AISchedulingEngine {
     if (!task.dueDate) return null;
     
     const urgentSlots = slots.filter(slot => 
-      slot.start < new Date(task.dueDate).getTime()
+      task.dueDate && slot.start < new Date(task.dueDate).getTime()
     );
     
     if (urgentSlots.length === 0) return null;
@@ -702,5 +702,4 @@ interface ProductivityAnalysis {
 // Export the main AI scheduling engine
 export const aiScheduler = new AISchedulingEngine();
 
-// Export utility functions for use throughout the app
-export { AISchedulingEngine };
+// Class is already exported above

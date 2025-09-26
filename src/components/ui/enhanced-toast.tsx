@@ -215,7 +215,7 @@ export function EnhancedToaster() {
       expand={true}
       visibleToasts={5}
       closeButton={false}
-      cn={(classes) => cn(classes, "font-sans")}
+      className="font-sans"
     />
   )
 }
