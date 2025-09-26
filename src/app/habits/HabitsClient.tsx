@@ -135,8 +135,13 @@ export default function HabitsPage() {
     icon: '⭐'
   });
 
-  // Week view state
-  const [currentWeek, setCurrentWeek] = useState(new Date());
+  // Week view state - initialize with null to prevent hydration issues
+  const [currentWeek, setCurrentWeek] = useState<Date | null>(null);
+  
+  // Initialize week on client-side only
+  useEffect(() => {
+    setCurrentWeek(new Date());
+  }, []);
   const [sortBy, setSortBy] = useState('name');
 
   // Fetch habits data
@@ -449,6 +454,7 @@ export default function HabitsPage() {
 
   // Render week view
   function renderWeekView() {
+    if (!currentWeek) return <div className="text-center py-8">Loading...</div>;
     const weekStart = startOfWeek(currentWeek);
     const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
@@ -458,7 +464,7 @@ export default function HabitsPage() {
         <div className="flex items-center justify-between">
           <Button 
             variant="outline" 
-            onClick={() => setCurrentWeek(prev => addDays(prev, -7))}
+            onClick={() => setCurrentWeek(prev => prev ? addDays(prev, -7) : new Date())}
           >
             Previous Week
           </Button>
@@ -467,7 +473,7 @@ export default function HabitsPage() {
           </h3>
           <Button 
             variant="outline" 
-            onClick={() => setCurrentWeek(prev => addDays(prev, 7))}
+            onClick={() => setCurrentWeek(prev => prev ? addDays(prev, 7) : new Date())}
           >
             Next Week
           </Button>

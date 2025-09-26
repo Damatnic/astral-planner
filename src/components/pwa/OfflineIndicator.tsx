@@ -11,9 +11,17 @@ interface OfflineIndicatorProps {
 }
 
 export function OfflineIndicator({ className }: OfflineIndicatorProps) {
+  // Initialize as true to match server-side state, then update on client
   const [isOnline, setIsOnline] = useState(true)
   const [showOfflineAlert, setShowOfflineAlert] = useState(false)
-  const [lastOnlineTime, setLastOnlineTime] = useState<Date>(new Date())
+  const [lastOnlineTime, setLastOnlineTime] = useState<Date | null>(null)
+  
+  // Initialize lastOnlineTime on client-side only
+  useEffect(() => {
+    setLastOnlineTime(new Date())
+    // Set initial online state on client
+    setIsOnline(navigator.onLine)
+  }, [])
 
   useEffect(() => {
     const updateOnlineStatus = () => {
@@ -90,6 +98,7 @@ export function OfflineIndicator({ className }: OfflineIndicatorProps) {
   }
 
   const formatLastOnlineTime = () => {
+    if (!lastOnlineTime) return 'Unknown'
     const now = new Date()
     const diff = now.getTime() - lastOnlineTime.getTime()
     const minutes = Math.floor(diff / 60000)
