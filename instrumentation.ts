@@ -9,8 +9,7 @@ export async function register() {
 }
 
 // Hook for capturing errors from nested React Server Components
-// Note: Temporarily disabled due to TypeScript compatibility issues with @sentry/nextjs
-// export async function onRequestError(err: unknown, request: Request, context: unknown) {
-//   const { captureRequestError } = await import('@sentry/nextjs')
-//   captureRequestError(err, request, context)
-// }
+export async function onRequestError(err: unknown, request: any, context: any) {
+  const { captureRequestError } = await import('@sentry/nextjs')
+  captureRequestError(err, request, context)
+}
