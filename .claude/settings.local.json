@@ -79,7 +79,9 @@
       "WebFetch(domain:github.com)",
       "Bash(VERCEL=true NODE_ENV=production npm run build)",
       "WebFetch(domain:ultimate-digital-planner-4mejoeha8-astral-productions.vercel.app)",
-      "WebFetch(domain:ultimate-digital-planner-9jj9pdkle-astral-productions.vercel.app)"
+      "WebFetch(domain:ultimate-digital-planner-9jj9pdkle-astral-productions.vercel.app)",
+      "WebFetch(domain:ultimate-digital-planner-8ejifzqhq-astral-productions.vercel.app)",
+      "WebFetch(domain:ultimate-digital-planner-pbpyxilrp-astral-productions.vercel.app)"
     ],
     "deny": [],
     "ask": []

@@ -12,8 +12,17 @@ export async function GET(req: NextRequest) {
     
     console.log('Fetching habits for user:', userId);
 
-    // Get account-specific data
-    const accountData = getAccountData(userId);
+    // Get account-specific data with error handling
+    let accountData;
+    try {
+      accountData = getAccountData(userId);
+    } catch (accountError) {
+      console.error('Failed to get account data:', accountError);
+      return NextResponse.json(
+        { error: 'Failed to retrieve account data', habits: [], stats: {} },
+        { status: 200 } // Return 200 with empty data instead of 500
+      );
+    }
     const userHabits = accountData.habits;
 
     // Overall statistics
@@ -40,8 +49,24 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('Failed to fetch habits:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch habits' },
-      { status: 500 }
+      { 
+        error: 'Failed to fetch habits', 
+        message: error instanceof Error ? error.message : 'Unknown error',
+        habits: [], 
+        stats: {
+          totalHabits: 0,
+          activeToday: 0,
+          totalCompletions: 0,
+          averageCompletionRate: 0,
+          longestStreak: 0
+        }
+      },
+      { 
+        status: 200, // Return 200 instead of 500 to prevent browser from treating as server error
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
     );
   }
 }

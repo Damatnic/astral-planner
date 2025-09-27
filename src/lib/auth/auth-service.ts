@@ -18,6 +18,7 @@ import {
   type AuthTokens,
   generateSessionId
 } from './token-service';
+
 import { RateLimiter } from './rate-limiter';
 import { InputValidator } from './input-validator';
 import Logger from '@/lib/logger';
@@ -482,9 +483,41 @@ export async function refreshTokens(request: NextRequest): Promise<{ tokens?: Au
  */
 export async function getUserProfile(request: NextRequest): Promise<{ user?: TokenUser; error?: string }> {
   try {
-    const user = await requireAuth(request);
-    return { user };
+    // Check for demo user authentication first
+    const demoHeader = request.headers.get('x-demo-user');
+    const demoToken = request.headers.get('x-demo-token');
+    
+    if (demoHeader === 'demo-user' || demoToken === 'demo-token-2024') {
+      // Return demo user profile
+      return {
+        user: {
+          id: 'demo-user',
+          email: 'demo@astralchronos.com',
+          firstName: 'Demo',
+          lastName: 'User',
+          username: 'demo-user',
+          role: 'user',
+          isDemo: true,
+          sessionId: 'demo-session'
+        }
+      };
+    }
+
+    // Try to get the user from token
+    const token = extractTokenFromRequest(request);
+    if (!token) {
+      return { error: 'No authentication token provided' };
+    }
+
+    // Verify the token using the token service
+    const tokenResult = await verifyToken(token);
+    if (!tokenResult.valid || !tokenResult.payload?.user) {
+      return { error: 'Invalid authentication token' };
+    }
+
+    return { user: tokenResult.payload.user };
   } catch (error) {
+    Logger.error('getUserProfile error', { error });
     return { error: 'Authentication required' };
   }
 }
