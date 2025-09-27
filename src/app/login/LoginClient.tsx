@@ -87,10 +87,18 @@ export default function LoginClient() {
   const [authProgress, setAuthProgress] = useState(0);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isFirstTime, setIsFirstTime] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const pinInputRef = useRef<HTMLInputElement>(null);
 
-  // Initialize welcome flow
+  // Ensure hydration consistency
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Initialize welcome flow (only after mount to avoid hydration mismatch)
+  useEffect(() => {
+    if (!isMounted) return;
+    
     const hasVisited = localStorage.getItem('has-visited-login');
     if (!hasVisited) {
       setIsFirstTime(true);
@@ -102,7 +110,7 @@ export default function LoginClient() {
     } else {
       setStep('select-account');
     }
-  }, []);
+  }, [isMounted]);
 
   // Auto-fill demo account PIN when selected
   useEffect(() => {
@@ -113,13 +121,15 @@ export default function LoginClient() {
     }
   }, [selectedAccount]);
 
-  // Check if user is already logged in
+  // Check if user is already logged in (only after mount to avoid hydration mismatch)
   useEffect(() => {
+    if (!isMounted) return;
+    
     const currentUser = localStorage.getItem('current-user');
     if (currentUser) {
       router.push('/dashboard');
     }
-  }, [router]);
+  }, [router, isMounted]);
 
   // Focus PIN input when step changes
   useEffect(() => {
@@ -254,6 +264,15 @@ export default function LoginClient() {
     setPin('');
     setError('');
   };
+
+  // Don't render until mounted to prevent hydration mismatch
+  if (!isMounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+        <div className="text-slate-600">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
