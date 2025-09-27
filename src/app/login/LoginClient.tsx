@@ -364,7 +364,7 @@ export default function LoginClient() {
                     maxLength={4}
                     autoFocus
                   />
-                  <Button
+                  <EnhancedButton
                     type="button"
                     variant="ghost"
                     size="sm"
@@ -372,7 +372,7 @@ export default function LoginClient() {
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
                   >
                     {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </Button>
+                  </EnhancedButton>
                 </div>
                 {selectedAccount.id === 'demo-user' && (
                   <p className="text-xs text-green-600 flex items-center gap-1">
@@ -392,7 +392,7 @@ export default function LoginClient() {
 
               {/* Action Buttons */}
               <div className="flex gap-3">
-                <Button
+                <EnhancedButton
                   type="button"
                   variant="outline"
                   onClick={goBack}
@@ -400,8 +400,8 @@ export default function LoginClient() {
                   disabled={isLoading}
                 >
                   Back
-                </Button>
-                <Button
+                </EnhancedButton>
+                <EnhancedButton
                   onClick={handleLogin}
                   className="flex-1"
                   disabled={pin.length !== 4 || isLoading}
@@ -418,7 +418,7 @@ export default function LoginClient() {
                       Sign In
                     </>
                   )}
-                </Button>
+                </EnhancedButton>
               </div>
             </CardContent>
           </Card>

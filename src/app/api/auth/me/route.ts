@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   
   try {
     Logger.info('User profile request', {
-      ip: request.headers.get('x-forwarded-for') || request.ip,
+      ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
       userAgent: request.headers.get('user-agent')
     });
 
@@ -152,7 +152,7 @@ export async function GET(request: NextRequest) {
     Logger.error('User profile endpoint error', { 
       error,
       processingTime,
-      ip: request.headers.get('x-forwarded-for') || request.ip
+      ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
     });
 
     return NextResponse.json(

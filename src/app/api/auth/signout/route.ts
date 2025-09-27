@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
   
   try {
     Logger.info('Sign out attempt', {
-      ip: request.headers.get('x-forwarded-for') || request.ip,
+      ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
       userAgent: request.headers.get('user-agent')
     });
 
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     Logger.error('Sign out endpoint error', { 
       error,
       processingTime,
-      ip: request.headers.get('x-forwarded-for') || request.ip
+      ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
     });
 
     // Still clear cookies even if there was an error
@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
   const startTime = Date.now();
   
   Logger.warn('GET request to sign out endpoint - potential CSRF or accidental link', {
-    ip: request.headers.get('x-forwarded-for') || request.ip,
+    ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
     userAgent: request.headers.get('user-agent'),
     referer: request.headers.get('referer')
   });
@@ -148,7 +148,7 @@ export async function GET(request: NextRequest) {
     Logger.error('GET sign out endpoint error', { 
       error,
       processingTime,
-      ip: request.headers.get('x-forwarded-for') || request.ip
+      ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
     });
 
     const response = clearAuthCookies();
