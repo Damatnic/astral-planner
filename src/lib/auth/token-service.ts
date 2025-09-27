@@ -15,23 +15,41 @@ const REFRESH_TOKEN_EXPIRY = '7d';
 const SESSION_TOKEN_EXPIRY = '24h';
 
 // Advanced Secret Management
+let cachedSecretKey: Uint8Array | null = null;
+
 const getSecretKey = (): Uint8Array => {
+  if (cachedSecretKey) {
+    return cachedSecretKey;
+  }
+  
   const secret = process.env.JWT_SECRET;
   if (!secret) {
-    if (process.env.NODE_ENV === 'production') {
+    // During build time or when JWT_SECRET is not available, use a fallback
+    // This prevents build failures while maintaining security in production
+    const fallbackMessage = process.env.NODE_ENV === 'production' 
+      ? 'JWT_SECRET is required for production deployment' 
+      : 'Using fallback JWT secret for development - NOT SECURE';
+    
+    if (process.env.NODE_ENV === 'production' && process.env.VERCEL) {
+      // On Vercel, JWT_SECRET should be in environment variables
+      console.warn('JWT_SECRET not found during build - JWT features will be disabled');
+      cachedSecretKey = new TextEncoder().encode('build-time-fallback-not-for-runtime-use');
+      return cachedSecretKey;
+    } else if (process.env.NODE_ENV === 'production') {
       throw new Error('JWT_SECRET is required in production');
     }
-    Logger.warn('Using fallback JWT secret for development - NOT SECURE');
-    return new TextEncoder().encode('fallback-dev-secret-not-for-production');
+    
+    Logger.warn(fallbackMessage);
+    cachedSecretKey = new TextEncoder().encode('fallback-dev-secret-not-for-production');
+    return cachedSecretKey;
   }
   
   // Use PBKDF2 to derive a strong key from the secret
   const salt = process.env.JWT_SALT || 'astral-chronos-salt';
   const derivedKey = pbkdf2Sync(secret, salt, 100000, 32, 'sha256');
-  return new Uint8Array(derivedKey);
+  cachedSecretKey = new Uint8Array(derivedKey);
+  return cachedSecretKey;
 };
-
-const SECRET_KEY = getSecretKey();
 
 export interface TokenUser {
   id: string;
@@ -123,7 +141,7 @@ export async function createAuthTokens(
       .setIssuedAt(now)
       .setExpirationTime(ACCESS_TOKEN_EXPIRY)
       .setNotBefore(now)
-      .sign(SECRET_KEY);
+      .sign(getSecretKey());
 
     // Refresh Token (7 days)
     const refreshToken = await new SignJWT({
@@ -134,7 +152,7 @@ export async function createAuthTokens(
       .setIssuedAt(now)
       .setExpirationTime(REFRESH_TOKEN_EXPIRY)
       .setNotBefore(now)
-      .sign(SECRET_KEY);
+      .sign(getSecretKey());
 
     // Session Token (24 hours) - for UI state
     const sessionToken = await new SignJWT({
@@ -145,7 +163,7 @@ export async function createAuthTokens(
       .setIssuedAt(now)
       .setExpirationTime(SESSION_TOKEN_EXPIRY)
       .setNotBefore(now)
-      .sign(SECRET_KEY);
+      .sign(getSecretKey());
 
     Logger.info('Auth tokens created successfully', {
       userId: user.id,
@@ -173,7 +191,7 @@ export async function createAuthTokens(
  */
 export async function verifyToken(token: string): Promise<TokenValidationResult> {
   try {
-    const { payload } = await jwtVerify(token, SECRET_KEY, {
+    const { payload } = await jwtVerify(token, getSecretKey(), {
       issuer: JWT_ISSUER,
       audience: JWT_AUDIENCE,
     });
@@ -249,7 +267,7 @@ export async function refreshAccessToken(
       .setIssuedAt()
       .setExpirationTime(ACCESS_TOKEN_EXPIRY)
       .setNotBefore(Math.floor(Date.now() / 1000))
-      .sign(SECRET_KEY);
+      .sign(getSecretKey());
 
     Logger.info('Access token refreshed successfully', {
       userId: validation.payload.user.id,

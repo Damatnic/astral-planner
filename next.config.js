@@ -351,5 +351,7 @@ const sentryWebpackPluginOptions = {
 
 // Catalyst Production Export - All Optimizations Enabled
 module.exports = withBundleAnalyzer(
-  withPWA(nextConfig)
+  withPWA(
+    withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+  )
 )
