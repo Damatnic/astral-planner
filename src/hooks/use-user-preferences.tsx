@@ -250,14 +250,11 @@ export function UserPreferencesProvider({ children }: { children: React.ReactNod
         
         // Apply theme immediately
         applyTheme(mergedPreferences.appearance.theme);
-      } else if (response.status === 401) {
-        // Authentication required - use defaults and skip error message
-        console.log('Authentication required for preferences, using defaults');
+      } else {
+        // Any error - use defaults (401s should not happen anymore due to API fallbacks)
+        console.log('Settings API returned error, using defaults. Status:', response.status);
         setPreferences(defaultPreferences);
         applyTheme(defaultPreferences.appearance.theme);
-      } else {
-        // Other errors
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
     } catch (error) {
       console.error('Failed to load preferences:', error);

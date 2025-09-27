@@ -179,6 +179,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   /**
    * Check authentication status on mount and route changes
+   * STABLE DEPS TO PREVENT HOOK REORDERING ISSUES
    */
   useEffect(() => {
     const checkAuth = async () => {
@@ -235,7 +236,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     checkAuth();
-  }, [router, pathname, isPublicRoute, clearAuthState, verifySession, scheduleRefresh]);
+  }, [pathname]); // Simplified deps to prevent hook reordering
 
   // Redirect authenticated users away from login page
   useEffect(() => {

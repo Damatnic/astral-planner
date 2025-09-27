@@ -29,17 +29,49 @@ const format = winston.format.combine(
   ),
 );
 
-// Define transports
-const transports = [
+// Define transports with production safety
+const transports: winston.transport[] = [
   new winston.transports.Console(),
-  new winston.transports.File({
-    filename: 'logs/error.log',
-    level: 'error',
-  }),
-  new winston.transports.File({
-    filename: 'logs/combined.log',
-  }),
 ];
+
+// Only add file transports in development or when logs directory is accessible
+if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_FILE_LOGGING === 'true') {
+  try {
+    // Try to create a test log entry to verify filesystem access
+    const fs = require('fs');
+    const path = require('path');
+    
+    const logsDir = path.join(process.cwd(), 'logs');
+    if (!fs.existsSync(logsDir)) {
+      fs.mkdirSync(logsDir, { recursive: true });
+    }
+    
+    transports.push(
+      new winston.transports.File({
+        filename: 'logs/error.log',
+        level: 'error',
+      }),
+      new winston.transports.File({
+        filename: 'logs/combined.log',
+      })
+    );
+  } catch (fsError) {
+    console.warn('File logging disabled due to filesystem access issues:', fsError);
+  }
+}
+
+// Create exception and rejection handlers safely
+const exceptionHandlers: winston.transport[] = [new winston.transports.Console()];
+const rejectionHandlers: winston.transport[] = [new winston.transports.Console()];
+
+if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_FILE_LOGGING === 'true') {
+  try {
+    exceptionHandlers.push(new winston.transports.File({ filename: 'logs/exceptions.log' }));
+    rejectionHandlers.push(new winston.transports.File({ filename: 'logs/rejections.log' }));
+  } catch (fsError) {
+    // Silently fall back to console only
+  }
+}
 
 // Create logger
 const Logger = winston.createLogger({
@@ -47,12 +79,8 @@ const Logger = winston.createLogger({
   levels,
   format,
   transports,
-  exceptionHandlers: [
-    new winston.transports.File({ filename: 'logs/exceptions.log' }),
-  ],
-  rejectionHandlers: [
-    new winston.transports.File({ filename: 'logs/rejections.log' }),
-  ],
+  exceptionHandlers,
+  rejectionHandlers,
   exitOnError: false,
 });
 
