@@ -77,7 +77,8 @@
       "Bash(PORT=3050 npm start)",
       "Bash(gh run list:*)",
       "WebFetch(domain:github.com)",
-      "Bash(VERCEL=true NODE_ENV=production npm run build)"
+      "Bash(VERCEL=true NODE_ENV=production npm run build)",
+      "WebFetch(domain:ultimate-digital-planner-4mejoeha8-astral-productions.vercel.app)"
     ],
     "deny": [],
     "ask": []
