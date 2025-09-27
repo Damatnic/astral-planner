@@ -9,6 +9,7 @@ export interface AuthUser {
   lastName?: string;
   imageUrl?: string;
   name?: string;
+  isDemo?: boolean;
 }
 
 export interface AuthContext {
@@ -33,29 +34,20 @@ export async function verifyToken(token: string): Promise<AuthUser | null> {
 }
 
 export async function getAuthContext(request: NextRequest): Promise<AuthContext> {
-  console.warn('[SECURITY WARNING] Legacy PIN authentication detected - migrating to secure JWT');
+  // ENHANCED AUTHENTICATION WITH MULTIPLE FALLBACKS
   
-  // SECURE JWT TOKEN AUTHENTICATION ONLY
-  const authHeader = request.headers.get('authorization');
-  const token = authHeader?.replace('Bearer ', '') || request.cookies.get('auth_token')?.value;
-  
-  if (token) {
-    const user = await verifyToken(token);
-    if (user) {
-      return {
-        user,
-        isAuthenticated: true,
-        isDemo: false
-      };
-    }
-  }
-
-  // DEMO MODE AUTHENTICATION (PRODUCTION ENABLED FOR DEMO)
+  // Check for demo user authentication first (most common case)
   const demoHeader = request.headers.get('x-demo-user');
   const demoToken = request.headers.get('x-demo-token');
+  const userDataHeader = request.headers.get('x-user-data');
+  const pinHeader = request.headers.get('x-pin');
   
-  if (demoHeader === 'demo-user' || demoToken === 'demo-token-2024') {
-    console.log('[DEMO MODE] Demo user authenticated for showcase');
+  // Demo user authentication
+  if (demoHeader === 'demo-user' || 
+      demoToken === 'demo-token-2024' ||
+      userDataHeader?.includes('demo-user') ||
+      pinHeader === '0000') {
+    console.log('[DEMO MODE] Demo user authenticated via headers');
     return {
       user: {
         id: 'demo-user',
@@ -64,13 +56,53 @@ export async function getAuthContext(request: NextRequest): Promise<AuthContext>
         firstName: 'Demo',
         lastName: 'User',
         name: 'Demo User',
-        imageUrl: '/avatars/demo-user.png'
+        imageUrl: '/avatars/demo-user.png',
+        isDemo: true
       },
       isAuthenticated: true,
       isDemo: true
     };
   }
+
+  // Nick's planner authentication
+  if (userDataHeader?.includes('nick-planner') || pinHeader === '7347') {
+    console.log('[PREMIUM] Nick planner authenticated via headers');
+    return {
+      user: {
+        id: 'nick-planner',
+        email: 'nick@example.com',
+        role: 'premium',
+        firstName: 'Nick',
+        lastName: 'Planner',
+        name: "Nick's Planner",
+        imageUrl: '/avatars/nick-planner.png',
+        isDemo: false
+      },
+      isAuthenticated: true,
+      isDemo: false
+    };
+  }
+
+  // JWT TOKEN AUTHENTICATION
+  const authHeader = request.headers.get('authorization');
+  const token = authHeader?.replace('Bearer ', '') || request.cookies.get('auth_token')?.value;
   
+  if (token) {
+    try {
+      const user = await verifyToken(token);
+      if (user) {
+        return {
+          user,
+          isAuthenticated: true,
+          isDemo: false
+        };
+      }
+    } catch (error) {
+      console.warn('Token verification failed:', error);
+    }
+  }
+
+  // No authentication found
   return {
     user: null,
     isAuthenticated: false,
