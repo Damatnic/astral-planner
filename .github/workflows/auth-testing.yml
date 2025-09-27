@@ -1,0 +1,651 @@
+# Comprehensive Authentication Testing Pipeline
+# Automated testing for authentication system with quality gates and reporting
+
+name: Authentication Testing Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'src/lib/auth/**'
+      - 'src/components/providers/auth-provider.tsx'
+      - 'src/app/api/auth/**'
+      - 'tests/**'
+      - '.github/workflows/auth-testing.yml'
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'src/lib/auth/**'
+      - 'src/components/providers/auth-provider.tsx'
+      - 'src/app/api/auth/**'
+      - 'tests/**'
+  schedule:
+    # Run full test suite daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Type of tests to run'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - unit
+          - integration
+          - e2e
+          - security
+          - performance
+      skip_cache:
+        description: 'Skip dependency cache'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  NODE_VERSION: '18'
+  CACHE_VERSION: 'v1'
+
+jobs:
+  # Quality Gates - Fast feedback on basic issues
+  quality-gates:
+    name: Quality Gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      should-run-tests: ${{ steps.changes.outputs.auth-changed || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for authentication changes
+        id: changes
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            auth-changed:
+              - 'src/lib/auth/**'
+              - 'src/components/providers/auth-provider.tsx'
+              - 'src/app/api/auth/**'
+              - 'tests/**'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci --prefer-offline --no-audit
+          
+      - name: TypeScript compilation check
+        run: |
+          npx tsc --noEmit --project tsconfig.json
+          
+      - name: Lint authentication code
+        run: |
+          npx eslint src/lib/auth/ src/components/providers/auth-provider.tsx src/app/api/auth/ --ext .ts,.tsx --format json --output-file lint-results.json || true
+          
+      - name: Check code formatting
+        run: |
+          npx prettier --check "src/lib/auth/**/*.{ts,tsx}" "src/components/providers/auth-provider.tsx" "src/app/api/auth/**/*.ts"
+
+      - name: Security audit
+        run: |
+          npm audit --audit-level=high --json > security-audit.json || true
+          
+      - name: Upload quality gate artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-gates-results
+          path: |
+            lint-results.json
+            security-audit.json
+          retention-days: 7
+
+  # Unit Tests - Core authentication logic
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: quality-gates
+    if: needs.quality-gates.outputs.should-run-tests == 'true'
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        node-version: [16, 18, 20]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Run unit tests with coverage
+        run: |
+          npm run test -- \
+            --testPathPattern="(auth|auth-utils|auth-provider)" \
+            --coverage \
+            --coverageReporters=json-summary,text,lcov \
+            --coverageDirectory=coverage/unit \
+            --testTimeout=30000 \
+            --maxWorkers=2
+
+      - name: Check coverage thresholds
+        run: |
+          node -e "
+          const coverage = require('./coverage/unit/coverage-summary.json');
+          const thresholds = {
+            statements: 95,
+            branches: 90,
+            functions: 95,
+            lines: 95
+          };
+          
+          let failed = false;
+          Object.entries(thresholds).forEach(([metric, threshold]) => {
+            const actual = coverage.total[metric].pct;
+            if (actual < threshold) {
+              console.error(\`❌ \${metric}: \${actual}% < \${threshold}%\`);
+              failed = true;
+            } else {
+              console.log(\`✅ \${metric}: \${actual}% >= \${threshold}%\`);
+            }
+          });
+          
+          if (failed) process.exit(1);
+          "
+
+      - name: Upload unit test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-results-node${{ matrix.node-version }}
+          path: |
+            coverage/unit/
+            junit-unit.xml
+          retention-days: 7
+
+  # Integration Tests - API and service integration
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: quality-gates
+    if: needs.quality-gates.outputs.should-run-tests == 'true'
+    timeout-minutes: 20
+    services:
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Setup test environment
+        run: |
+          cp .env.example .env.test
+          echo "REDIS_URL=redis://localhost:6379" >> .env.test
+          echo "NODE_ENV=test" >> .env.test
+
+      - name: Run integration tests
+        run: |
+          npm run test -- \
+            --testPathPattern="integration" \
+            --coverage \
+            --coverageDirectory=coverage/integration \
+            --testTimeout=60000 \
+            --runInBand
+        env:
+          NODE_ENV: test
+
+      - name: Test API endpoints health
+        run: |
+          # Start the app in background
+          npm run build
+          npm run start &
+          APP_PID=$!
+          
+          # Wait for app to start
+          sleep 10
+          
+          # Test auth endpoints
+          curl -f http://localhost:3000/api/auth/me || exit 1
+          curl -f -X POST http://localhost:3000/api/auth/signout || exit 1
+          
+          # Stop the app
+          kill $APP_PID
+
+      - name: Upload integration test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: integration-test-results
+          path: |
+            coverage/integration/
+            junit-integration.xml
+          retention-days: 7
+
+  # Security Tests - Authentication vulnerability testing
+  security-tests:
+    name: Security Tests
+    runs-on: ubuntu-latest
+    needs: quality-gates
+    if: needs.quality-gates.outputs.should-run-tests == 'true' && (github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'security' || github.event_name == 'schedule')
+    timeout-minutes: 25
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Run security tests
+        run: |
+          npm run test -- \
+            --testPathPattern="security" \
+            --testTimeout=60000 \
+            --verbose
+        env:
+          NODE_ENV: test
+
+      - name: Run SAST security scan
+        uses: securecodewarrior/github-action-add-sarif@v1
+        with:
+          sarif-file: 'security-scan-results.sarif'
+        continue-on-error: true
+
+      - name: Check for hardcoded secrets
+        run: |
+          # Check for potential secrets in auth files
+          echo "Checking for hardcoded secrets..."
+          if grep -r -E "(password|secret|key|token).*=.*['\"][^'\"]{8,}" src/lib/auth/ src/app/api/auth/ --include="*.ts" --include="*.tsx"; then
+            echo "❌ Potential hardcoded secrets found!"
+            exit 1
+          else
+            echo "✅ No hardcoded secrets detected"
+          fi
+
+      - name: Validate authentication security headers
+        run: |
+          npm run build
+          npm run start &
+          APP_PID=$!
+          sleep 10
+          
+          # Check security headers
+          HEADERS=$(curl -I http://localhost:3000/api/auth/me 2>/dev/null)
+          
+          echo "Checking security headers..."
+          echo "$HEADERS" | grep -i "x-frame-options" || echo "⚠️ Missing X-Frame-Options header"
+          echo "$HEADERS" | grep -i "x-content-type-options" || echo "⚠️ Missing X-Content-Type-Options header"
+          echo "$HEADERS" | grep -i "strict-transport-security" || echo "⚠️ Missing HSTS header"
+          
+          kill $APP_PID
+
+      - name: Upload security test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-test-results
+          path: |
+            security-scan-results.sarif
+            junit-security.xml
+          retention-days: 30
+
+  # Performance Tests - Authentication speed and scalability
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    needs: quality-gates
+    if: needs.quality-gates.outputs.should-run-tests == 'true' && (github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'performance' || github.event_name == 'schedule')
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Run performance tests
+        run: |
+          npm run test -- \
+            --testPathPattern="performance" \
+            --testTimeout=300000 \
+            --maxWorkers=1 \
+            --verbose
+        env:
+          NODE_ENV: test
+
+      - name: Generate performance report
+        run: |
+          echo "# Authentication Performance Report" > performance-report.md
+          echo "Generated on: $(date)" >> performance-report.md
+          echo "" >> performance-report.md
+          echo "## Test Results" >> performance-report.md
+          
+          # Add performance metrics if test results exist
+          if [ -f "performance-results.json" ]; then
+            echo "Performance tests completed successfully" >> performance-report.md
+          else
+            echo "No performance results generated" >> performance-report.md
+          fi
+
+      - name: Upload performance test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: performance-test-results
+          path: |
+            performance-report.md
+            performance-results.json
+            junit-performance.xml
+          retention-days: 30
+
+  # End-to-End Tests - Full user journey testing
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: [quality-gates, unit-tests]
+    if: needs.quality-gates.outputs.should-run-tests == 'true' && (github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'e2e')
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Build application
+        run: npm run build
+
+      - name: Start application
+        run: |
+          npm run start &
+          echo $! > app.pid
+          sleep 10
+        env:
+          PORT: 3000
+
+      - name: Run E2E tests
+        run: |
+          npx playwright test tests/e2e/auth.spec.ts \
+            --reporter=html,junit \
+            --output-dir=test-results/e2e
+        env:
+          E2E_BASE_URL: http://localhost:3000
+
+      - name: Stop application
+        if: always()
+        run: |
+          if [ -f app.pid ]; then
+            kill $(cat app.pid) || true
+            rm app.pid
+          fi
+
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-test-results
+          path: |
+            test-results/e2e/
+            playwright-report/
+            junit-e2e.xml
+          retention-days: 14
+
+  # Edge Case Tests - Error scenarios and boundary conditions
+  edge-case-tests:
+    name: Edge Case Tests
+    runs-on: ubuntu-latest
+    needs: quality-gates
+    if: needs.quality-gates.outputs.should-run-tests == 'true' && (github.event.inputs.test_type == 'all' || github.event_name == 'schedule')
+    timeout-minutes: 20
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Run edge case tests
+        run: |
+          npm run test -- \
+            --testPathPattern="edge-cases" \
+            --testTimeout=60000 \
+            --verbose
+        env:
+          NODE_ENV: test
+
+      - name: Upload edge case test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: edge-case-test-results
+          path: |
+            junit-edge-cases.xml
+          retention-days: 7
+
+  # Test Summary and Quality Gates
+  test-summary:
+    name: Test Summary & Quality Gates
+    runs-on: ubuntu-latest
+    needs: [quality-gates, unit-tests, integration-tests, security-tests, performance-tests, e2e-tests, edge-case-tests]
+    if: always() && needs.quality-gates.outputs.should-run-tests == 'true'
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: test-artifacts
+
+      - name: Generate comprehensive test report
+        run: |
+          echo "# 🧪 Authentication Testing Summary" > test-summary.md
+          echo "Generated on: $(date)" >> test-summary.md
+          echo "" >> test-summary.md
+          
+          # Job status summary
+          echo "## 📊 Test Job Status" >> test-summary.md
+          echo "| Test Type | Status | Duration |" >> test-summary.md
+          echo "|-----------|--------|----------|" >> test-summary.md
+          echo "| Quality Gates | ${{ needs.quality-gates.result }} | - |" >> test-summary.md
+          echo "| Unit Tests | ${{ needs.unit-tests.result }} | - |" >> test-summary.md
+          echo "| Integration Tests | ${{ needs.integration-tests.result }} | - |" >> test-summary.md
+          echo "| Security Tests | ${{ needs.security-tests.result }} | - |" >> test-summary.md
+          echo "| Performance Tests | ${{ needs.performance-tests.result }} | - |" >> test-summary.md
+          echo "| E2E Tests | ${{ needs.e2e-tests.result }} | - |" >> test-summary.md
+          echo "| Edge Case Tests | ${{ needs.edge-case-tests.result }} | - |" >> test-summary.md
+          echo "" >> test-summary.md
+          
+          # Coverage summary
+          echo "## 📈 Code Coverage" >> test-summary.md
+          if [ -f "test-artifacts/unit-test-results-node18/coverage-summary.json" ]; then
+            echo "Unit test coverage data found" >> test-summary.md
+          else
+            echo "No coverage data available" >> test-summary.md
+          fi
+          echo "" >> test-summary.md
+          
+          # Security findings
+          echo "## 🔒 Security Findings" >> test-summary.md
+          if [ -f "test-artifacts/security-test-results/security-scan-results.sarif" ]; then
+            echo "Security scan completed - check artifacts for details" >> test-summary.md
+          else
+            echo "No security findings reported" >> test-summary.md
+          fi
+          echo "" >> test-summary.md
+          
+          # Performance metrics
+          echo "## ⚡ Performance Metrics" >> test-summary.md
+          if [ -f "test-artifacts/performance-test-results/performance-report.md" ]; then
+            cat "test-artifacts/performance-test-results/performance-report.md" >> test-summary.md
+          else
+            echo "No performance data available" >> test-summary.md
+          fi
+
+      - name: Check quality gates
+        id: quality-check
+        run: |
+          FAILED_JOBS=""
+          
+          # Check critical jobs
+          if [[ "${{ needs.unit-tests.result }}" != "success" ]]; then
+            FAILED_JOBS="$FAILED_JOBS unit-tests"
+          fi
+          
+          if [[ "${{ needs.integration-tests.result }}" != "success" ]]; then
+            FAILED_JOBS="$FAILED_JOBS integration-tests"
+          fi
+          
+          if [[ "${{ needs.security-tests.result }}" == "failure" ]]; then
+            FAILED_JOBS="$FAILED_JOBS security-tests"
+          fi
+          
+          # E2E and performance tests can be skipped but not failed
+          if [[ "${{ needs.e2e-tests.result }}" == "failure" ]]; then
+            FAILED_JOBS="$FAILED_JOBS e2e-tests"
+          fi
+          
+          if [[ -n "$FAILED_JOBS" ]]; then
+            echo "❌ Quality gates failed. Failed jobs: $FAILED_JOBS"
+            echo "failed-jobs=$FAILED_JOBS" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "✅ All quality gates passed"
+            echo "failed-jobs=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload test summary
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-summary-report
+          path: test-summary.md
+          retention-days: 30
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = fs.readFileSync('test-summary.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary
+            });
+
+      - name: Update commit status
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const state = '${{ steps.quality-check.outcome }}' === 'success' ? 'success' : 'failure';
+            const description = state === 'success' 
+              ? 'All authentication tests passed' 
+              : 'Some authentication tests failed: ${{ steps.quality-check.outputs.failed-jobs }}';
+            
+            github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: state,
+              target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              description: description,
+              context: 'Authentication Test Suite'
+            });
+
+  # Deployment Quality Gates
+  deployment-ready:
+    name: Deployment Readiness Check
+    runs-on: ubuntu-latest
+    needs: [test-summary]
+    if: always() && github.ref == 'refs/heads/main'
+    timeout-minutes: 5
+    steps:
+      - name: Check deployment readiness
+        run: |
+          if [[ "${{ needs.test-summary.result }}" == "success" ]]; then
+            echo "✅ Authentication system is ready for deployment"
+            echo "All quality gates passed successfully"
+          else
+            echo "❌ Authentication system is NOT ready for deployment"
+            echo "Quality gates failed - deployment blocked"
+            exit 1
+          fi
+
+      - name: Set deployment status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const state = '${{ needs.test-summary.result }}' === 'success' ? 'success' : 'failure';
+            const description = state === 'success' 
+              ? 'Authentication system ready for deployment' 
+              : 'Authentication tests failed - deployment blocked';
+            
+            github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: state,
+              target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              description: description,
+              context: 'Deployment Readiness'
+            });

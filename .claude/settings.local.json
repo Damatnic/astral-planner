@@ -74,7 +74,10 @@
       "Bash(npm run test:*)",
       "Bash(dir scripts)",
       "Bash(npm start)",
-      "Bash(PORT=3050 npm start)"
+      "Bash(PORT=3050 npm start)",
+      "Bash(gh run list:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(VERCEL=true NODE_ENV=production npm run build)"
     ],
     "deny": [],
     "ask": []
