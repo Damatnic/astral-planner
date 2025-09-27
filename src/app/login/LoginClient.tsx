@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, 
   Lock, 
@@ -11,13 +11,27 @@ import {
   Eye, 
   EyeOff,
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
+  ArrowLeft,
+  Shield,
+  Star,
+  Zap,
+  Heart,
+  Crown,
+  HelpCircle,
+  RefreshCw,
+  ChevronRight,
+  Play
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { EnhancedButton } from '@/components/ui/enhanced-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Progress } from '@/components/ui/progress';
+import { useToast } from '@/components/ui/use-toast';
 
 interface Account {
   id: string;
@@ -27,37 +41,68 @@ interface Account {
   avatar?: string;
   theme: string;
   createdAt: string;
+  description?: string;
+  features?: string[];
+  lastLogin?: string | null;
+  isDemoAccount?: boolean;
 }
 
 const DEMO_ACCOUNTS: Account[] = [
   {
     id: 'nick-planner',
-    name: "Nick's Planner",
+    name: "Nick's Personal Planner",
     pin: '7347',
     displayName: 'Nick',
     avatar: '👨‍💼',
     theme: 'blue',
-    createdAt: '2024-01-15T10:00:00Z'
+    createdAt: '2024-01-15T10:00:00Z',
+    description: 'Personal productivity workspace',
+    features: ['Calendar', 'Tasks', 'Goals', 'Analytics'],
+    lastLogin: '2024-03-15T14:30:00Z'
   },
   {
     id: 'demo-user',
-    name: 'Demo Account',
+    name: 'Demo Experience',
     pin: '0000',
     displayName: 'Demo User',
     avatar: '🎯',
     theme: 'green',
-    createdAt: '2024-01-01T00:00:00Z'
+    createdAt: '2024-01-01T00:00:00Z',
+    description: 'Try all features with sample data',
+    features: ['Full Access', 'Sample Data', 'All Features'],
+    lastLogin: null,
+    isDemoAccount: true
   }
 ];
 
 export default function LoginClient() {
   const router = useRouter();
+  const { toast } = useToast();
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [pin, setPin] = useState('');
   const [showPin, setShowPin] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState<'select-account' | 'enter-pin'>('select-account');
+  const [step, setStep] = useState<'welcome' | 'select-account' | 'enter-pin' | 'success'>('welcome');
+  const [authProgress, setAuthProgress] = useState(0);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [isFirstTime, setIsFirstTime] = useState(false);
+  const pinInputRef = useRef<HTMLInputElement>(null);
+
+  // Initialize welcome flow
+  useEffect(() => {
+    const hasVisited = localStorage.getItem('has-visited-login');
+    if (!hasVisited) {
+      setIsFirstTime(true);
+      localStorage.setItem('has-visited-login', 'true');
+      // Show welcome for 2 seconds, then move to account selection
+      setTimeout(() => {
+        setStep('select-account');
+      }, 2000);
+    } else {
+      setStep('select-account');
+    }
+  }, []);
 
   // Auto-fill demo account PIN when selected
   useEffect(() => {
@@ -76,10 +121,32 @@ export default function LoginClient() {
     }
   }, [router]);
 
+  // Focus PIN input when step changes
+  useEffect(() => {
+    if (step === 'enter-pin' && pinInputRef.current) {
+      setTimeout(() => {
+        pinInputRef.current?.focus();
+      }, 300);
+    }
+  }, [step]);
+
   const handleAccountSelect = (account: Account) => {
     setSelectedAccount(account);
     setError('');
-    setStep('enter-pin');
+    setAuthProgress(25);
+    
+    // Show selection feedback
+    toast({
+      title: `${account.name} selected`,
+      description: `Welcome back, ${account.displayName}!`,
+      duration: 2000,
+    });
+    
+    // Smooth transition to PIN entry
+    setTimeout(() => {
+      setStep('enter-pin');
+      setAuthProgress(50);
+    }, 500);
   };
 
   const handleLogin = async () => {
@@ -90,11 +157,24 @@ export default function LoginClient() {
 
     setIsLoading(true);
     setError('');
+    setAuthProgress(75);
 
-    // Simulate authentication delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Simulate authentication process with progress updates
+    const steps = [
+      { progress: 80, message: 'Verifying credentials...' },
+      { progress: 90, message: 'Setting up workspace...' },
+      { progress: 95, message: 'Loading preferences...' }
+    ];
+
+    for (const step of steps) {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      setAuthProgress(step.progress);
+    }
 
     if (pin === selectedAccount.pin) {
+      setAuthProgress(100);
+      setStep('success');
+      
       // Store user session
       localStorage.setItem('current-user', JSON.stringify({
         id: selectedAccount.id,
@@ -114,20 +194,42 @@ export default function LoginClient() {
 
       // Set authentication for backend API calls
       if (selectedAccount.id === 'demo-user') {
-        // Set demo authentication header for all future API calls
         localStorage.setItem('demo-auth', 'true');
-        
-        // Set up default headers for fetch requests
         if (typeof window !== 'undefined') {
-          // Store demo auth state for API calls
           (window as any).demoAuthEnabled = true;
         }
       }
 
-      router.push('/dashboard');
+      // Success feedback
+      toast({
+        title: "Welcome back!",
+        description: `Successfully signed in to ${selectedAccount.name}`,
+        duration: 3000,
+      });
+
+      // Redirect after success animation
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 1500);
     } else {
       setError('Invalid PIN. Please try again.');
       setPin('');
+      setAuthProgress(50);
+      
+      // Shake animation for error feedback
+      if (pinInputRef.current) {
+        pinInputRef.current.classList.add('animate-shake');
+        setTimeout(() => {
+          pinInputRef.current?.classList.remove('animate-shake');
+        }, 500);
+      }
+      
+      toast({
+        title: "Authentication failed",
+        description: "Please check your PIN and try again",
+        variant: "destructive",
+        duration: 3000,
+      });
     }
 
     setIsLoading(false);

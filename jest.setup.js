@@ -170,3 +170,281 @@ process.env.PUSHER_APP_ID = 'test-app-id'
 process.env.PUSHER_SECRET = 'test-pusher-secret'
 process.env.OPENAI_API_KEY = 'sk-test-openai-key'
 process.env.ENABLE_TEST_USER = 'true'
+process.env.JWT_SECRET = 'test-jwt-secret-key-for-testing-only'
+
+// ============================================================================
+// Authentication Testing Utilities
+// ============================================================================
+
+// Mock console methods for cleaner test output
+const originalConsole = global.console;
+global.console = {
+  ...originalConsole,
+  // Suppress console.log in tests unless VERBOSE_TESTS is set
+  log: process.env.VERBOSE_TESTS ? originalConsole.log : jest.fn(),
+  info: process.env.VERBOSE_TESTS ? originalConsole.info : jest.fn(),
+  // Always show warnings and errors
+  warn: originalConsole.warn,
+  error: originalConsole.error,
+};
+
+// Create a helper for creating mock NextRequest objects
+global.createMockNextRequest = (options = {}) => {
+  const {
+    method = 'GET',
+    url = 'http://localhost:3000',
+    headers = {},
+    cookies = {},
+    body = null
+  } = options;
+
+  return {
+    method,
+    url,
+    headers: {
+      get: jest.fn((key) => headers[key] || null),
+      has: jest.fn((key) => key in headers),
+      entries: jest.fn(() => Object.entries(headers)),
+      keys: jest.fn(() => Object.keys(headers)),
+      values: jest.fn(() => Object.values(headers)),
+      forEach: jest.fn()
+    },
+    cookies: {
+      get: jest.fn((key) => cookies[key] ? { value: cookies[key] } : undefined),
+      has: jest.fn((key) => key in cookies),
+      getAll: jest.fn(() => Object.entries(cookies).map(([name, value]) => ({ name, value }))),
+      set: jest.fn(),
+      delete: jest.fn()
+    },
+    nextUrl: {
+      pathname: new URL(url).pathname,
+      searchParams: new URL(url).searchParams,
+      clone: jest.fn(() => ({ pathname: new URL(url).pathname }))
+    },
+    json: jest.fn(() => Promise.resolve(body)),
+    text: jest.fn(() => Promise.resolve(JSON.stringify(body))),
+    formData: jest.fn(),
+    arrayBuffer: jest.fn(),
+    blob: jest.fn(),
+    clone: jest.fn(() => global.createMockNextRequest(options))
+  };
+};
+
+// ============================================================================
+// Custom Jest Matchers for Authentication Testing
+// ============================================================================
+
+expect.extend({
+  // Matcher for checking authentication responses
+  toBeAuthenticatedResponse(received) {
+    const pass = received && 
+                 typeof received === 'object' && 
+                 received.isAuthenticated === true &&
+                 received.user !== null &&
+                 typeof received.user === 'object';
+
+    if (pass) {
+      return {
+        message: () => `expected response not to be authenticated`,
+        pass: true,
+      };
+    } else {
+      return {
+        message: () => `expected response to be authenticated with user object`,
+        pass: false,
+      };
+    }
+  },
+
+  // Matcher for checking unauthenticated responses
+  toBeUnauthenticatedResponse(received) {
+    const pass = received && 
+                 typeof received === 'object' && 
+                 received.isAuthenticated === false &&
+                 received.user === null;
+
+    if (pass) {
+      return {
+        message: () => `expected response not to be unauthenticated`,
+        pass: true,
+      };
+    } else {
+      return {
+        message: () => `expected response to be unauthenticated with null user`,
+        pass: false,
+      };
+    }
+  },
+
+  // Matcher for checking demo authentication
+  toBeDemoAuthentication(received) {
+    const pass = received && 
+                 typeof received === 'object' && 
+                 received.isAuthenticated === true &&
+                 received.isDemo === true &&
+                 received.user !== null;
+
+    if (pass) {
+      return {
+        message: () => `expected response not to be demo authentication`,
+        pass: true,
+      };
+    } else {
+      return {
+        message: () => `expected response to be demo authentication`,
+        pass: false,
+      };
+    }
+  },
+
+  // Matcher for checking user roles
+  toHaveRole(received, expectedRole) {
+    const pass = received && 
+                 received.user && 
+                 received.user.role === expectedRole;
+
+    if (pass) {
+      return {
+        message: () => `expected user not to have role ${expectedRole}`,
+        pass: true,
+      };
+    } else {
+      const actualRole = received?.user?.role || 'none';
+      return {
+        message: () => `expected user to have role ${expectedRole}, but got ${actualRole}`,
+        pass: false,
+      };
+    }
+  },
+
+  // Matcher for checking execution time
+  toCompleteWithin(received, maxTime) {
+    const pass = received <= maxTime;
+
+    if (pass) {
+      return {
+        message: () => `expected execution time ${received}ms not to be within ${maxTime}ms`,
+        pass: true,
+      };
+    } else {
+      return {
+        message: () => `expected execution time ${received}ms to be within ${maxTime}ms`,
+        pass: false,
+      };
+    }
+  }
+});
+
+// ============================================================================
+// Global Test Helpers for Authentication
+// ============================================================================
+
+// Helper for creating test users
+global.createTestUser = (overrides = {}) => {
+  return {
+    id: 'test-user-123',
+    email: 'test@example.com',
+    firstName: 'Test',
+    lastName: 'User',
+    role: 'user',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides
+  };
+};
+
+// Helper for creating demo user
+global.createDemoUser = () => {
+  return {
+    id: 'demo-user',
+    email: 'demo@astralchronos.com',
+    role: 'user',
+    firstName: 'Demo',
+    lastName: 'User',
+    name: 'Demo User',
+    imageUrl: '/avatars/demo-user.png'
+  };
+};
+
+// Helper for creating admin user
+global.createAdminUser = (overrides = {}) => {
+  return {
+    id: 'admin-user-123',
+    email: 'admin@example.com',
+    firstName: 'Admin',
+    lastName: 'User',
+    role: 'admin',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides
+  };
+};
+
+// Helper for measuring execution time
+global.measureExecutionTime = async (fn) => {
+  const start = performance.now();
+  const result = await fn();
+  const end = performance.now();
+  return {
+    result,
+    executionTime: end - start
+  };
+};
+
+// Authentication test data
+global.AuthTestData = {
+  validJWT: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+  
+  invalidJWTs: [
+    'invalid-token',
+    'header.payload', // Missing signature
+    'not.a.jwt.token.extra',
+    '',
+    null,
+    undefined
+  ],
+  
+  maliciousHeaders: {
+    'authorization': 'Bearer admin\r\nSet-Cookie: role=admin',
+    'x-forwarded-for': '127.0.0.1\r\nX-Admin: true',
+    'user-agent': 'Mozilla/5.0\r\nAuthorization: Bearer admin-token'
+  }
+};
+
+// ============================================================================
+// Test Environment Cleanup
+// ============================================================================
+
+beforeEach(() => {
+  // Clear all mocks before each test
+  jest.clearAllMocks();
+  
+  // Reset fetch mock
+  if (global.fetch && typeof global.fetch.mockClear === 'function') {
+    global.fetch.mockClear();
+  }
+});
+
+afterEach(() => {
+  // Clear all mocks after each test
+  jest.clearAllMocks();
+  
+  // Clear timers
+  jest.clearAllTimers();
+});
+
+afterAll(() => {
+  // Restore original console
+  global.console = originalConsole;
+  
+  // Clean up any global state
+  jest.restoreAllMocks();
+});
+
+// Set default timeout for all tests
+jest.setTimeout(30000); // 30 seconds
+
+console.log('🧪 Authentication Test Suite Setup Complete');
+console.log(`📋 Test Environment: ${process.env.NODE_ENV || 'development'}`);
+console.log(`📊 Verbose Logging: ${process.env.VERBOSE_TESTS ? 'Enabled' : 'Disabled'}`);
+console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');

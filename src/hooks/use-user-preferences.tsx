@@ -150,7 +150,7 @@ const defaultPreferences: UserPreferences = {
     timeFormat: '12h',
     showWeekends: true,
     showDeclinedEvents: false,
-    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    timeZone: 'UTC', // Use UTC as default to avoid hydration mismatch, will be updated on client mount
   },
   ai: {
     enabled: true,
@@ -168,9 +168,25 @@ export function UserPreferencesProvider({ children }: { children: React.ReactNod
   const [preferences, setPreferences] = useState<UserPreferences>(defaultPreferences);
   const [loading, setLoading] = useState(true);
 
-  // Load preferences on mount
+  // Load preferences on mount and update timezone
   useEffect(() => {
     loadPreferences();
+    
+    // Update timezone to client timezone after mount to avoid hydration mismatch
+    if (typeof window !== 'undefined' && preferences.calendar.timeZone === 'UTC') {
+      try {
+        const clientTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        setPreferences(prev => ({
+          ...prev,
+          calendar: {
+            ...prev.calendar,
+            timeZone: clientTimeZone
+          }
+        }));
+      } catch (error) {
+        console.warn('Failed to detect client timezone, keeping UTC');
+      }
+    }
   }, []);
 
   // Helper function to get authentication headers from localStorage
@@ -181,19 +197,14 @@ export function UserPreferencesProvider({ children }: { children: React.ReactNod
         const userData = JSON.parse(currentUser);
         const headers: Record<string, string> = {
           'Content-Type': 'application/json',
-          'x-user-data': JSON.stringify(userData)
+          // Use base64 encoding to avoid non-ASCII characters in headers
+          'x-user-id': userData.id || '',
         };
         
         // Add demo authentication header for backend
         if (userData.id === 'demo-user') {
           headers['x-demo-user'] = 'demo-user';
           headers['x-demo-token'] = 'demo-token-2024';
-        }
-        
-        // Only add x-pin if we have a valid PIN
-        const pin = userData.id === 'demo-user' ? '0000' : userData.id === 'nick-planner' ? '7347' : '';
-        if (pin) {
-          headers['x-pin'] = pin;
         }
         
         return headers;

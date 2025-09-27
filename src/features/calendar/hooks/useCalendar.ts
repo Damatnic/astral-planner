@@ -151,7 +151,7 @@ const defaultConfig: CalendarConfig = {
     workingDays: [1, 2, 3, 4, 5], // Monday to Friday
     breakTimes: [],
   },
-  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  timeZone: 'UTC', // Will be updated on client mount to avoid hydration mismatch
   firstDayOfWeek: 1, // Monday
   displayOptions: {
     showConflicts: true,
