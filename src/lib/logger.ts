@@ -1,4 +1,12 @@
-import winston from 'winston';
+// Edge Runtime compatibility - conditional import
+let winston: any = null;
+try {
+  if (typeof process !== 'undefined' && process.versions && process.versions.node) {
+    winston = require('winston');
+  }
+} catch (error) {
+  // Winston not available in Edge Runtime
+}
 
 // Define log levels
 const levels = {
@@ -18,24 +26,26 @@ const colors = {
   debug: 'white',
 };
 
-winston.addColors(colors);
+if (winston) {
+  winston.addColors(colors);
+}
 
 // Define log format
-const format = winston.format.combine(
+const format = winston ? winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
   winston.format.colorize({ all: true }),
   winston.format.printf(
     (info) => `${info.timestamp} ${info.level}: ${info.message}`,
   ),
-);
+) : null;
 
 // Define transports with production safety
-const transports: winston.transport[] = [
+const transports: any[] = winston ? [
   new winston.transports.Console(),
-];
+] : [];
 
 // Only add file transports in development or when logs directory is accessible
-if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_FILE_LOGGING === 'true') {
+if (winston && (process.env.NODE_ENV !== 'production' || process.env.ENABLE_FILE_LOGGING === 'true')) {
   try {
     // Try to create a test log entry to verify filesystem access
     const fs = require('fs');
@@ -61,10 +71,10 @@ if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_FILE_LOGGING ===
 }
 
 // Create exception and rejection handlers safely
-const exceptionHandlers: winston.transport[] = [new winston.transports.Console()];
-const rejectionHandlers: winston.transport[] = [new winston.transports.Console()];
+const exceptionHandlers: any[] = winston ? [new winston.transports.Console()] : [];
+const rejectionHandlers: any[] = winston ? [new winston.transports.Console()] : [];
 
-if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_FILE_LOGGING === 'true') {
+if (winston && (process.env.NODE_ENV !== 'production' || process.env.ENABLE_FILE_LOGGING === 'true')) {
   try {
     exceptionHandlers.push(new winston.transports.File({ filename: 'logs/exceptions.log' }));
     rejectionHandlers.push(new winston.transports.File({ filename: 'logs/rejections.log' }));
@@ -76,8 +86,8 @@ if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_FILE_LOGGING ===
 // Create logger - Edge Runtime compatible
 let Logger: any;
 
-if (typeof process !== 'undefined' && process.versions && process.versions.node) {
-  // Node.js environment
+if (winston && typeof process !== 'undefined' && process.versions && process.versions.node) {
+  // Node.js environment with winston available
   Logger = winston.createLogger({
     level: process.env.NODE_ENV === 'production' ? 'warn' : 'debug',
     levels,
@@ -88,7 +98,7 @@ if (typeof process !== 'undefined' && process.versions && process.versions.node)
     exitOnError: false,
   });
 } else {
-  // Edge Runtime environment - simple console logger
+  // Edge Runtime environment or winston not available - simple console logger
   Logger = {
     error: console.error,
     warn: console.warn,

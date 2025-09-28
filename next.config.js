@@ -115,7 +115,14 @@ const nextConfig = {
   // CRITICAL: Enable SWC minification
   // swcMinify: true, // Removed as it's default in Next.js 15
   
-  serverExternalPackages: ['@neondatabase/serverless'],
+  serverExternalPackages: [
+    '@neondatabase/serverless',
+    'winston',
+    'winston-daily-rotate-file',
+    'fs',
+    'path',
+    'os'
+  ],
   
   images: {
     formats: ['image/avif', 'image/webp'],
@@ -230,7 +237,12 @@ const nextConfig = {
       buffer: false,
       url: false,
       querystring: false,
-      events: require.resolve('events/')
+      events: require.resolve('events/'),
+      winston: false,
+      'winston-daily-rotate-file': false,
+      child_process: false,
+      worker_threads: false,
+      inspector: false
     };
 
     if (!isServer) {
@@ -503,6 +515,13 @@ const nextConfig = {
         config.externals.push({
           '@tanstack/react-query-devtools': 'false',
           'react-devtools': 'false',
+          'winston': 'commonjs winston',
+          'winston-daily-rotate-file': 'commonjs winston-daily-rotate-file',
+          'fs': 'commonjs fs',
+          'path': 'commonjs path',
+          'os': 'commonjs os',
+          'child_process': 'commonjs child_process',
+          'worker_threads': 'commonjs worker_threads'
         });
       }
     }
