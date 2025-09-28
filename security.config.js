@@ -41,6 +41,14 @@ const securityConfig = {
         "'sha256-TM0gfv7DcirldRw2OO/I78A5HijnDirCZ4kD6oxdYSg='",
         "'sha256-DlvvmRWxqUMKtpoqEL0k9BOSUR5CSic14MG8ffhhWHs='",
         "'sha256-qVJ6zdcE738yylw/idbJYnqp1PLPUvhb1iQOsxsYBRQ='",
+  // Newly observed hashes (batch 3)
+  "'sha256-7HMdOk1pnG4eP4lpln4d71gFnH3wLD8880bFLYhfdnM='",
+  "'sha256-wH8P7UmZPoaNqTHZsPKNAyAKhMqNzHvjec9OnkWD24o='",
+  "'sha256-l8qTUavRBQcY6lxRkQXJZxKstmNb6EuQCDnwKhj8zyk='",
+  "'sha256-4zed+JBas++l0jx2rNqmjViUqCcJGfkrohwTm51Jjys='",
+  "'sha256-YNeqeJLx79iODEhVx313jdR4P04nRRbRBRWKyleaPD8='",
+  "'sha256-hJUCrsoceF51eVHqWy+9LwBAHjNY0UG2GLaBPP4TBOw='",
+  "'sha256-aIZRQrxInXB41Gwa0ceIs4NySmhxEUJP6q+FUFZywQs='",
         (req, res) => `'nonce-${res.locals.nonce}'` // Dynamic nonce
       ],
       styleSrc: [

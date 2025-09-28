@@ -110,13 +110,22 @@ export function getSecureCSP(nonce?: string): string {
     "'sha256-yhycP12wTAwsJhfYgUco4U46C2S/sYGYxgIaqd0ckWg='",
     "'sha256-TM0gfv7DcirldRw2OO/I78A5HijnDirCZ4kD6oxdYSg='",
     "'sha256-DlvvmRWxqUMKtpoqEL0k9BOSUR5CSic14MG8ffhhWHs='",
-    "'sha256-qVJ6zdcE738yylw/idbJYnqp1PLPUvhb1iQOsxsYBRQ='"
+    "'sha256-qVJ6zdcE738yylw/idbJYnqp1PLPUvhb1iQOsxsYBRQ='",
+    // Newly observed inline script hashes
+    "'sha256-7HMdOk1pnG4eP4lpln4d71gFnH3wLD8880bFLYhfdnM='",
+    "'sha256-wH8P7UmZPoaNqTHZsPKNAyAKhMqNzHvjec9OnkWD24o='",
+    "'sha256-l8qTUavRBQcY6lxRkQXJZxKstmNb6EuQCDnwKhj8zyk='",
+    "'sha256-4zed+JBas++l0jx2rNqmjViUqCcJGfkrohwTm51Jjys='",
+    "'sha256-YNeqeJLx79iODEhVx313jdR4P04nRRbRBRWKyleaPD8='",
+    "'sha256-hJUCrsoceF51eVHqWy+9LwBAHjNY0UG2GLaBPP4TBOw='",
+    "'sha256-aIZRQrxInXB41Gwa0ceIs4NySmhxEUJP6q+FUFZywQs='"
   ].join(' ');
   
   const directives = [
     "default-src 'self'",
     // Allow specific script hashes, nonce, and required Next.js domains
-    `script-src 'self' ${nonceStr} ${knownScriptHashes} 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com`,
+    // Include 'unsafe-inline' here to avoid needing every transient Next.js runtime hash.
+    `script-src 'self' 'unsafe-inline' ${nonceStr} ${knownScriptHashes} 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai",
     "img-src 'self' data: https: blob:",
