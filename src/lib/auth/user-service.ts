@@ -96,42 +96,6 @@ export class UserService {
     }
   }
 
-  /**
-   * Update user subscription
-   */
-  static async updateSubscription(
-    userId: string,
-    subscription: {
-      plan: 'free' | 'pro' | 'team' | 'admin';
-      status: 'active' | 'inactive' | 'cancelled' | 'past_due';
-      periodStart?: Date;
-      periodEnd?: Date;
-      cancelAtPeriodEnd?: boolean;
-      stripeCustomerId?: string;
-      stripeSubscriptionId?: string;
-    }
-  ): Promise<User | null> {
-    try {
-      const [updatedUser] = await db
-        .update(users)
-        .set({
-          subscription,
-          updatedAt: new Date(),
-        })
-        .where(eq(users.id, userId))
-        .returning();
-
-      Logger.info('User subscription updated:', { 
-        userId, 
-        plan: subscription.plan 
-      });
-      
-      return updatedUser;
-    } catch (error) {
-      Logger.error('Error updating user subscription:', error);
-      return null;
-    }
-  }
 
   /**
    * Update user activity

@@ -1,45 +1,90 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { isPublicRoute } from './lib/auth/auth-utils';
+import { 
+  getSecurityHeaders, 
+  generateCSPNonce, 
+  RateLimitProtection,
+  SecurityLogger 
+} from './lib/security/security-hardening';
 
 /**
- * Catalyst Performance Middleware
- * Lightweight security and performance monitoring
+ * Guardian Security Middleware
+ * Enterprise-grade security and performance monitoring
  */
-export default async function catalystMiddleware(req: NextRequest) {
+export default async function guardianMiddleware(req: NextRequest) {
   const startTime = Date.now();
   
   try {
     const pathname = req.nextUrl.pathname;
     const method = req.method;
+    const ip = getClientIP(req);
+    const userAgent = req.headers.get('user-agent') || 'unknown';
+    
+    // Rate limiting protection
+    if (!RateLimitProtection.isAllowed(ip)) {
+      SecurityLogger.logSecurityEvent({
+        type: 'rate_limit',
+        severity: 'medium',
+        ip,
+        userAgent,
+        details: { pathname, method, rateLimitExceeded: true }
+      });
+      
+      return new NextResponse('Rate limit exceeded', { 
+        status: 429,
+        headers: {
+          'Retry-After': '60',
+          ...getSecurityHeaders(undefined, true)
+        }
+      });
+    }
     
     // Skip middleware for static assets and system routes
     if (shouldIgnoreRoute(pathname)) {
-      return addSecurityHeaders(NextResponse.next());
+      return addEnhancedSecurityHeaders(NextResponse.next());
+    }
+    
+    // Security logging for API routes
+    const isApiRoute = pathname.startsWith('/api/');
+    if (isApiRoute) {
+      SecurityLogger.logSecurityEvent({
+        type: 'authentication',
+        severity: 'low',
+        ip,
+        userAgent,
+        details: { pathname, method, timestamp: new Date().toISOString() }
+      });
     }
     
     // Public route check
     if (isPublicRoute(pathname)) {
       const response = NextResponse.next();
-      addSecurityHeaders(response);
+      addEnhancedSecurityHeaders(response, isApiRoute);
       return response;
     }
     
     // For now, allow all other routes (authentication can be added later)
     const response = NextResponse.next();
-    addSecurityHeaders(response);
+    addEnhancedSecurityHeaders(response, isApiRoute);
     
     // Performance monitoring
     const processingTime = Date.now() - startTime;
     response.headers.set('X-Processing-Time', processingTime.toString());
+    response.headers.set('X-Request-ID', generateRequestId());
     
     return response;
     
   } catch (error) {
-    console.error('[CATALYST] Middleware error:', error);
+    SecurityLogger.logSecurityEvent({
+      type: 'authentication',
+      severity: 'high',
+      ip: getClientIP(req),
+      details: { error: error instanceof Error ? error.message : 'Unknown error', pathname: req.nextUrl.pathname }
+    });
     
     // Fail gracefully
     const response = NextResponse.next();
-    addSecurityHeaders(response);
+    addEnhancedSecurityHeaders(response, false);
     return response;
   }
 }
@@ -61,60 +106,35 @@ function shouldIgnoreRoute(pathname: string): boolean {
 }
 
 /**
- * Get comprehensive security headers
+ * Get client IP address
  */
-function getSecurityHeaders(): Record<string, string> {
-  return {
-    // Frame protection
-    'X-Frame-Options': 'DENY',
-    
-    // Content type protection
-    'X-Content-Type-Options': 'nosniff',
-    
-    // XSS protection
-    'X-XSS-Protection': '1; mode=block',
-    
-    // Referrer policy
-    'Referrer-Policy': 'strict-origin-when-cross-origin',
-    
-    // HSTS
-    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
-    
-    // Permissions policy
-    'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()',
-    
-    // Content Security Policy
-    'Content-Security-Policy': [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-      "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
-      "font-src 'self' fonts.gstatic.com https://r2cdn.perplexity.ai",
-      "img-src 'self' data: https:",
-      "connect-src 'self' https: wss:",
-      "frame-ancestors 'none'",
-      "base-uri 'self'",
-      "form-action 'self'",
-    ].join('; '),
-    
-    // Server identification
-    'X-Powered-By': 'Catalyst Performance Framework',
-    
-    // Cache control for sensitive responses
-    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-    'Pragma': 'no-cache',
-    'Expires': '0',
-  };
+function getClientIP(request: NextRequest): string {
+  const forwarded = request.headers.get('x-forwarded-for');
+  const realIP = request.headers.get('x-real-ip');
+  const ip = forwarded?.split(',')[0] || realIP || 'unknown';
+  return ip.trim();
 }
 
 /**
- * Add security headers to response
+ * Generate unique request ID
  */
-function addSecurityHeaders(response: NextResponse): NextResponse {
-  const headers = getSecurityHeaders();
+function generateRequestId(): string {
+  return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+}
+
+/**
+ * Add enhanced security headers to response
+ */
+function addEnhancedSecurityHeaders(response: NextResponse, isApiRoute: boolean = false): NextResponse {
+  const nonce = generateCSPNonce();
+  const headers = getSecurityHeaders(nonce, isApiRoute);
   
   Object.entries(headers).forEach(([key, value]) => {
     response.headers.set(key, value);
   });
+  
+  // Add nonce for CSP
+  response.headers.set('X-CSP-Nonce', nonce);
   
   return response;
 }

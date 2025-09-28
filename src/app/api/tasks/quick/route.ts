@@ -191,7 +191,7 @@ async function handlePOST(req: NextRequest) {
         );
       }
     } catch (broadcastError) {
-      console.error('Failed to broadcast task creation:', broadcastError);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to broadcast task creation:', broadcastError);
       // Don't fail the request if broadcasting fails
     }
 
@@ -209,7 +209,7 @@ async function handlePOST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Quick creation error:', error);
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Quick creation error:', error);
     return NextResponse.json(
       { error: 'Failed to create item' },
       { status: 500 }

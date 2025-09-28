@@ -160,7 +160,7 @@ export function useVoiceInput(options?: {
       recognitionRef.current.start();
       setIsListening(true);
     } catch (error) {
-      console.error('Failed to start speech recognition:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to start speech recognition:', error);
       setError('Failed to start voice input');
       setIsListening(false);
     }
@@ -173,7 +173,7 @@ export function useVoiceInput(options?: {
       recognitionRef.current.stop();
       setIsListening(false);
     } catch (error) {
-      console.error('Failed to stop speech recognition:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to stop speech recognition:', error);
     }
 
     if (timeoutRef.current) {

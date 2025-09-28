@@ -73,7 +73,7 @@ export function useRealtime(options: RealtimeOptions) {
     channel.bind('pusher:subscription_error', (error: any) => {
       setIsConnected(false);
       setConnectionError(error.message || 'Failed to connect to real-time service');
-      console.error('Pusher subscription error:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Pusher subscription error:', error);
     });
 
     channel.bind('pusher:member_added', (member: any) => {
@@ -304,7 +304,7 @@ export function useRealtime(options: RealtimeOptions) {
         throw new Error('Failed to broadcast event');
       }
     } catch (error) {
-      console.error('Broadcast error:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Broadcast error:', error);
     }
   }, [isConnected, workspaceId]);
 
@@ -324,7 +324,7 @@ export function useRealtime(options: RealtimeOptions) {
         }),
       });
     } catch (error) {
-      console.error('Cursor broadcast error:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Cursor broadcast error:', error);
     }
   }, [isConnected, enableCollaboration, workspaceId]);
 
@@ -344,7 +344,7 @@ export function useRealtime(options: RealtimeOptions) {
         }),
       });
     } catch (error) {
-      console.error('Selection broadcast error:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Selection broadcast error:', error);
     }
   }, [isConnected, enableCollaboration, workspaceId]);
 
@@ -364,7 +364,7 @@ export function useRealtime(options: RealtimeOptions) {
         }),
       });
     } catch (error) {
-      console.error('Typing broadcast error:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Typing broadcast error:', error);
     }
   }, [isConnected, enableCollaboration, workspaceId]);
 
@@ -394,7 +394,7 @@ export function useRealtime(options: RealtimeOptions) {
         }),
       });
     } catch (error) {
-      console.error('Notification send error:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Notification send error:', error);
     }
   }, []);
 

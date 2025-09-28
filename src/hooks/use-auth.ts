@@ -17,7 +17,6 @@ export interface AuthUser {
   isDemo: boolean;
   sessionId?: string;
   settings?: any;
-  subscription?: any;
   onboardingCompleted?: boolean;
   onboardingStep?: number;
 }
@@ -86,7 +85,7 @@ function generateDeviceFingerprint(): string {
     
     return Math.abs(hash).toString(16);
   } catch (error) {
-    console.warn('Failed to generate device fingerprint:', error);
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to generate device fingerprint:', error);
     return 'unknown-device';
   }
 }
@@ -140,12 +139,14 @@ async function makeAuthRequest(
  * Revolutionary authentication hook
  */
 export function useAuth(): UseAuthReturn {
+  // Initialize with hydration-safe defaults to prevent server/client mismatch
   const [state, setState] = useState<AuthState>({
     user: null,
     loading: true,
     error: null,
     isAuthenticated: false,
   });
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const router = useRouter();
   const refreshTimeoutRef = useRef<NodeJS.Timeout>();
@@ -198,7 +199,7 @@ export function useAuth(): UseAuthReturn {
           scheduleRefresh(); // Schedule next refresh
         }
       } catch (error) {
-        console.warn('Scheduled session refresh failed:', error);
+        // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Scheduled session refresh failed:', error);
       }
     }, SESSION_REFRESH_INTERVAL);
   }, []);
@@ -279,7 +280,7 @@ export function useAuth(): UseAuthReturn {
       return { success: false, error: 'Login failed' };
 
     } catch (error) {
-      console.error('Login error:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Login error:', error);
       updateState({ 
         loading: false, 
         error: 'Network error. Please check your connection and try again.' 
@@ -303,7 +304,7 @@ export function useAuth(): UseAuthReturn {
       });
 
     } catch (error) {
-      console.warn('Logout API call failed:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Logout API call failed:', error);
     } finally {
       // Always clear local state regardless of API success
       clearAuthState();
@@ -337,14 +338,14 @@ export function useAuth(): UseAuthReturn {
       }
 
       if (response.status === 401) {
-        console.warn('Refresh token expired, redirecting to login');
+        // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Refresh token expired, redirecting to login');
         clearAuthState();
         router.push('/login');
       }
 
       return false;
     } catch (error) {
-      console.error('Session refresh failed:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Session refresh failed:', error);
       return false;
     }
   }, [clearAuthState, router]);
@@ -357,47 +358,52 @@ export function useAuth(): UseAuthReturn {
   }, [updateState]);
 
   /**
-   * Check authentication status on mount
+   * Check authentication status on mount - hydration-safe
    */
   useEffect(() => {
     let mounted = true;
 
     const checkAuthStatus = async () => {
       try {
-        // Check for existing session
-        const storedUser = localStorage.getItem('current-user');
-        if (storedUser) {
-          const userData = JSON.parse(storedUser);
-          
-          // Verify session is still valid (within 24 hours)
-          const loginTime = new Date(userData.loginTime);
-          const now = new Date();
-          const timeDiff = now.getTime() - loginTime.getTime();
-          const hoursDiff = timeDiff / (1000 * 3600);
-          
-          if (hoursDiff >= 24) {
-            // Session expired
-            clearAuthState();
-            if (mounted) updateState({ loading: false });
-            return;
-          }
-
-          // Verify with server
-          const response = await makeAuthRequest('/api/auth/me');
-          
-          if (response.ok) {
-            const data = await response.json();
-            if (data.authenticated && data.user) {
-              if (mounted) {
-                updateState({
-                  user: data.user,
-                  isAuthenticated: true,
-                  loading: false,
-                  error: null
-                });
-                scheduleRefresh();
-              }
+        // Mark as hydrated to ensure consistent state
+        setIsHydrated(true);
+        
+        // Only check localStorage on client side
+        if (typeof window !== 'undefined') {
+          const storedUser = localStorage.getItem('current-user');
+          if (storedUser) {
+            const userData = JSON.parse(storedUser);
+            
+            // Verify session is still valid (within 24 hours)
+            const loginTime = new Date(userData.loginTime);
+            const now = new Date();
+            const timeDiff = now.getTime() - loginTime.getTime();
+            const hoursDiff = timeDiff / (1000 * 3600);
+            
+            if (hoursDiff >= 24) {
+              // Session expired
+              clearAuthState();
+              if (mounted) updateState({ loading: false });
               return;
+            }
+
+            // Verify with server
+            const response = await makeAuthRequest('/api/auth/me');
+            
+            if (response.ok) {
+              const data = await response.json();
+              if (data.authenticated && data.user) {
+                if (mounted) {
+                  updateState({
+                    user: data.user,
+                    isAuthenticated: true,
+                    loading: false,
+                    error: null
+                  });
+                  scheduleRefresh();
+                }
+                return;
+              }
             }
           }
         }
@@ -407,7 +413,7 @@ export function useAuth(): UseAuthReturn {
         if (mounted) updateState({ loading: false });
 
       } catch (error) {
-        console.error('Auth status check failed:', error);
+        console.warn('Auth status check failed:', error);
         clearAuthState();
         if (mounted) updateState({ loading: false });
       }
@@ -434,6 +440,8 @@ export function useAuth(): UseAuthReturn {
 
   return {
     ...state,
+    // Override isAuthenticated to be hydration-safe
+    isAuthenticated: isHydrated ? state.isAuthenticated : false,
     login,
     logout,
     refreshSession,

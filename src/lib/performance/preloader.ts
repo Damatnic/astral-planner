@@ -22,7 +22,7 @@ export class ComponentPreloader {
         try {
           await component()
         } catch (error) {
-          console.warn('Failed to preload critical component:', error)
+          // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to preload critical component:', error)
         }
       })
     })
@@ -44,7 +44,7 @@ export class ComponentPreloader {
           try {
             await component()
           } catch (error) {
-            console.warn('Failed to preload interaction component:', error)
+            // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to preload interaction component:', error)
           }
         })
       })
@@ -78,7 +78,7 @@ export class ComponentPreloader {
           try {
             await component()
           } catch (error) {
-            console.warn('Failed to preload idle component:', error)
+            // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to preload idle component:', error)
           }
         })
       })
@@ -107,7 +107,7 @@ export class ComponentPreloader {
           await componentLoader()
           this.preloadedModules.add(route)
         } catch (error) {
-          console.warn(`Failed to preload component for route ${route}:`, error)
+          // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn(`Failed to preload component for route ${route}:`, error)
         }
       })
 

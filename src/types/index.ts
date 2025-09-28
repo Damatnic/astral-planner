@@ -379,7 +379,6 @@ export interface AdminUser {
   totalTasksCompleted: number;
   streakDays: number;
   onboardingCompleted: boolean;
-  subscription: 'free' | 'pro' | 'enterprise';
   status: 'active' | 'suspended' | 'inactive';
   permissions: string[];
   createdAt: Timestamp;

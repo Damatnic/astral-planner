@@ -64,7 +64,7 @@ export function reportWebVitals() {
     onFCP(sendToAnalytics)
     onINP(sendToAnalytics)
   } catch (err) {
-    console.error('[Web Vitals] Failed to report:', err)
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('[Web Vitals] Failed to report:', err)
   }
 }
 
@@ -89,7 +89,7 @@ export function measurePerformance(name: string, startMark: string, endMark: str
         })
       }
     } catch (err) {
-      console.error('[Performance] Measurement failed:', err)
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('[Performance] Measurement failed:', err)
     }
   }
 }
@@ -160,6 +160,6 @@ export function monitorLongTasks() {
     
     return () => observer.disconnect()
   } catch (err) {
-    console.error('[Performance] Long task monitoring failed:', err)
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('[Performance] Long task monitoring failed:', err)
   }
 }

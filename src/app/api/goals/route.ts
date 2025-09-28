@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Failed to fetch goals:', error);
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to fetch goals:', error);
     return NextResponse.json(
       { error: 'Failed to fetch goals' },
       { status: 500 }
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
       message: 'Goal created successfully'
     });
   } catch (error) {
-    console.error('Failed to create goal:', error);
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to create goal:', error);
     return NextResponse.json(
       { error: 'Failed to create goal' },
       { status: 500 }

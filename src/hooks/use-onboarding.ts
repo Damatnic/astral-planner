@@ -13,15 +13,16 @@ interface OnboardingData {
 }
 
 export function useOnboarding() {
-  const [isCompleted, setIsCompleted] = useState<boolean | null>(null);
+  // Initialize with hydration-safe defaults
+  const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [onboardingData, setOnboardingData] = useState<OnboardingData | null>(null);
-  const [isClient, setIsClient] = useState<boolean | null>(null);
+  const [isHydrated, setIsHydrated] = useState<boolean>(false);
 
   useEffect(() => {
-    // Mark that we're on the client side
-    setIsClient(true);
+    // Hydration effect - runs only on client after initial render
+    setIsHydrated(true);
     
-    // Check if onboarding is completed
+    // Check if onboarding is completed only on client
     if (typeof window !== 'undefined') {
       const completed = localStorage.getItem('onboarding-completed');
       const data = localStorage.getItem('onboarding-data');
@@ -32,7 +33,7 @@ export function useOnboarding() {
         try {
           setOnboardingData(JSON.parse(data));
         } catch (error) {
-          console.error('Failed to parse onboarding data:', error);
+          console.warn('Failed to parse onboarding data:', error);
         }
       }
     }
@@ -61,6 +62,6 @@ export function useOnboarding() {
     onboardingData,
     completeOnboarding,
     resetOnboarding,
-    isClient,
+    isHydrated,
   };
 }

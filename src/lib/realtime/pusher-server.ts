@@ -256,7 +256,7 @@ export class RealtimeService {
       const result = await this.pusher.get({ path: `/channels/${channelName}` });
       return result;
     } catch (error) {
-      console.error('Failed to get channel info:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to get channel info:', error);
       return null;
     }
   }
@@ -266,7 +266,7 @@ export class RealtimeService {
       const result = await this.pusher.get({ path: '/channels' });
       return result;
     } catch (error) {
-      console.error('Failed to get active channels:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to get active channels:', error);
       return null;
     }
   }

@@ -1,0 +1,11 @@
+{
+  "errorBoundaries": true,
+  "consoleLogging": false,
+  "remoteLogging": false,
+  "errorThresholds": {
+    "critical": 0,
+    "high": 3,
+    "medium": 10,
+    "low": 50
+  }
+}

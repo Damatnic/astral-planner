@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useOnboarding } from '@/hooks/use-onboarding';
 import Link from 'next/link';
@@ -75,7 +75,7 @@ const benefits = [
 
 export default function HomeClient() {
   const router = useRouter();
-  const { isCompleted, onboardingData, isClient } = useOnboarding();
+  const { isCompleted, onboardingData, isHydrated } = useOnboarding();
   
   const handleGetStarted = () => {
     router.push('/login');
@@ -83,21 +83,36 @@ export default function HomeClient() {
 
   const getStartedText = 'Get Started';
 
+  // Show loading state only during hydration to prevent mismatch
+  // After hydration, show the full content consistently
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <div className="text-2xl font-bold text-foreground">Astral Chronos</div>
+            <div className="text-muted-foreground">Loading your planner...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto flex h-16 items-center px-4">
-          <div className="flex items-center gap-2">
-            <Calendar className="h-6 w-6 text-primary" />
-            <span className="text-lg font-bold">Astral Chronos</span>
-          </div>
-          
-          <div className="ml-auto flex items-center gap-4">
-            <Button asChild variant="ghost">
-              <Link href="/login">Sign In</Link>
-            </Button>
-            <Button asChild>
+          <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="container mx-auto flex h-16 items-center px-4">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-6 w-6 text-primary" />
+                <span className="text-lg font-bold">Astral Chronos</span>
+              </div>
+              
+              <div className="ml-auto flex items-center gap-4">
+                <Button asChild variant="ghost">
+                  <Link href="/login">Sign In</Link>
+                </Button>
+                <Button asChild>
               <Link href="/login">Get Started</Link>
             </Button>
           </div>

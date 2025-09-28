@@ -283,16 +283,6 @@ export function CommandPalette() {
         router.push('/settings?tab=integrations');
       },
       keywords: ['connect', 'sync']
-    },
-    {
-      id: 'billing',
-      title: 'Billing',
-      icon: CreditCard,
-      action: () => {
-        setOpen(false);
-        router.push('/settings?tab=billing');
-      },
-      keywords: ['payment', 'subscription']
     }
   ];
 

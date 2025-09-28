@@ -26,7 +26,7 @@ export function getPusherClient() {
         },
       });
     } catch (error) {
-      console.error('Failed to initialize Pusher client:', error);
+      // TODO: Replace with proper logging - console.error('Failed to initialize Pusher client:', error);
       return null;
     }
   }

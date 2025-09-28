@@ -1,0 +1,397 @@
+// Catalyst Performance Configuration - Blazing Fast Bundle Optimization
+const { withSentryConfig } = require('@sentry/nextjs')
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  disable: process.env.NODE_ENV === 'development',
+  register: true,
+  skipWaiting: true,
+  disableDevLogs: true,
+  maximumFileSizeToCacheInBytes: 2000000, // REDUCED from 5MB to 2MB
+  // CATALYST CRITICAL FIX: Minimal caching to prevent quota exceeded
+  buildExcludes: [
+    /chunks\/pages\/_app/,
+    /middleware-manifest\.json$/,
+    /\.map$/,
+    /^build-manifest\.json$/,
+    /\/chunks\/.*\.js\.map$/,
+    /_next\/app-build-manifest\.json$/,
+    /app-build-manifest\.json$/,
+  ],
+  publicExcludes: [
+    '!sw.js',
+    '!workbox-*.js',
+    '!fallback-*.js',
+  ],
+  runtimeCaching: [
+    // ONLY cache critical resources
+    {
+      urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'google-fonts',
+        expiration: {
+          maxEntries: 5, // REDUCED from 10
+          maxAgeSeconds: 30 * 24 * 60 * 60, // REDUCED to 30 days
+          purgeOnQuotaError: true
+        }
+      }
+    },
+    {
+      urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'google-fonts-static',
+        expiration: {
+          maxEntries: 10, // REDUCED from 20
+          maxAgeSeconds: 30 * 24 * 60 * 60, // REDUCED to 30 days
+          purgeOnQuotaError: true
+        }
+      }
+    },
+    {
+      urlPattern: /\/_next\/image\?url=.*/i,
+      handler: 'NetworkFirst', // CHANGED from StaleWhileRevalidate
+      options: {
+        cacheName: 'next-image',
+        expiration: {
+          maxEntries: 20, // REDUCED from 100
+          maxAgeSeconds: 24 * 60 * 60, // REDUCED to 1 day
+          purgeOnQuotaError: true
+        }
+      }
+    },
+    // REMOVED API caching to prevent memory leaks
+    {
+      urlPattern: /^https:\/\/.*\.(woff2|woff|ttf|eot)$/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'fonts',
+        expiration: {
+          maxEntries: 10, // REDUCED from 30
+          maxAgeSeconds: 30 * 24 * 60 * 60, // REDUCED to 30 days
+          purgeOnQuotaError: true
+        }
+      }
+    }
+  ]
+})
+const path = require('path');
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // Performance optimizations
+  outputFileTracingRoot: __dirname,
+  
+  experimental: {
+    // CATALYST: Aggressive package optimization with tree shaking
+    optimizePackageImports: [
+      'lucide-react',
+      'date-fns',
+      'recharts',
+      '@radix-ui/react-accordion',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-popover',
+      '@radix-ui/react-select',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-toast',
+      '@radix-ui/react-checkbox',
+      '@radix-ui/react-switch',
+      '@radix-ui/react-separator',
+      '@radix-ui/react-avatar',
+      '@radix-ui/react-progress',
+      '@radix-ui/react-radio-group',
+      '@radix-ui/react-scroll-area',
+      '@radix-ui/react-slider',
+      '@radix-ui/react-tooltip',
+      'framer-motion',
+      '@tanstack/react-query',
+      'clsx',
+      'class-variance-authority',
+      'tailwind-merge',
+      'react-window',
+      'react-hook-form',
+      'cmdk'
+    ],
+    // Enable modern bundling
+    esmExternals: true,
+    // Optimize CSS with lightning CSS
+    optimizeCss: true,
+    // CATALYST: Optimize font loading
+    optimizeServerReact: true,
+    // Enable client trace metadata for better debugging
+    clientTraceMetadata: ['trace', 'jaeger'],
+  },
+
+  // CATALYST: SWC Compiler optimizations for maximum performance
+  compiler: {
+    // Remove console logs in production
+    removeConsole: process.env.NODE_ENV === 'production',
+    // React compiler optimizations
+    reactRemoveProperties: process.env.NODE_ENV === 'production',
+    // Styled components optimization
+    styledComponents: false,
+  },
+  
+  // Turbo configuration
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
+      },
+    },
+  },
+  
+  serverExternalPackages: ['@neondatabase/serverless'],
+  
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 31536000,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'img.clerk.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.clerk.dev'
+      }
+    ]
+  },
+  
+  compress: true,
+  poweredByHeader: false,
+  
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block'
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin'
+          },
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'off'
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains; preload'
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), autoplay=(), encrypted-media=(), fullscreen=(self), picture-in-picture=()'
+          },
+          // CSP header removed - handled by middleware for better nonce support
+          {
+            key: 'X-Powered-By',
+            value: 'Guardian Security Framework'
+          }
+        ]
+      },
+      {
+        source: '/api/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate'
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache'
+          },
+          {
+            key: 'Expires',
+            value: '0'
+          }
+        ]
+      },
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          }
+        ]
+      }
+    ];
+  },
+
+  webpack: (config, { isServer, webpack, dev }) => {
+    // Suppress critical dependency warnings from Prisma instrumentation
+    config.ignoreWarnings = [
+      {
+        module: /node_modules\/@prisma\/instrumentation/,
+        message: /Critical dependency: the request of a dependency is an expression/,
+      },
+    ];
+    
+    // CRITICAL FIX: Let Next.js handle devtool in development
+    // if (dev) {
+    //   config.devtool = 'cheap-module-source-map';
+    // }
+    
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      net: false,
+      tls: false,
+      path: false,
+      stream: false,
+      crypto: false,
+      os: false,
+      util: false,
+      assert: false,
+      buffer: false,
+      url: false,
+      querystring: false,
+      events: require.resolve('events/')
+    };
+
+    if (!isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@': './src'
+      };
+      
+      // CATALYST CRITICAL FIX: Optimized Bundle Splitting for Performance
+      if (config.optimization && config.optimization.splitChunks) {
+        config.optimization.splitChunks = {
+          chunks: 'all',
+          minSize: 20000, // REDUCED from 30KB for more granular splitting
+          maxSize: 244000, // INCREASED for better chunk efficiency
+          maxAsyncRequests: 30, // INCREASED for better lazy loading
+          maxInitialRequests: 30, // INCREASED for better critical resource loading
+          automaticNameDelimiter: '-',
+          cacheGroups: {
+            default: false,
+            vendors: false,
+            // CRITICAL ONLY - Essential UI for first paint
+            critical: {
+              name: 'critical',
+              test: /[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+              chunks: 'initial',
+              priority: 50,
+              reuseExistingChunk: true,
+              enforce: true,
+              maxSize: 150000,
+            },
+            // UI Components - Separate but still critical
+            ui: {
+              name: 'ui',
+              test: /[\\/]node_modules[\\/](@radix-ui)[\\/]/,
+              chunks: 'async',
+              priority: 30,
+              reuseExistingChunk: true,
+              maxSize: 100000,
+            },
+            // Icons - Async loaded for tree-shaking
+            icons: {
+              name: 'icons',
+              test: /[\\/]node_modules[\\/](lucide-react)[\\/]/,
+              chunks: 'async',
+              priority: 20,
+              reuseExistingChunk: true,
+              maxSize: 80000,
+            },
+            // Heavy libraries - Lazy load EVERYTHING
+            heavy: {
+              name: 'heavy',
+              test: /[\\/]node_modules[\\/](recharts|framer-motion|@tanstack|date-fns)[\\/]/,
+              chunks: 'async',
+              priority: 15,
+              reuseExistingChunk: true,
+              maxSize: 150000,
+            },
+            // Utilities - Small and reusable
+            utils: {
+              name: 'utils',
+              test: /[\\/]node_modules[\\/](clsx|class-variance-authority|tailwind-merge|cmdk)[\\/]/,
+              chunks: 'all',
+              priority: 10,
+              reuseExistingChunk: true,
+              maxSize: 50000,
+            },
+            // Commons - Everything else
+            common: {
+              name: 'common',
+              test: /[\\/]node_modules[\\/]/,
+              chunks: 'all',
+              priority: 1,
+              reuseExistingChunk: true,
+              minChunks: 2,
+              maxSize: 200000,
+            },
+          },
+        };
+        
+        // CATALYST: Additional optimization settings
+        config.optimization.usedExports = true;
+        config.optimization.sideEffects = false;
+        config.optimization.moduleIds = 'deterministic';
+        config.optimization.chunkIds = 'deterministic';
+      }
+      
+      // Tree shaking improvements
+      config.resolve.mainFields = ['module', 'main'];
+    }
+
+    // Enable webpack caching with better error handling
+    config.cache = {
+      type: 'filesystem',
+      buildDependencies: {
+        config: [__filename],
+      },
+      cacheDirectory: path.resolve(__dirname, 'node_modules/.cache/webpack'),
+      compression: 'gzip',
+      hashAlgorithm: 'xxhash64',
+    };
+
+    return config;
+  },
+
+  env: {
+    CUSTOM_KEY: process.env.CUSTOM_KEY
+  }
+};
+
+// Sentry configuration options
+const sentryWebpackPluginOptions = {
+  silent: true,
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  widenClientFileUpload: true,
+  transpileClientSDK: true,
+  tunnelRoute: '/monitoring',
+  hideSourceMaps: true,
+  disableLogger: true,
+  automaticVercelMonitors: true,
+}
+
+// Catalyst Production Export - All Optimizations Enabled
+module.exports = withBundleAnalyzer(
+  withPWA(
+    process.env.SENTRY_AUTH_TOKEN 
+      ? withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+      : nextConfig
+  )
+)

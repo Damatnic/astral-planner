@@ -107,11 +107,6 @@ export interface AdminUserData {
   status: 'active' | 'inactive' | 'banned';
   createdAt: Date;
   lastLoginAt?: Date;
-  subscription?: {
-    plan: string;
-    status: string;
-    expiresAt?: Date;
-  };
 }
 
 export interface AdminActivity {

@@ -81,7 +81,7 @@ export function MobileNavigation({ className }: MobileNavigationProps) {
 
               {/* User Info Section */}
               {user && (
-                <div className="p-4 border-b bg-gray-50">
+                <div className="p-4 border-b bg-muted/50">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                       {user.avatar ? (
@@ -91,8 +91,8 @@ export function MobileNavigation({ className }: MobileNavigationProps) {
                       )}
                     </div>
                     <div className="flex-1">
-                      <p className="font-semibold text-gray-900">{user.name}</p>
-                      <p className="text-sm text-gray-600">Welcome back, {user.displayName}!</p>
+                      <p className="font-semibold text-foreground">{user.name}</p>
+                      <p className="text-sm text-muted-foreground">Welcome back, {user.displayName}!</p>
                     </div>
                   </div>
                 </div>

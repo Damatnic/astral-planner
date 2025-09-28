@@ -37,7 +37,7 @@ export class Cache {
       const data = await this.redis.get(key)
       return data as T
     } catch (error) {
-      console.error('Cache get error:', error)
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Cache get error:', error)
       return null
     }
   }
@@ -59,7 +59,7 @@ export class Cache {
         }
       }
     } catch (error) {
-      console.error('Cache set error:', error)
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Cache set error:', error)
     }
   }
 
@@ -69,7 +69,7 @@ export class Cache {
     try {
       await this.redis.del(key)
     } catch (error) {
-      console.error('Cache delete error:', error)
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Cache delete error:', error)
     }
   }
 
@@ -85,7 +85,7 @@ export class Cache {
         ])
       }
     } catch (error) {
-      console.error('Cache invalidate tag error:', error)
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Cache invalidate tag error:', error)
     }
   }
 
@@ -95,7 +95,7 @@ export class Cache {
     try {
       await this.redis.flushdb()
     } catch (error) {
-      console.error('Cache flush error:', error)
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Cache flush error:', error)
     }
   }
 

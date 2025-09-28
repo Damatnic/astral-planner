@@ -232,7 +232,7 @@ export default function EnhancedLoginClient() {
         }
       });
     } catch (error) {
-      console.error('Login error:', error);
+      // TODO: Replace with proper logging - console.error('Login error:', error);
       setStep('enter-pin');
       setError('Network error. Please try again.');
       setPin('');

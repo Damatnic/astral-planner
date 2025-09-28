@@ -34,6 +34,7 @@ import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
 import { format, parseISO, isAfter, isBefore } from 'date-fns';
 import MobileNavigation from '@/components/mobile/MobileNavigation';
+import { AppHeader } from '@/components/layout/AppHeader';
 import { useAuth } from '@/components/providers/auth-provider';
 // import Logger from '@/lib/logger'; // Removed to prevent 500 errors in production
 
@@ -136,7 +137,7 @@ export default function GoalsPage() {
           throw new Error(result.error || 'Failed to fetch goals');
         }
       } catch (error) {
-        console.error('Failed to fetch goals:', error);
+        // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to fetch goals:', error);
         setData(prev => ({
           ...prev,
           loading: false,
@@ -181,10 +182,10 @@ export default function GoalsPage() {
         window.location.reload();
       } else {
         const error = await response.json();
-        console.error('Failed to save goal:', error);
+        // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to save goal:', error);
       }
     } catch (error) {
-      console.error('Failed to save goal:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to save goal:', error);
     }
   }
 
@@ -198,7 +199,7 @@ export default function GoalsPage() {
         window.location.reload();
       }
     } catch (error) {
-      console.error('Failed to delete goal:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to delete goal:', error);
     }
   }
 
@@ -371,6 +372,7 @@ export default function GoalsPage() {
 
   return (
     <>
+      <AppHeader />
       <MobileNavigation />
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
 

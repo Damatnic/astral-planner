@@ -1,0 +1,341 @@
+{
+  "timestamp": "2025-09-27T20:16:36.745Z",
+  "loadTesting": {
+    "Homepage": {
+      "totalRequests": 4891,
+      "successfulRequests": 4891,
+      "failedRequests": 0,
+      "avgResponseTime": 170.37108975669597,
+      "minResponseTime": 24,
+      "maxResponseTime": 335,
+      "requestsPerSecond": 81.49765054820541,
+      "errorRate": 0,
+      "duration": 60.014
+    },
+    "Dashboard": {
+      "totalRequests": 15000,
+      "successfulRequests": 13226,
+      "failedRequests": 1774,
+      "avgResponseTime": 8.18191441100862,
+      "minResponseTime": 3,
+      "maxResponseTime": 75,
+      "requestsPerSecond": 249.9791684026331,
+      "errorRate": 0.11826666666666667,
+      "duration": 60.005
+    },
+    "Login": {
+      "totalRequests": 7362,
+      "successfulRequests": 0,
+      "failedRequests": 7362,
+      "avgResponseTime": 40.620464009518145,
+      "minResponseTime": 13,
+      "maxResponseTime": 5064,
+      "requestsPerSecond": 122.69795503408277,
+      "errorRate": 1,
+      "duration": 60.001
+    },
+    "API Health": {
+      "totalRequests": 3062,
+      "successfulRequests": 0,
+      "failedRequests": 3062,
+      "avgResponseTime": 35.91541476159373,
+      "minResponseTime": 13,
+      "maxResponseTime": 268,
+      "requestsPerSecond": 51.02227850632363,
+      "errorRate": 1,
+      "duration": 60.013
+    }
+  },
+  "memoryLeaks": {
+    "snapshots": [
+      {
+        "name": "Initial",
+        "memory": 19860136
+      },
+      {
+        "name": "Repeated API Calls",
+        "memory": 11297816
+      },
+      {
+        "name": "Large Data Processing",
+        "memory": 17410296
+      },
+      {
+        "name": "DOM Manipulation Simulation",
+        "memory": 10547704
+      }
+    ],
+    "finalIncrease": -9312432
+  },
+  "bundleAnalysis": {
+    "totalSize": 24910924,
+    "pageCount": 0,
+    "chunkCount": 22,
+    "largestChunks": [
+      {
+        "name": "chunks\\main-app.js",
+        "size": 12946789,
+        "type": "javascript"
+      },
+      {
+        "name": "chunks\\app\\layout.js",
+        "size": 4735258,
+        "type": "javascript"
+      },
+      {
+        "name": "chunks\\app\\dashboard\\page.js",
+        "size": 3044217,
+        "type": "javascript"
+      },
+      {
+        "name": "chunks\\_app-pages-browser_node_modules_tanstack_query-devtools_build_DevtoolsPanelComponent_PULY4AJ7_js.js",
+        "size": 1278412,
+        "type": "javascript"
+      },
+      {
+        "name": "chunks\\_app-pages-browser_node_modules_tanstack_query-devtools_build_DevtoolsComponent_6ELMOJL2_js.js",
+        "size": 1277324,
+        "type": "javascript"
+      },
+      {
+        "name": "chunks\\app\\error.js",
+        "size": 364238,
+        "type": "javascript"
+      },
+      {
+        "name": "chunks\\app\\global-error.js",
+        "size": 329525,
+        "type": "javascript"
+      },
+      {
+        "name": "chunks\\_app-pages-browser_node_modules_tanstack_react-query-devtools_build_modern_index_js.js",
+        "size": 289262,
+        "type": "javascript"
+      },
+      {
+        "name": "chunks\\app-pages-internals.js",
+        "size": 238100,
+        "type": "javascript"
+      },
+      {
+        "name": "chunks\\webpack.js",
+        "size": 141135,
+        "type": "javascript"
+      },
+      {
+        "name": "css\\app\\layout.css",
+        "size": 136490,
+        "type": "css"
+      },
+      {
+        "name": "chunks\\polyfills.js",
+        "size": 112594,
+        "type": "javascript"
+      },
+      {
+        "name": "chunks\\_app-pages-browser_node_modules_next_dist_client_dev_noop-turbopack-hmr_js.js",
+        "size": 6401,
+        "type": "javascript"
+      },
+      {
+        "name": "webpack\\app\\layout.dc763e148edfa31e.hot-update.js",
+        "size": 1835,
+        "type": "javascript"
+      },
+      {
+        "name": "webpack\\app\\layout.e28e6f77c617d02b.hot-update.js",
+        "size": 1835,
+        "type": "javascript"
+      },
+      {
+        "name": "chunks\\app\\api\\tasks\\route.js",
+        "size": 1667,
+        "type": "javascript"
+      },
+      {
+        "name": "chunks\\app\\not-found.js",
+        "size": 1661,
+        "type": "javascript"
+      },
+      {
+        "name": "webpack\\webpack.4cdf5ffea889775a.hot-update.js",
+        "size": 1157,
+        "type": "javascript"
+      },
+      {
+        "name": "webpack\\webpack.dc763e148edfa31e.hot-update.js",
+        "size": 1157,
+        "type": "javascript"
+      },
+      {
+        "name": "webpack\\webpack.e28e6f77c617d02b.hot-update.js",
+        "size": 1157,
+        "type": "javascript"
+      },
+      {
+        "name": "development\\_buildManifest.js",
+        "size": 634,
+        "type": "javascript"
+      },
+      {
+        "name": "development\\_ssgManifest.js",
+        "size": 76,
+        "type": "javascript"
+      }
+    ],
+    "jsSize": 24774434,
+    "cssSize": 136490
+  },
+  "pageSpeed": {
+    "Homepage": {
+      "totalLoadTime": 278,
+      "timeToFirstByte": 277,
+      "contentSize": 42469,
+      "statusCode": 200,
+      "headers": {
+        "x-frame-options": "DENY",
+        "x-content-type-options": "nosniff",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-dns-prefetch-control": "off",
+        "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), ambient-light-sensor=(), autoplay='self', fullscreen='self', picture-in-picture=()",
+        "x-download-options": "noopen",
+        "x-permitted-cross-domain-policies": "none",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-xss-protection": "1; mode=block",
+        "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com *.vercel.app; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai data:; img-src 'self' data: blob: https:; connect-src 'self' *.neon.tech wss: https: *.vercel.app https://vitals.vercel-insights.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';",
+        "origin-agent-cluster": "?1",
+        "content-security-policy-report-only": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https: http://localhost:*; font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai data:; connect-src 'self' ws: wss: http://localhost:* https://api.vercel.com ws: wss:; media-src 'self' data: blob:; object-src 'none'; frame-src 'self'; worker-src 'self' blob:; manifest-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "cross-origin-embedder-policy": "require-corp",
+        "cross-origin-opener-policy": "same-origin",
+        "cross-origin-resource-policy": "same-origin",
+        "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+        "cache-control": "no-store, must-revalidate",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Sat, 27 Sep 2025 20:20:42 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked"
+      }
+    },
+    "Dashboard": {
+      "totalLoadTime": 8,
+      "timeToFirstByte": 8,
+      "contentSize": 37,
+      "statusCode": 307,
+      "headers": {
+        "x-frame-options": "DENY",
+        "x-content-type-options": "nosniff",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-dns-prefetch-control": "off",
+        "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), ambient-light-sensor=(), autoplay='self', fullscreen='self', picture-in-picture=()",
+        "x-download-options": "noopen",
+        "x-permitted-cross-domain-policies": "none",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-xss-protection": "1; mode=block",
+        "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com *.vercel.app; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai data:; img-src 'self' data: blob: https:; connect-src 'self' *.neon.tech wss: https: *.vercel.app https://vitals.vercel-insights.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';",
+        "origin-agent-cluster": "?1",
+        "content-security-policy-report-only": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https: http://localhost:*; font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai data:; connect-src 'self' ws: wss: http://localhost:* https://api.vercel.com ws: wss:; media-src 'self' data: blob:; object-src 'none'; frame-src 'self'; worker-src 'self' blob:; manifest-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "cross-origin-embedder-policy": "require-corp",
+        "cross-origin-opener-policy": "same-origin",
+        "cross-origin-resource-policy": "same-origin",
+        "location": "/auth/signin?callbackUrl=%2Fdashboard",
+        "set-cookie": [
+          "next-auth.session-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT",
+          "__Secure-next-auth.session-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT",
+          "next-auth.callback-url=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT",
+          "__Secure-next-auth.callback-url=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT",
+          "next-auth.csrf-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT",
+          "__Host-next-auth.csrf-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+        ],
+        "date": "Sat, 27 Sep 2025 20:20:42 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked"
+      }
+    },
+    "Login": {
+      "totalLoadTime": 286,
+      "timeToFirstByte": 286,
+      "contentSize": 16334,
+      "statusCode": 307,
+      "headers": {
+        "x-frame-options": "DENY",
+        "x-content-type-options": "nosniff",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-dns-prefetch-control": "off",
+        "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), ambient-light-sensor=(), autoplay='self', fullscreen='self', picture-in-picture=()",
+        "x-download-options": "noopen",
+        "x-permitted-cross-domain-policies": "none",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-xss-protection": "1; mode=block",
+        "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com *.vercel.app; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai data:; img-src 'self' data: blob: https:; connect-src 'self' *.neon.tech wss: https: *.vercel.app https://vitals.vercel-insights.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';",
+        "origin-agent-cluster": "?1",
+        "content-security-policy-report-only": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https: http://localhost:*; font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai data:; connect-src 'self' ws: wss: http://localhost:* https://api.vercel.com ws: wss:; media-src 'self' data: blob:; object-src 'none'; frame-src 'self'; worker-src 'self' blob:; manifest-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "cross-origin-embedder-policy": "require-corp",
+        "cross-origin-opener-policy": "same-origin",
+        "cross-origin-resource-policy": "same-origin",
+        "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+        "location": "/auth/signin",
+        "cache-control": "no-store, must-revalidate",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Sat, 27 Sep 2025 20:20:42 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked"
+      }
+    }
+  },
+  "apiPerformance": {
+    "Health Check": {
+      "avgResponseTime": 48.08,
+      "minResponseTime": 20,
+      "maxResponseTime": 62,
+      "throughput": 20.798668885191347,
+      "successRate": 0,
+      "totalRequests": 50
+    },
+    "Auth Me": {
+      "avgResponseTime": 34.48,
+      "minResponseTime": 10,
+      "maxResponseTime": 1044,
+      "throughput": 29.00232018561485,
+      "successRate": 0,
+      "totalRequests": 50
+    },
+    "Login": {
+      "avgResponseTime": 12.94,
+      "minResponseTime": 8,
+      "maxResponseTime": 20,
+      "throughput": 77.1604938271605,
+      "successRate": 0,
+      "totalRequests": 50
+    }
+  },
+  "recommendations": [
+    {
+      "type": "bundle",
+      "severity": "warning",
+      "message": "Bundle size (23.8 MB) exceeds threshold (976.6 KB)"
+    }
+  ],
+  "metadata": {
+    "testDuration": 60,
+    "concurrentUsers": 50,
+    "baseUrl": "http://localhost:3000",
+    "thresholds": {
+      "responseTime": 200,
+      "throughput": 100,
+      "errorRate": 0.01,
+      "memoryLeak": 50,
+      "bundleSize": 1000000,
+      "pageLoad": 3000,
+      "firstContentfulPaint": 1500,
+      "largestContentfulPaint": 2500,
+      "cumulativeLayoutShift": 0.1,
+      "firstInputDelay": 100
+    },
+    "timestamp": "2025-09-27T20:20:47.618Z",
+    "nodeVersion": "v22.17.0",
+    "platform": "win32"
+  }
+}

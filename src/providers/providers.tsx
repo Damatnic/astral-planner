@@ -10,33 +10,57 @@ import { CollaborationProvider } from '@/components/collaboration/CollaborationP
 import { UserPreferencesProvider } from '@/hooks/use-user-preferences';
 import { useState } from 'react';
 
-// Dynamic import for ReactQueryDevtools to prevent hydration issues
-const ReactQueryDevtools = dynamic(
-  () => import('@tanstack/react-query-devtools').then(mod => ({ default: mod.ReactQueryDevtools })),
-  { ssr: false }
-);
+// CATALYST CRITICAL: Ultra-lazy loading for DevTools (production excluded)
+const ReactQueryDevtools = process.env.NODE_ENV === 'development' 
+  ? dynamic(
+      () => import('@tanstack/react-query-devtools').then(mod => ({ default: mod.ReactQueryDevtools })),
+      { 
+        ssr: false,
+        loading: () => null, // No loading state to reduce bundle
+      }
+    )
+  : () => null;
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  // CATALYST CRITICAL: Ultra-optimized query client for performance
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 60 * 1000, // 1 minute
+        staleTime: 10 * 60 * 1000, // INCREASED to 10 minutes for less refetching
+        gcTime: 15 * 60 * 1000, // INCREASED: 15 minutes garbage collection
+        refetchOnWindowFocus: false, // DISABLE to reduce network calls
+        refetchOnMount: false, // DISABLE to reduce network calls
+        refetchOnReconnect: false, // DISABLE to reduce network calls
+        networkMode: 'offlineFirst', // CRITICAL: Offline-first for better performance
         retry: (failureCount, error: unknown) => {
           const apiError = error as { status?: number };
-          if (apiError?.status === 404 || apiError?.status === 401) return false;
-          return failureCount < 3;
+          // CRITICAL: Stop infinite retries immediately for known errors
+          if (apiError?.status === 404 || apiError?.status === 401 || 
+              apiError?.status === 403 || apiError?.status >= 500) {
+            return false;
+          }
+          return failureCount < 1; // REDUCED to 1 retry only
         },
+        retryDelay: () => 1000, // FIXED: 1 second delay only
+      },
+      mutations: {
+        retry: 0, // CRITICAL: No mutation retries for faster UX
+        networkMode: 'offlineFirst',
       },
     },
+    // CRITICAL: Minimal query cache for memory efficiency
+    queryCache: undefined, // Use default with garbage collection
+    mutationCache: undefined, // Use default with garbage collection
   }));
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider
         attribute="class"
-        defaultTheme="system"
-        enableSystem
+        defaultTheme="dark"
+        enableSystem={true}
         disableTransitionOnChange
+        storageKey="astral-theme"
       >
         <AuthProvider>
           <UserPreferencesProvider>

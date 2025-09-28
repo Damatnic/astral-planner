@@ -28,7 +28,7 @@ export async function sendEmail(options: EmailOptions) {
 
     return { success: true, data }
   } catch (error) {
-    console.error('Failed to send email:', error)
+    // TODO: Replace with proper logging - console.error('Failed to send email:', error)
     return { success: false, error }
   }
 }

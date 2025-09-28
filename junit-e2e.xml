@@ -1,0 +1,113 @@
+<testsuites id="" name="" tests="18" failures="1" skipped="17" errors="0" time="31.9309">
+<testsuite name="auth.setup.ts" timestamp="2025-09-28T00:25:41.832Z" hostname="setup" tests="1" failures="1" skipped="0" time="18.352" errors="0">
+<testcase name="authenticate with demo account" classname="auth.setup.ts" time="18.352">
+<failure message="auth.setup.ts:10:6 authenticate with demo account" type="FAILURE">
+<![CDATA[  [setup] › auth.setup.ts:10:6 › authenticate with demo account ────────────────────────────────────
+
+    TimeoutError: page.waitForURL: Timeout 10000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation until "load"
+    ============================================================
+
+      71 |
+      72 |   // Wait for authentication to complete
+    > 73 |   await page.waitForURL(url => url.pathname === '/' || url.pathname.includes('/dashboard'), {
+         |              ^
+      74 |     timeout: 10000
+      75 |   });
+      76 |
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.setup.ts:73:14
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth.setup.ts-authenticate-with-demo-account-setup\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth.setup.ts-authenticate-with-demo-account-setup\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\e2e\auth.setup.ts-authenticate-with-demo-account-setup\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth.setup.ts-authenticate-with-demo-account-setup\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth.setup.ts-authenticate-with-demo-account-setup\video.webm]]
+
+[[ATTACHMENT|test-results\e2e\auth.setup.ts-authenticate-with-demo-account-setup\error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="demo-account.e2e.test.ts" timestamp="2025-09-28T00:25:41.832Z" hostname="chromium" tests="17" failures="0" skipped="17" time="0" errors="0">
+<testcase name="Demo Account E2E Tests › Authentication Flow › should login with demo account PIN 0000" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Authentication Flow › should maintain authentication across page reloads" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Authentication Flow › should persist authentication across browser sessions" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should display dashboard after login" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should show demo user information" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should handle navigation between sections" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should create and display tasks" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should access goals section" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should access habits section" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Error Handling › should reject invalid PIN" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Error Handling › should handle network errors gracefully" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Performance › should load dashboard within acceptable time" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Performance › should handle multiple rapid navigations" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Mobile Responsiveness › should work on mobile viewport" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Mobile Responsiveness › should maintain functionality on tablet viewport" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Accessibility › should be accessible with keyboard navigation" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Accessibility › should have proper ARIA labels" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+</testsuites>

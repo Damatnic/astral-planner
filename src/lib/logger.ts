@@ -56,7 +56,7 @@ if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_FILE_LOGGING ===
       })
     );
   } catch (fsError) {
-    console.warn('File logging disabled due to filesystem access issues:', fsError);
+    // TODO: Replace with proper logging - console.warn('File logging disabled due to filesystem access issues:', fsError);
   }
 }
 
@@ -73,16 +73,30 @@ if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_FILE_LOGGING ===
   }
 }
 
-// Create logger
-const Logger = winston.createLogger({
-  level: process.env.NODE_ENV === 'production' ? 'warn' : 'debug',
-  levels,
-  format,
-  transports,
-  exceptionHandlers,
-  rejectionHandlers,
-  exitOnError: false,
-});
+// Create logger - Edge Runtime compatible
+let Logger: any;
+
+if (typeof process !== 'undefined' && process.versions && process.versions.node) {
+  // Node.js environment
+  Logger = winston.createLogger({
+    level: process.env.NODE_ENV === 'production' ? 'warn' : 'debug',
+    levels,
+    format,
+    transports,
+    exceptionHandlers,
+    rejectionHandlers,
+    exitOnError: false,
+  });
+} else {
+  // Edge Runtime environment - simple console logger
+  Logger = {
+    error: console.error,
+    warn: console.warn,
+    info: console.info,
+    debug: console.debug,
+    silly: console.log,
+  };
+}
 
 export default Logger;
 

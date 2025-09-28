@@ -170,7 +170,7 @@ export function TaskForm({
       };
 
       recognition.current.onerror = (event: any) => {
-        console.error('Speech recognition error:', event.error);
+        // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Speech recognition error:', event.error);
         setIsVoiceRecording(false);
       };
 
@@ -258,7 +258,7 @@ export function TaskForm({
 
       setNaturalLanguageInput('');
     } catch (error) {
-      console.error('AI processing error:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('AI processing error:', error);
     } finally {
       setIsProcessingAI(false);
     }

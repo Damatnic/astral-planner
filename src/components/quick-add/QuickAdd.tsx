@@ -30,7 +30,7 @@ export function QuickAdd({ open, onOpenChange }: QuickAddProps) {
             parsedData = parseResult.parsed;
           }
         } catch (error) {
-          console.warn('AI parsing failed, using basic parsing:', error);
+          // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('AI parsing failed, using basic parsing:', error);
         }
       }
 
@@ -77,7 +77,7 @@ export function QuickAdd({ open, onOpenChange }: QuickAddProps) {
       }
 
     } catch (error) {
-      console.error('Quick add error:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Quick add error:', error);
       toast({
         title: 'Error',
         description: error instanceof Error ? error.message : 'Failed to create item. Please try again.',

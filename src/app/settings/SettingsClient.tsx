@@ -8,7 +8,6 @@ import {
   Palette, 
   Globe, 
   Link, 
-  CreditCard,
   HelpCircle,
   LogOut,
   ChevronRight,
@@ -17,7 +16,38 @@ import {
   Monitor,
   Check,
   X,
-  Loader2
+  Loader2,
+  Upload,
+  Camera,
+  Trash2,
+  Save,
+  AlertCircle,
+  Eye,
+  EyeOff,
+  Mail,
+  MapPin,
+  Smartphone,
+  Languages,
+  Clock,
+  MessageSquare,
+  Award,
+  Users,
+  Zap,
+  Volume2,
+  VolumeX,
+  TestTube,
+  Type,
+  Layout,
+  Brush,
+  Contrast,
+  EyeIcon,
+  Paintbrush,
+  Layers,
+  Filter,
+  Download,
+  Trash,
+  Database,
+  Lock
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -35,7 +65,7 @@ import { GoogleCalendarIntegration } from '@/components/integrations/GoogleCalen
 
 export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // Start with false to remove loading spinner
   const { toast } = useToast();
   
   // Settings state
@@ -44,43 +74,99 @@ export default function SettingsPage() {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john.doe@example.com',
+      username: 'johndoe',
+      bio: '',
+      phone: '',
+      company: '',
+      avatarUrl: '',
       timezone: 'America/New_York',
       language: 'en'
     },
     notifications: {
       email: {
         taskReminders: true,
+        taskDeadlines: true,
         dailyDigest: false,
         weeklyReport: true,
-        achievements: true
+        monthlyReport: false,
+        achievements: true,
+        teamUpdates: true,
+        securityAlerts: true,
+        marketingEmails: false
       },
       push: {
         taskReminders: true,
+        taskDeadlines: true,
         mentions: true,
-        updates: false
+        comments: true,
+        updates: false,
+        teamActivity: true,
+        systemMaintenance: true
+      },
+      inApp: {
+        taskCompletions: true,
+        teamInvites: true,
+        mentions: true,
+        systemMessages: true,
+        tips: true
       },
       quietHours: {
         enabled: true,
         start: '22:00',
-        end: '08:00'
+        end: '08:00',
+        timezone: 'local',
+        weekendsOnly: false
+      },
+      frequency: {
+        digest: 'daily',
+        reminders: '15min',
+        summaries: 'weekly'
       }
     },
     appearance: {
       theme: 'system',
       accentColor: 'blue',
+      primaryColor: '#3b82f6',
+      backgroundColor: 'default',
       fontSize: 'medium',
-      reducedMotion: false
+      fontFamily: 'system',
+      borderRadius: 'medium',
+      density: 'comfortable',
+      reducedMotion: false,
+      animations: true,
+      highContrast: false,
+      colorBlindFriendly: false
     },
     privacy: {
       profileVisibility: 'team',
       activityStatus: true,
-      dataSharing: false
+      dataSharing: false,
+      searchEngineIndexing: false,
+      showEmail: false,
+      showPhoneNumber: false,
+      allowDirectMessages: true,
+      shareProgressPublicly: false,
+      dataRetention: '2years',
+      downloadableData: true,
+      accountDeletion: {
+        canDelete: true,
+        deleteAfterDays: 30
+      },
+      twoFactorAuth: false,
+      sessionTimeout: 30,
+      loginNotifications: true
     },
     integrations: [
-      { id: 'google', name: 'Google Calendar', connected: true, icon: '📅' },
-      { id: 'slack', name: 'Slack', connected: false, icon: '💬' },
-      { id: 'notion', name: 'Notion', connected: false, icon: '📝' },
-      { id: 'github', name: 'GitHub', connected: true, icon: '🐙' }
+      { id: 'google', name: 'Google Calendar', connected: true, icon: '📅', description: 'Sync your calendar events and deadlines', category: 'productivity' },
+      { id: 'slack', name: 'Slack', connected: false, icon: '💬', description: 'Get task notifications in Slack channels', category: 'communication' },
+      { id: 'notion', name: 'Notion', connected: false, icon: '📝', description: 'Sync notes and documentation', category: 'productivity' },
+      { id: 'github', name: 'GitHub', connected: true, icon: '🐙', description: 'Track commits and pull requests', category: 'development' },
+      { id: 'trello', name: 'Trello', connected: false, icon: '📋', description: 'Import boards and cards as tasks', category: 'productivity' },
+      { id: 'asana', name: 'Asana', connected: false, icon: '🎯', description: 'Sync projects and tasks', category: 'productivity' },
+      { id: 'zoom', name: 'Zoom', connected: false, icon: '🎥', description: 'Schedule and track meetings', category: 'communication' },
+      { id: 'outlook', name: 'Outlook', connected: false, icon: '📧', description: 'Sync emails and calendar', category: 'communication' },
+      { id: 'dropbox', name: 'Dropbox', connected: false, icon: '📦', description: 'Attach files to tasks', category: 'storage' },
+      { id: 'zapier', name: 'Zapier', connected: false, icon: '⚡', description: 'Connect to 5000+ apps', category: 'automation' }
     ]
   });
 
@@ -109,7 +195,14 @@ export default function SettingsPage() {
         return headers;
       }
     } catch (error) {
-      console.warn('Failed to get auth headers:', error);
+      // Enhanced error logging with security considerations
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.warn('Auth headers retrieval failed:', {
+        error: errorMessage,
+        timestamp: new Date().toISOString(),
+        component: 'SettingsClient',
+        action: 'getAuthHeaders'
+      });
     }
     return { 'Content-Type': 'application/json' };
   };
@@ -185,19 +278,20 @@ export default function SettingsPage() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading settings...</p>
-        </div>
-      </div>
-    );
-  }
+  // Remove loading state - let content render immediately
+  // if (isLoading) {
+  //   return (
+  //     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 flex items-center justify-center">
+  //       <div className="text-center">
+  //         <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+  //         <p className="text-muted-foreground">Loading settings...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Settings</h1>
@@ -207,13 +301,12 @@ export default function SettingsPage() {
         </div>
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:grid-cols-none">
+          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:grid-cols-none">
             <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
             <TabsTrigger value="appearance">Appearance</TabsTrigger>
             <TabsTrigger value="integrations">Integrations</TabsTrigger>
             <TabsTrigger value="privacy">Privacy</TabsTrigger>
-            <TabsTrigger value="billing">Billing</TabsTrigger>
           </TabsList>
 
           {/* Profile Settings */}
@@ -226,64 +319,182 @@ export default function SettingsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Avatar */}
-                <div className="flex items-center gap-4">
-                  <Avatar className="h-20 w-20">
-                    <AvatarImage src="/avatar.jpg" />
-                    <AvatarFallback>JD</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <Button variant="outline" size="sm">Change Avatar</Button>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      JPG, PNG or GIF. Max 2MB.
-                    </p>
+                {/* Enhanced Avatar Section */}
+                <div className="flex items-start gap-6">
+                  <div className="relative group">
+                    <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
+                      <AvatarImage src={settings.profile.avatarUrl || "/avatar.jpg"} alt="Profile picture" />
+                      <AvatarFallback className="text-lg font-semibold">
+                        {settings.profile.firstName?.charAt(0) || 'U'}{settings.profile.lastName?.charAt(0) || ''}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-full flex items-center justify-center">
+                      <Camera className="h-6 w-6 text-white" />
+                    </div>
+                  </div>
+                  <div className="flex-1 space-y-3">
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => document.getElementById('avatar-upload')?.click()}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload New Photo
+                      </Button>
+                      <Button variant="outline" size="sm" className="text-red-600 hover:text-red-600">
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Remove
+                      </Button>
+                    </div>
+                    <div className="text-sm text-muted-foreground space-y-1">
+                      <p>• Upload JPG, PNG or GIF. Max 5MB</p>
+                      <p>• Recommended size: 400x400 pixels</p>
+                      <p>• Square images work best</p>
+                    </div>
+                    <input 
+                      id="avatar-upload" 
+                      type="file" 
+                      accept="image/*" 
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          if (file.size > 5 * 1024 * 1024) {
+                            alert('File size must be less than 5MB');
+                            return;
+                          }
+                          // Handle file upload logic here
+                          console.log('File selected:', file);
+                        }
+                      }}
+                    />
                   </div>
                 </div>
 
                 <Separator />
 
-                {/* Personal Info */}
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input
-                      id="firstName"
-                      value={settings.profile.firstName}
-                      onChange={(e) => setSettings({
-                        ...settings,
-                        profile: { ...settings.profile, firstName: e.target.value }
-                      })}
-                    />
+                {/* Enhanced Personal Information */}
+                <div className="space-y-6">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName" className="flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        First Name *
+                      </Label>
+                      <Input
+                        id="firstName"
+                        value={settings.profile.firstName}
+                        placeholder="Enter your first name"
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          profile: { ...settings.profile, firstName: e.target.value }
+                        })}
+                        className={!settings.profile.firstName ? 'border-red-200' : ''}
+                      />
+                      {!settings.profile.firstName && (
+                        <p className="text-xs text-red-500 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          First name is required
+                        </p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName" className="flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        Last Name *
+                      </Label>
+                      <Input
+                        id="lastName"
+                        value={settings.profile.lastName}
+                        placeholder="Enter your last name"
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          profile: { ...settings.profile, lastName: e.target.value }
+                        })}
+                        className={!settings.profile.lastName ? 'border-red-200' : ''}
+                      />
+                      {!settings.profile.lastName && (
+                        <p className="text-xs text-red-500 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          Last name is required
+                        </p>
+                      )}
+                    </div>
                   </div>
+
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
+                    <Label htmlFor="email" className="flex items-center gap-2">
+                      <Mail className="h-4 w-4" />
+                      Email Address *
+                    </Label>
                     <Input
-                      id="lastName"
-                      value={settings.profile.lastName}
+                      id="email"
+                      type="email"
+                      value={settings.profile.email}
+                      placeholder="Enter your email address"
                       onChange={(e) => setSettings({
                         ...settings,
-                        profile: { ...settings.profile, lastName: e.target.value }
+                        profile: { ...settings.profile, email: e.target.value }
+                      })}
+                      className={!settings.profile.email || !settings.profile.email.includes('@') ? 'border-red-200' : ''}
+                    />
+                    {(!settings.profile.email || !settings.profile.email.includes('@')) && (
+                      <p className="text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        Valid email address is required
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="username" className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      Username
+                    </Label>
+                    <Input
+                      id="username"
+                      value={settings.profile.username || ''}
+                      placeholder="Choose a unique username"
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        profile: { ...settings.profile, username: e.target.value }
                       })}
                     />
+                    <p className="text-xs text-muted-foreground">
+                      Your username will be visible to other users in shared workspaces
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="bio" className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      Bio
+                    </Label>
+                    <textarea
+                      id="bio"
+                      value={settings.profile.bio || ''}
+                      placeholder="Tell others about yourself..."
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        profile: { ...settings.profile, bio: e.target.value }
+                      })}
+                      className="min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+                      maxLength={500}
+                    />
+                    <p className="text-xs text-muted-foreground text-right">
+                      {(settings.profile.bio || '').length}/500 characters
+                    </p>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={settings.profile.email}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      profile: { ...settings.profile, email: e.target.value }
-                    })}
-                  />
-                </div>
-
+                {/* Location and Preferences */}
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="timezone">Timezone</Label>
+                    <Label htmlFor="timezone" className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      Timezone *
+                    </Label>
                     <Select
                       value={settings.profile.timezone}
                       onValueChange={(value) => setSettings({
@@ -292,18 +503,27 @@ export default function SettingsPage() {
                       })}
                     >
                       <SelectTrigger id="timezone">
-                        <SelectValue />
+                        <SelectValue placeholder="Select your timezone" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="America/New_York">Eastern Time</SelectItem>
-                        <SelectItem value="America/Chicago">Central Time</SelectItem>
-                        <SelectItem value="America/Denver">Mountain Time</SelectItem>
-                        <SelectItem value="America/Los_Angeles">Pacific Time</SelectItem>
+                        <SelectItem value="America/New_York">🇺🇸 Eastern Time (UTC-5)</SelectItem>
+                        <SelectItem value="America/Chicago">🇺🇸 Central Time (UTC-6)</SelectItem>
+                        <SelectItem value="America/Denver">🇺🇸 Mountain Time (UTC-7)</SelectItem>
+                        <SelectItem value="America/Los_Angeles">🇺🇸 Pacific Time (UTC-8)</SelectItem>
+                        <SelectItem value="Europe/London">🇬🇧 GMT (UTC+0)</SelectItem>
+                        <SelectItem value="Europe/Paris">🇫🇷 CET (UTC+1)</SelectItem>
+                        <SelectItem value="Europe/Berlin">🇩🇪 CET (UTC+1)</SelectItem>
+                        <SelectItem value="Asia/Tokyo">🇯🇵 JST (UTC+9)</SelectItem>
+                        <SelectItem value="Asia/Shanghai">🇨🇳 CST (UTC+8)</SelectItem>
+                        <SelectItem value="Australia/Sydney">🇦🇺 AEDT (UTC+11)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="language">Language</Label>
+                    <Label htmlFor="language" className="flex items-center gap-2">
+                      <Languages className="h-4 w-4" />
+                      Language
+                    </Label>
                     <Select
                       value={settings.profile.language}
                       onValueChange={(value) => setSettings({
@@ -312,130 +532,344 @@ export default function SettingsPage() {
                       })}
                     >
                       <SelectTrigger id="language">
-                        <SelectValue />
+                        <SelectValue placeholder="Select your language" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="en">English</SelectItem>
-                        <SelectItem value="es">Spanish</SelectItem>
-                        <SelectItem value="fr">French</SelectItem>
-                        <SelectItem value="de">German</SelectItem>
+                        <SelectItem value="en">🇺🇸 English</SelectItem>
+                        <SelectItem value="es">🇪🇸 Spanish</SelectItem>
+                        <SelectItem value="fr">🇫🇷 French</SelectItem>
+                        <SelectItem value="de">🇩🇪 German</SelectItem>
+                        <SelectItem value="it">🇮🇹 Italian</SelectItem>
+                        <SelectItem value="pt">🇵🇹 Portuguese</SelectItem>
+                        <SelectItem value="zh">🇨🇳 Chinese</SelectItem>
+                        <SelectItem value="ja">🇯🇵 Japanese</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
-                <div className="flex justify-end">
-                  <Button onClick={() => handleSave('profile', settings.profile)} disabled={isSaving}>
-                    {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                    Save Changes
-                  </Button>
+                {/* Contact Information */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Contact Information</h3>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="phone" className="flex items-center gap-2">
+                        <Smartphone className="h-4 w-4" />
+                        Phone Number
+                      </Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={settings.profile.phone || ''}
+                        placeholder="+1 (555) 123-4567"
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          profile: { ...settings.profile, phone: e.target.value }
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="company" className="flex items-center gap-2">
+                        <Globe className="h-4 w-4" />
+                        Company/Organization
+                      </Label>
+                      <Input
+                        id="company"
+                        value={settings.profile.company || ''}
+                        placeholder="Your company name"
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          profile: { ...settings.profile, company: e.target.value }
+                        })}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Enhanced Save Section */}
+                <div className="flex flex-col sm:flex-row gap-3 sm:justify-between sm:items-center pt-4 border-t">
+                  <div className="text-sm text-muted-foreground">
+                    <p>* Required fields</p>
+                    <p>Changes are saved automatically when you click Save Changes</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        // Reset to default values
+                        setSettings({
+                          ...settings,
+                          profile: {
+                            firstName: 'John',
+                            lastName: 'Doe',
+                            email: 'john.doe@example.com',
+                            timezone: 'America/New_York',
+                            language: 'en'
+                          }
+                        });
+                      }}
+                    >
+                      Reset
+                    </Button>
+                    <Button 
+                      onClick={() => handleSave('profile', settings.profile)} 
+                      disabled={isSaving || !settings.profile.firstName || !settings.profile.lastName || !settings.profile.email}
+                      className="min-w-[120px]"
+                    >
+                      {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                      {!isSaving && <Save className="h-4 w-4 mr-2" />}
+                      Save Changes
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Notification Settings */}
+          {/* Enhanced Notification Settings */}
           <TabsContent value="notifications">
-            <Card>
-              <CardHeader>
-                <CardTitle>Notification Preferences</CardTitle>
-                <CardDescription>
-                  Choose how you want to be notified
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Email Notifications */}
-                <div>
-                  <h3 className="font-medium mb-4">Email Notifications</h3>
-                  <div className="space-y-4">
-                    {Object.entries(settings.notifications.email).map(([key, value]) => (
-                      <div key={key} className="flex items-center justify-between">
+            <div className="space-y-6">
+              {/* Quick Actions */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Bell className="h-5 w-5" />
+                    Notification Preferences
+                  </CardTitle>
+                  <CardDescription>
+                    Customize how and when you receive notifications
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        // Enable all notifications
+                        const allEnabled = { ...settings.notifications };
+                        Object.keys(allEnabled.email).forEach(key => allEnabled.email[key] = true);
+                        Object.keys(allEnabled.push).forEach(key => allEnabled.push[key] = true);
+                        Object.keys(allEnabled.inApp).forEach(key => allEnabled.inApp[key] = true);
+                        setSettings({ ...settings, notifications: allEnabled });
+                      }}
+                    >
+                      <Volume2 className="h-4 w-4 mr-2" />
+                      Enable All
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        // Disable all notifications
+                        const allDisabled = { ...settings.notifications };
+                        Object.keys(allDisabled.email).forEach(key => allDisabled.email[key] = false);
+                        Object.keys(allDisabled.push).forEach(key => allDisabled.push[key] = false);
+                        Object.keys(allDisabled.inApp).forEach(key => allDisabled.inApp[key] = false);
+                        setSettings({ ...settings, notifications: allDisabled });
+                      }}
+                    >
+                      <VolumeX className="h-4 w-4 mr-2" />
+                      Disable All
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        alert('Sending test notification...');
+                      }}
+                    >
+                      <TestTube className="h-4 w-4 mr-2" />
+                      Send Test Notification
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Email Notifications */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Mail className="h-5 w-5" />
+                    Email Notifications
+                  </CardTitle>
+                  <CardDescription>
+                    Control what email notifications you receive
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {[
+                    { key: 'taskReminders', label: 'Task Reminders', desc: 'Get reminded about upcoming task deadlines', icon: Clock },
+                    { key: 'taskDeadlines', label: 'Task Deadlines', desc: 'Critical alerts for overdue tasks', icon: AlertCircle },
+                    { key: 'dailyDigest', label: 'Daily Digest', desc: 'Summary of your daily activities and progress', icon: Mail },
+                    { key: 'weeklyReport', label: 'Weekly Report', desc: 'Comprehensive weekly performance report', icon: Award },
+                    { key: 'monthlyReport', label: 'Monthly Report', desc: 'Monthly insights and goal tracking', icon: Award },
+                    { key: 'achievements', label: 'Achievements', desc: 'Celebrate milestones and completed goals', icon: Award },
+                    { key: 'teamUpdates', label: 'Team Updates', desc: 'Stay informed about team activities', icon: Users },
+                    { key: 'securityAlerts', label: 'Security Alerts', desc: 'Important security and account notifications', icon: Shield },
+                    { key: 'marketingEmails', label: 'Marketing Emails', desc: 'Product updates and feature announcements', icon: Zap }
+                  ].map(({ key, label, desc, icon: Icon }) => (
+                    <div key={key} className="flex items-center justify-between p-3 rounded-lg border">
+                      <div className="flex items-start gap-3">
+                        <Icon className="h-5 w-5 mt-0.5 text-muted-foreground" />
                         <div>
-                          <Label htmlFor={`email-${key}`} className="text-base">
-                            {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                          <Label htmlFor={`email-${key}`} className="text-base font-medium">
+                            {label}
                           </Label>
                           <p className="text-sm text-muted-foreground">
-                            Receive email notifications for this activity
+                            {desc}
                           </p>
                         </div>
-                        <Switch
-                          id={`email-${key}`}
-                          checked={value}
-                          onCheckedChange={(checked) => setSettings({
-                            ...settings,
-                            notifications: {
-                              ...settings.notifications,
-                              email: { ...settings.notifications.email, [key]: checked }
-                            }
-                          })}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Push Notifications */}
-                <div>
-                  <h3 className="font-medium mb-4">Push Notifications</h3>
-                  <div className="space-y-4">
-                    {Object.entries(settings.notifications.push).map(([key, value]) => (
-                      <div key={key} className="flex items-center justify-between">
-                        <div>
-                          <Label htmlFor={`push-${key}`} className="text-base">
-                            {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                          </Label>
-                          <p className="text-sm text-muted-foreground">
-                            Receive push notifications for this activity
-                          </p>
-                        </div>
-                        <Switch
-                          id={`push-${key}`}
-                          checked={value}
-                          onCheckedChange={(checked) => setSettings({
-                            ...settings,
-                            notifications: {
-                              ...settings.notifications,
-                              push: { ...settings.notifications.push, [key]: checked }
-                            }
-                          })}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Quiet Hours */}
-                <div>
-                  <h3 className="font-medium mb-4">Quiet Hours</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Label htmlFor="quiet-hours" className="text-base">
-                          Enable Quiet Hours
-                        </Label>
-                        <p className="text-sm text-muted-foreground">
-                          Pause notifications during specified hours
-                        </p>
                       </div>
                       <Switch
-                        id="quiet-hours"
-                        checked={settings.notifications.quietHours.enabled}
+                        id={`email-${key}`}
+                        checked={settings.notifications.email[key]}
                         onCheckedChange={(checked) => setSettings({
                           ...settings,
                           notifications: {
                             ...settings.notifications,
-                            quietHours: { ...settings.notifications.quietHours, enabled: checked }
+                            email: { ...settings.notifications.email, [key]: checked }
                           }
                         })}
                       />
                     </div>
-                    
-                    {settings.notifications.quietHours.enabled && (
-                      <div className="grid gap-4 sm:grid-cols-2 pl-4">
+                  ))}
+                </CardContent>
+              </Card>
+
+              {/* Push Notifications */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Smartphone className="h-5 w-5" />
+                    Push Notifications
+                  </CardTitle>
+                  <CardDescription>
+                    Instant notifications on your device
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {[
+                    { key: 'taskReminders', label: 'Task Reminders', desc: 'Push notifications for upcoming tasks', icon: Clock },
+                    { key: 'taskDeadlines', label: 'Task Deadlines', desc: 'Urgent alerts for overdue items', icon: AlertCircle },
+                    { key: 'mentions', label: 'Mentions', desc: 'When someone mentions you in comments', icon: MessageSquare },
+                    { key: 'comments', label: 'Comments', desc: 'New comments on your tasks or projects', icon: MessageSquare },
+                    { key: 'updates', label: 'General Updates', desc: 'App updates and new features', icon: Zap },
+                    { key: 'teamActivity', label: 'Team Activity', desc: 'Real-time team collaboration updates', icon: Users },
+                    { key: 'systemMaintenance', label: 'System Maintenance', desc: 'Important system announcements', icon: Shield }
+                  ].map(({ key, label, desc, icon: Icon }) => (
+                    <div key={key} className="flex items-center justify-between p-3 rounded-lg border">
+                      <div className="flex items-start gap-3">
+                        <Icon className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                        <div>
+                          <Label htmlFor={`push-${key}`} className="text-base font-medium">
+                            {label}
+                          </Label>
+                          <p className="text-sm text-muted-foreground">
+                            {desc}
+                          </p>
+                        </div>
+                      </div>
+                      <Switch
+                        id={`push-${key}`}
+                        checked={settings.notifications.push[key]}
+                        onCheckedChange={(checked) => setSettings({
+                          ...settings,
+                          notifications: {
+                            ...settings.notifications,
+                            push: { ...settings.notifications.push, [key]: checked }
+                          }
+                        })}
+                      />
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              {/* In-App Notifications */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Bell className="h-5 w-5" />
+                    In-App Notifications
+                  </CardTitle>
+                  <CardDescription>
+                    Notifications within the application
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {[
+                    { key: 'taskCompletions', label: 'Task Completions', desc: 'Celebrate when you complete tasks', icon: Check },
+                    { key: 'teamInvites', label: 'Team Invites', desc: 'Invitations to join teams or projects', icon: Users },
+                    { key: 'mentions', label: 'Mentions', desc: 'When you\'re mentioned in discussions', icon: MessageSquare },
+                    { key: 'systemMessages', label: 'System Messages', desc: 'Important app messages and updates', icon: Shield },
+                    { key: 'tips', label: 'Tips & Suggestions', desc: 'Helpful tips to improve productivity', icon: Zap }
+                  ].map(({ key, label, desc, icon: Icon }) => (
+                    <div key={key} className="flex items-center justify-between p-3 rounded-lg border">
+                      <div className="flex items-start gap-3">
+                        <Icon className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                        <div>
+                          <Label htmlFor={`inapp-${key}`} className="text-base font-medium">
+                            {label}
+                          </Label>
+                          <p className="text-sm text-muted-foreground">
+                            {desc}
+                          </p>
+                        </div>
+                      </div>
+                      <Switch
+                        id={`inapp-${key}`}
+                        checked={settings.notifications.inApp[key]}
+                        onCheckedChange={(checked) => setSettings({
+                          ...settings,
+                          notifications: {
+                            ...settings.notifications,
+                            inApp: { ...settings.notifications.inApp, [key]: checked }
+                          }
+                        })}
+                      />
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              {/* Enhanced Quiet Hours */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Moon className="h-5 w-5" />
+                    Quiet Hours
+                  </CardTitle>
+                  <CardDescription>
+                    Pause notifications during specific hours
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="quiet-hours" className="text-base font-medium">
+                        Enable Quiet Hours
+                      </Label>
+                      <p className="text-sm text-muted-foreground">
+                        Automatically pause all notifications during specified times
+                      </p>
+                    </div>
+                    <Switch
+                      id="quiet-hours"
+                      checked={settings.notifications.quietHours.enabled}
+                      onCheckedChange={(checked) => setSettings({
+                        ...settings,
+                        notifications: {
+                          ...settings.notifications,
+                          quietHours: { ...settings.notifications.quietHours, enabled: checked }
+                        }
+                      })}
+                    />
+                  </div>
+                  
+                  {settings.notifications.quietHours.enabled && (
+                    <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                      <div className="grid gap-4 sm:grid-cols-2">
                         <div className="space-y-2">
                           <Label htmlFor="quiet-start">Start Time</Label>
                           <Input
@@ -467,347 +901,1074 @@ export default function SettingsPage() {
                           />
                         </div>
                       </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex justify-end">
-                  <Button onClick={() => handleSave('notifications', settings.notifications)} disabled={isSaving}>
-                    {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                    Save Changes
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Appearance Settings */}
-          <TabsContent value="appearance">
-            <Card>
-              <CardHeader>
-                <CardTitle>Appearance</CardTitle>
-                <CardDescription>
-                  Customize the look and feel of your planner
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Theme */}
-                <div>
-                  <Label className="text-base mb-4 block">Theme</Label>
-                  <RadioGroup
-                    value={settings.appearance.theme}
-                    onValueChange={(value) => setSettings({
-                      ...settings,
-                      appearance: { ...settings.appearance, theme: value }
-                    })}
-                    className="grid grid-cols-3 gap-4"
-                  >
-                    <div>
-                      <RadioGroupItem value="light" id="light" className="peer sr-only" />
-                      <Label
-                        htmlFor="light"
-                        className="flex flex-col items-center justify-center rounded-lg border-2 border-muted p-4 hover:border-accent hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
-                      >
-                        <Sun className="h-6 w-6 mb-2" />
-                        Light
-                      </Label>
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="weekends-only" className="text-base">
+                            Weekends Only
+                          </Label>
+                          <p className="text-sm text-muted-foreground">
+                            Apply quiet hours only on weekends
+                          </p>
+                        </div>
+                        <Switch
+                          id="weekends-only"
+                          checked={settings.notifications.quietHours.weekendsOnly}
+                          onCheckedChange={(checked) => setSettings({
+                            ...settings,
+                            notifications: {
+                              ...settings.notifications,
+                              quietHours: { ...settings.notifications.quietHours, weekendsOnly: checked }
+                            }
+                          })}
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <RadioGroupItem value="dark" id="dark" className="peer sr-only" />
-                      <Label
-                        htmlFor="dark"
-                        className="flex flex-col items-center justify-center rounded-lg border-2 border-muted p-4 hover:border-accent hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
-                      >
-                        <Moon className="h-6 w-6 mb-2" />
-                        Dark
-                      </Label>
-                    </div>
-                    <div>
-                      <RadioGroupItem value="system" id="system" className="peer sr-only" />
-                      <Label
-                        htmlFor="system"
-                        className="flex flex-col items-center justify-center rounded-lg border-2 border-muted p-4 hover:border-accent hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
-                      >
-                        <Monitor className="h-6 w-6 mb-2" />
-                        System
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
+                  )}
+                </CardContent>
+              </Card>
 
-                <Separator />
-
-                {/* Font Size */}
-                <div>
-                  <Label htmlFor="fontSize">Font Size</Label>
-                  <Select
-                    value={settings.appearance.fontSize}
-                    onValueChange={(value) => setSettings({
-                      ...settings,
-                      appearance: { ...settings.appearance, fontSize: value }
-                    })}
-                  >
-                    <SelectTrigger id="fontSize">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="small">Small</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="large">Large</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Reduced Motion */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label htmlFor="reduced-motion" className="text-base">
-                      Reduced Motion
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      Minimize animations and transitions
-                    </p>
-                  </div>
-                  <Switch
-                    id="reduced-motion"
-                    checked={settings.appearance.reducedMotion}
-                    onCheckedChange={(checked) => setSettings({
-                      ...settings,
-                      appearance: { ...settings.appearance, reducedMotion: checked }
-                    })}
-                  />
-                </div>
-
-                <div className="flex justify-end">
-                  <Button onClick={() => handleSave('appearance', settings.appearance)} disabled={isSaving}>
-                    {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                    Save Changes
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Integrations */}
-          <TabsContent value="integrations">
-            <div className="space-y-6">
-              <GoogleCalendarIntegration />
-              
+              {/* Notification Frequency */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Other Integrations</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="h-5 w-5" />
+                    Notification Frequency
+                  </CardTitle>
                   <CardDescription>
-                    More integrations coming soon
+                    Control how often you receive different types of notifications
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {settings.integrations.filter(i => i.id !== 'google').map((integration) => (
-                      <div key={integration.id} className="flex items-center justify-between p-4 border rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <span className="text-2xl">{integration.icon}</span>
-                          <div>
-                            <p className="font-medium">{integration.name}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {integration.connected ? 'Connected' : 'Coming soon'}
-                            </p>
-                          </div>
-                        </div>
-                        <Button
-                          variant={integration.connected ? 'outline' : 'secondary'}
-                          size="sm"
-                          disabled={!integration.connected}
+                <CardContent className="space-y-4">
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="digest-frequency">Digest Frequency</Label>
+                      <Select
+                        value={settings.notifications.frequency.digest}
+                        onValueChange={(value) => setSettings({
+                          ...settings,
+                          notifications: {
+                            ...settings.notifications,
+                            frequency: { ...settings.notifications.frequency, digest: value }
+                          }
+                        })}
+                      >
+                        <SelectTrigger id="digest-frequency">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="daily">Daily</SelectItem>
+                          <SelectItem value="weekly">Weekly</SelectItem>
+                          <SelectItem value="never">Never</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="reminder-timing">Reminder Timing</Label>
+                      <Select
+                        value={settings.notifications.frequency.reminders}
+                        onValueChange={(value) => setSettings({
+                          ...settings,
+                          notifications: {
+                            ...settings.notifications,
+                            frequency: { ...settings.notifications.frequency, reminders: value }
+                          }
+                        })}
+                      >
+                        <SelectTrigger id="reminder-timing">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="5min">5 minutes before</SelectItem>
+                          <SelectItem value="15min">15 minutes before</SelectItem>
+                          <SelectItem value="30min">30 minutes before</SelectItem>
+                          <SelectItem value="1hour">1 hour before</SelectItem>
+                          <SelectItem value="1day">1 day before</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="summary-frequency">Summary Reports</Label>
+                      <Select
+                        value={settings.notifications.frequency.summaries}
+                        onValueChange={(value) => setSettings({
+                          ...settings,
+                          notifications: {
+                            ...settings.notifications,
+                            frequency: { ...settings.notifications.frequency, summaries: value }
+                          }
+                        })}
+                      >
+                        <SelectTrigger id="summary-frequency">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="weekly">Weekly</SelectItem>
+                          <SelectItem value="monthly">Monthly</SelectItem>
+                          <SelectItem value="never">Never</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Save Button */}
+              <div className="flex justify-end">
+                <Button 
+                  onClick={() => handleSave('notifications', settings.notifications)} 
+                  disabled={isSaving}
+                  size="lg"
+                >
+                  {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  {!isSaving && <Save className="h-4 w-4 mr-2" />}
+                  Save Notification Preferences
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Enhanced Appearance Settings */}
+          <TabsContent value="appearance">
+            <div className="space-y-6">
+              {/* Theme Selection */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Palette className="h-5 w-5" />
+                    Theme & Colors
+                  </CardTitle>
+                  <CardDescription>
+                    Customize the overall look and color scheme
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Theme Selection */}
+                  <div>
+                    <Label className="text-base mb-4 block">Color Theme</Label>
+                    <RadioGroup
+                      value={settings.appearance.theme}
+                      onValueChange={(value) => setSettings({
+                        ...settings,
+                        appearance: { ...settings.appearance, theme: value }
+                      })}
+                      className="grid grid-cols-3 gap-4"
+                    >
+                      <div>
+                        <RadioGroupItem value="light" id="light" className="peer sr-only" />
+                        <Label
+                          htmlFor="light"
+                          className="flex flex-col items-center justify-center rounded-lg border-2 border-muted p-6 hover:border-accent hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer transition-all"
                         >
-                          {integration.connected ? 'Disconnect' : 'Coming Soon'}
-                        </Button>
+                          <Sun className="h-8 w-8 mb-3 text-yellow-500" />
+                          <span className="font-medium">Light</span>
+                          <span className="text-xs text-muted-foreground mt-1">Bright & clean</span>
+                        </Label>
                       </div>
-                    ))}
+                      <div>
+                        <RadioGroupItem value="dark" id="dark" className="peer sr-only" />
+                        <Label
+                          htmlFor="dark"
+                          className="flex flex-col items-center justify-center rounded-lg border-2 border-muted p-6 hover:border-accent hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer transition-all"
+                        >
+                          <Moon className="h-8 w-8 mb-3 text-blue-400" />
+                          <span className="font-medium">Dark</span>
+                          <span className="text-xs text-muted-foreground mt-1">Easy on eyes</span>
+                        </Label>
+                      </div>
+                      <div>
+                        <RadioGroupItem value="system" id="system" className="peer sr-only" />
+                        <Label
+                          htmlFor="system"
+                          className="flex flex-col items-center justify-center rounded-lg border-2 border-muted p-6 hover:border-accent hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer transition-all"
+                        >
+                          <Monitor className="h-8 w-8 mb-3 text-gray-500" />
+                          <span className="font-medium">System</span>
+                          <span className="text-xs text-muted-foreground mt-1">Follows OS</span>
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  {/* Accent Color */}
+                  <div>
+                    <Label className="text-base mb-4 block">Accent Color</Label>
+                    <div className="grid grid-cols-6 gap-3">
+                      {[
+                        { name: 'blue', color: '#3b82f6', label: 'Blue' },
+                        { name: 'green', color: '#10b981', label: 'Green' },
+                        { name: 'purple', color: '#8b5cf6', label: 'Purple' },
+                        { name: 'pink', color: '#ec4899', label: 'Pink' },
+                        { name: 'orange', color: '#f97316', label: 'Orange' },
+                        { name: 'red', color: '#ef4444', label: 'Red' }
+                      ].map(({ name, color, label }) => (
+                        <button
+                          key={name}
+                          onClick={() => setSettings({
+                            ...settings,
+                            appearance: { ...settings.appearance, accentColor: name, primaryColor: color }
+                          })}
+                          className={`group relative flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-all hover:scale-105 ${
+                            settings.appearance.accentColor === name
+                              ? 'border-primary bg-primary/5'
+                              : 'border-muted hover:border-accent'
+                          }`}
+                        >
+                          <div
+                            className="w-8 h-8 rounded-full border-2 border-white shadow-md"
+                            style={{ backgroundColor: color }}
+                          />
+                          <span className="text-xs font-medium">{label}</span>
+                          {settings.appearance.accentColor === name && (
+                            <Check className="absolute top-1 right-1 h-4 w-4 text-primary" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Custom Primary Color */}
+                  <div>
+                    <Label htmlFor="custom-color" className="text-base mb-2 block">Custom Primary Color</Label>
+                    <div className="flex gap-3 items-center">
+                      <Input
+                        id="custom-color"
+                        type="color"
+                        value={settings.appearance.primaryColor}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          appearance: { ...settings.appearance, primaryColor: e.target.value }
+                        })}
+                        className="w-16 h-10 rounded-md cursor-pointer"
+                      />
+                      <Input
+                        value={settings.appearance.primaryColor}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          appearance: { ...settings.appearance, primaryColor: e.target.value }
+                        })}
+                        placeholder="#3b82f6"
+                        className="font-mono"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Typography */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Type className="h-5 w-5" />
+                    Typography
+                  </CardTitle>
+                  <CardDescription>
+                    Customize fonts and text appearance
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <Label htmlFor="fontFamily">Font Family</Label>
+                      <Select
+                        value={settings.appearance.fontFamily}
+                        onValueChange={(value) => setSettings({
+                          ...settings,
+                          appearance: { ...settings.appearance, fontFamily: value }
+                        })}
+                      >
+                        <SelectTrigger id="fontFamily">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="system">System Default</SelectItem>
+                          <SelectItem value="inter">Inter</SelectItem>
+                          <SelectItem value="roboto">Roboto</SelectItem>
+                          <SelectItem value="open-sans">Open Sans</SelectItem>
+                          <SelectItem value="poppins">Poppins</SelectItem>
+                          <SelectItem value="nunito">Nunito</SelectItem>
+                          <SelectItem value="source-sans">Source Sans Pro</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="fontSize">Font Size</Label>
+                      <Select
+                        value={settings.appearance.fontSize}
+                        onValueChange={(value) => setSettings({
+                          ...settings,
+                          appearance: { ...settings.appearance, fontSize: value }
+                        })}
+                      >
+                        <SelectTrigger id="fontSize">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="small">Small (14px)</SelectItem>
+                          <SelectItem value="medium">Medium (16px)</SelectItem>
+                          <SelectItem value="large">Large (18px)</SelectItem>
+                          <SelectItem value="extra-large">Extra Large (20px)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Layout & Spacing */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Layout className="h-5 w-5" />
+                    Layout & Spacing
+                  </CardTitle>
+                  <CardDescription>
+                    Control interface density and spacing
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <Label htmlFor="density">Interface Density</Label>
+                      <Select
+                        value={settings.appearance.density}
+                        onValueChange={(value) => setSettings({
+                          ...settings,
+                          appearance: { ...settings.appearance, density: value }
+                        })}
+                      >
+                        <SelectTrigger id="density">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="compact">Compact</SelectItem>
+                          <SelectItem value="comfortable">Comfortable</SelectItem>
+                          <SelectItem value="spacious">Spacious</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Controls padding and spacing throughout the app
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="borderRadius">Border Radius</Label>
+                      <Select
+                        value={settings.appearance.borderRadius}
+                        onValueChange={(value) => setSettings({
+                          ...settings,
+                          appearance: { ...settings.appearance, borderRadius: value }
+                        })}
+                      >
+                        <SelectTrigger id="borderRadius">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">None (0px)</SelectItem>
+                          <SelectItem value="small">Small (4px)</SelectItem>
+                          <SelectItem value="medium">Medium (8px)</SelectItem>
+                          <SelectItem value="large">Large (12px)</SelectItem>
+                          <SelectItem value="extra-large">Extra Large (16px)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Roundness of buttons, cards, and other elements
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Animation & Motion */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Zap className="h-5 w-5" />
+                    Animation & Motion
+                  </CardTitle>
+                  <CardDescription>
+                    Control animations and visual effects
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between p-3 rounded-lg border">
+                    <div>
+                      <Label htmlFor="animations" className="text-base font-medium">
+                        Enable Animations
+                      </Label>
+                      <p className="text-sm text-muted-foreground">
+                        Smooth transitions and micro-interactions
+                      </p>
+                    </div>
+                    <Switch
+                      id="animations"
+                      checked={settings.appearance.animations}
+                      onCheckedChange={(checked) => setSettings({
+                        ...settings,
+                        appearance: { ...settings.appearance, animations: checked }
+                      })}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 rounded-lg border">
+                    <div>
+                      <Label htmlFor="reduced-motion" className="text-base font-medium">
+                        Reduced Motion
+                      </Label>
+                      <p className="text-sm text-muted-foreground">
+                        Minimize animations for better accessibility
+                      </p>
+                    </div>
+                    <Switch
+                      id="reduced-motion"
+                      checked={settings.appearance.reducedMotion}
+                      onCheckedChange={(checked) => setSettings({
+                        ...settings,
+                        appearance: { ...settings.appearance, reducedMotion: checked }
+                      })}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Accessibility */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <EyeIcon className="h-5 w-5" />
+                    Accessibility
+                  </CardTitle>
+                  <CardDescription>
+                    Visual accessibility and readability options
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between p-3 rounded-lg border">
+                    <div>
+                      <Label htmlFor="high-contrast" className="text-base font-medium">
+                        High Contrast Mode
+                      </Label>
+                      <p className="text-sm text-muted-foreground">
+                        Increase contrast for better readability
+                      </p>
+                    </div>
+                    <Switch
+                      id="high-contrast"
+                      checked={settings.appearance.highContrast}
+                      onCheckedChange={(checked) => setSettings({
+                        ...settings,
+                        appearance: { ...settings.appearance, highContrast: checked }
+                      })}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 rounded-lg border">
+                    <div>
+                      <Label htmlFor="colorblind-friendly" className="text-base font-medium">
+                        Color Blind Friendly
+                      </Label>
+                      <p className="text-sm text-muted-foreground">
+                        Adjust colors for color vision deficiency
+                      </p>
+                    </div>
+                    <Switch
+                      id="colorblind-friendly"
+                      checked={settings.appearance.colorBlindFriendly}
+                      onCheckedChange={(checked) => setSettings({
+                        ...settings,
+                        appearance: { ...settings.appearance, colorBlindFriendly: checked }
+                      })}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Preview and Reset */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Eye className="h-5 w-5" />
+                    Preview & Reset
+                  </CardTitle>
+                  <CardDescription>
+                    Preview changes and reset to defaults
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-4 rounded-lg border bg-muted/50">
+                    <h4 className="font-medium mb-2">Preview</h4>
+                    <div className="space-y-2 text-sm">
+                      <p>Theme: <span className="font-mono">{settings.appearance.theme}</span></p>
+                      <p>Font: <span className="font-mono">{settings.appearance.fontFamily}</span> - {settings.appearance.fontSize}</p>
+                      <p>Density: <span className="font-mono">{settings.appearance.density}</span></p>
+                      <p>Accent: <span className="font-mono">{settings.appearance.accentColor}</span></p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Button 
+                      variant="outline"
+                      onClick={() => {
+                        setSettings({
+                          ...settings,
+                          appearance: {
+                            theme: 'system',
+                            accentColor: 'blue',
+                            primaryColor: '#3b82f6',
+                            backgroundColor: 'default',
+                            fontSize: 'medium',
+                            fontFamily: 'system',
+                            borderRadius: 'medium',
+                            density: 'comfortable',
+                            reducedMotion: false,
+                            animations: true,
+                            highContrast: false,
+                            colorBlindFriendly: false
+                          }
+                        });
+                      }}
+                    >
+                      Reset to Defaults
+                    </Button>
+                    <Button 
+                      onClick={() => handleSave('appearance', settings.appearance)} 
+                      disabled={isSaving}
+                      className="flex-1"
+                    >
+                      {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                      {!isSaving && <Save className="h-4 w-4 mr-2" />}
+                      Save Appearance Settings
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
-          {/* Privacy Settings */}
-          <TabsContent value="privacy">
-            <Card>
-              <CardHeader>
-                <CardTitle>Privacy & Security</CardTitle>
-                <CardDescription>
-                  Control your privacy settings and data sharing
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <Label htmlFor="visibility">Profile Visibility</Label>
-                  <Select
-                    value={settings.privacy.profileVisibility}
-                    onValueChange={(value) => setSettings({
-                      ...settings,
-                      privacy: { ...settings.privacy, profileVisibility: value }
-                    })}
-                  >
-                    <SelectTrigger id="visibility">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="public">Public</SelectItem>
-                      <SelectItem value="team">Team Only</SelectItem>
-                      <SelectItem value="private">Private</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+          {/* Enhanced Integrations */}
+          <TabsContent value="integrations">
+            <div className="space-y-6">
+              {/* Google Calendar Integration */}
+              <GoogleCalendarIntegration />
+              
+              {/* Integration Categories */}
+              {['productivity', 'communication', 'development', 'storage', 'automation'].map(category => {
+                const categoryIntegrations = settings.integrations.filter(i => i.category === category && i.id !== 'google');
+                if (categoryIntegrations.length === 0) return null;
+                
+                return (
+                  <Card key={category}>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 capitalize">
+                        <Link className="h-5 w-5" />
+                        {category} Integrations
+                      </CardTitle>
+                      <CardDescription>
+                        Connect with your favorite {category} tools
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        {categoryIntegrations.map((integration) => (
+                          <div key={integration.id} className="p-4 border rounded-lg hover:border-accent transition-colors">
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex items-center gap-3">
+                                <span className="text-2xl">{integration.icon}</span>
+                                <div>
+                                  <h4 className="font-medium">{integration.name}</h4>
+                                  <p className="text-sm text-muted-foreground">
+                                    {integration.description}
+                                  </p>
+                                </div>
+                              </div>
+                              {integration.connected && (
+                                <Badge variant="default" className="text-xs">
+                                  Connected
+                                </Badge>
+                              )}
+                            </div>
+                            
+                            <div className="flex gap-2">
+                              <Button
+                                variant={integration.connected ? 'outline' : 'default'}
+                                size="sm"
+                                className="flex-1"
+                                onClick={() => {
+                                  if (integration.connected) {
+                                    // Disconnect logic
+                                    setSettings({
+                                      ...settings,
+                                      integrations: settings.integrations.map(i => 
+                                        i.id === integration.id ? { ...i, connected: false } : i
+                                      )
+                                    });
+                                    toast({
+                                      title: "Integration disconnected",
+                                      description: `${integration.name} has been disconnected successfully.`
+                                    });
+                                  } else {
+                                    // Connect logic
+                                    setSettings({
+                                      ...settings,
+                                      integrations: settings.integrations.map(i => 
+                                        i.id === integration.id ? { ...i, connected: true } : i
+                                      )
+                                    });
+                                    toast({
+                                      title: "Integration connected",
+                                      description: `${integration.name} has been connected successfully.`
+                                    });
+                                  }
+                                }}
+                              >
+                                {integration.connected ? 'Disconnect' : 'Connect'}
+                              </Button>
+                              {integration.connected && (
+                                <Button variant="outline" size="sm">
+                                  <X className="h-4 w-4" />
+                                  Settings
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
 
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="activity-status" className="text-base">
-                        Activity Status
-                      </Label>
-                      <p className="text-sm text-muted-foreground">
-                        Show when you're online
+              {/* Integration Management */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Globe className="h-5 w-5" />
+                    Integration Management
+                  </CardTitle>
+                  <CardDescription>
+                    Manage your connected services and data sync
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="p-4 border rounded-lg">
+                      <h4 className="font-medium mb-2 flex items-center gap-2">
+                        <Zap className="h-4 w-4" />
+                        Auto-Sync
+                      </h4>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Automatically sync data every 15 minutes
                       </p>
+                      <Switch defaultChecked />
                     </div>
-                    <Switch
-                      id="activity-status"
-                      checked={settings.privacy.activityStatus}
-                      onCheckedChange={(checked) => setSettings({
-                        ...settings,
-                        privacy: { ...settings.privacy, activityStatus: checked }
-                      })}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="data-sharing" className="text-base">
-                        Analytics Data Sharing
-                      </Label>
-                      <p className="text-sm text-muted-foreground">
-                        Help improve the product with anonymous usage data
+                    
+                    <div className="p-4 border rounded-lg">
+                      <h4 className="font-medium mb-2 flex items-center gap-2">
+                        <Shield className="h-4 w-4" />
+                        Data Privacy
+                      </h4>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Encrypt all integration data
                       </p>
-                    </div>
-                    <Switch
-                      id="data-sharing"
-                      checked={settings.privacy.dataSharing}
-                      onCheckedChange={(checked) => setSettings({
-                        ...settings,
-                        privacy: { ...settings.privacy, dataSharing: checked }
-                      })}
-                    />
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-3">
-                  <h3 className="font-medium">Danger Zone</h3>
-                  <Button variant="outline" className="text-red-600 hover:text-red-600">
-                    Export All Data
-                  </Button>
-                  <Button variant="outline" className="text-red-600 hover:text-red-600 ml-3">
-                    Delete Account
-                  </Button>
-                </div>
-
-                <div className="flex justify-end">
-                  <Button onClick={() => handleSave('privacy', settings.privacy)} disabled={isSaving}>
-                    {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                    Save Changes
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Billing */}
-          <TabsContent value="billing">
-            <Card>
-              <CardHeader>
-                <CardTitle>Billing & Subscription</CardTitle>
-                <CardDescription>
-                  Manage your subscription and payment methods
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Current Plan */}
-                <div className="p-4 border rounded-lg bg-primary/5">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-medium">Current Plan</h3>
-                    <Badge>PRO</Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    $9.99/month • Renews on Feb 1, 2024
-                  </p>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-500" />
-                      Unlimited tasks and projects
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-500" />
-                      Advanced analytics
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-500" />
-                      Team collaboration
+                      <Switch defaultChecked />
                     </div>
                   </div>
-                </div>
 
-                <div className="flex gap-3">
-                  <Button variant="outline">Change Plan</Button>
-                  <Button variant="outline" className="text-red-600 hover:text-red-600">
-                    Cancel Subscription
-                  </Button>
-                </div>
+                  <Separator />
 
-                <Separator />
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant="outline" size="sm">
+                      <Download className="h-4 w-4 mr-2" />
+                      Export Integration Data
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      <Zap className="h-4 w-4 mr-2" />
+                      Force Sync All
+                    </Button>
+                    <Button variant="outline" size="sm" className="text-red-600 hover:text-red-600">
+                      <X className="h-4 w-4 mr-2" />
+                      Disconnect All
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
 
-                {/* Payment Method */}
-                <div>
-                  <h3 className="font-medium mb-4">Payment Method</h3>
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <CreditCard className="h-5 w-5" />
-                      <div>
-                        <p className="font-medium">•••• •••• •••• 4242</p>
-                        <p className="text-sm text-muted-foreground">Expires 12/24</p>
+              {/* API Keys and Webhooks */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Database className="h-5 w-5" />
+                    API & Webhooks
+                  </CardTitle>
+                  <CardDescription>
+                    Manage API access and webhook configurations
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-4 border rounded-lg bg-muted/50">
+                    <h4 className="font-medium mb-2">API Key</h4>
+                    <div className="flex gap-2">
+                      <Input 
+                        type="password" 
+                        value="ap1_xxxxx...xxxxx" 
+                        readOnly 
+                        className="font-mono text-sm"
+                      />
+                      <Button variant="outline" size="sm">
+                        Copy
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        Regenerate
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Use this API key to access your data programmatically
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h4 className="font-medium">Webhook Endpoints</h4>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <p className="font-mono text-sm">https://your-app.com/webhook/tasks</p>
+                          <p className="text-xs text-muted-foreground">Task completion events</p>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          Edit
+                        </Button>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm">Update</Button>
+                    <Button variant="outline" size="sm">
+                      Add Webhook
+                    </Button>
                   </div>
-                </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
-                {/* Billing History */}
-                <div>
-                  <h3 className="font-medium mb-4">Billing History</h3>
-                  <div className="space-y-2">
+          {/* Enhanced Privacy & Security Settings */}
+          <TabsContent value="privacy">
+            <div className="space-y-6">
+              {/* Profile Privacy */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Shield className="h-5 w-5" />
+                    Profile Privacy
+                  </CardTitle>
+                  <CardDescription>
+                    Control who can see your profile and personal information
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div>
+                    <Label htmlFor="visibility" className="text-base mb-2 block">Profile Visibility</Label>
+                    <Select
+                      value={settings.privacy.profileVisibility}
+                      onValueChange={(value) => setSettings({
+                        ...settings,
+                        privacy: { ...settings.privacy, profileVisibility: value }
+                      })}
+                    >
+                      <SelectTrigger id="visibility">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="public">
+                          <div className="flex flex-col items-start">
+                            <span>Public</span>
+                            <span className="text-xs text-muted-foreground">Visible to everyone</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="team">
+                          <div className="flex flex-col items-start">
+                            <span>Team Only</span>
+                            <span className="text-xs text-muted-foreground">Visible to team members</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="private">
+                          <div className="flex flex-col items-start">
+                            <span>Private</span>
+                            <span className="text-xs text-muted-foreground">Only visible to you</span>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-4">
                     {[
-                      { date: 'Jan 1, 2024', amount: '$9.99', status: 'Paid' },
-                      { date: 'Dec 1, 2023', amount: '$9.99', status: 'Paid' },
-                      { date: 'Nov 1, 2023', amount: '$9.99', status: 'Paid' }
-                    ].map((invoice, i) => (
-                      <div key={i} className="flex items-center justify-between p-3 border rounded-lg">
+                      { key: 'showEmail', label: 'Show Email Address', desc: 'Display your email in your public profile' },
+                      { key: 'showPhoneNumber', label: 'Show Phone Number', desc: 'Display your phone number in team directory' },
+                      { key: 'activityStatus', label: 'Activity Status', desc: 'Show when you\'re online or last active' },
+                      { key: 'shareProgressPublicly', label: 'Public Progress Sharing', desc: 'Allow others to see your task completion stats' },
+                      { key: 'allowDirectMessages', label: 'Allow Direct Messages', desc: 'Let team members send you direct messages' }
+                    ].map(({ key, label, desc }) => (
+                      <div key={key} className="flex items-center justify-between p-3 rounded-lg border">
                         <div>
-                          <p className="text-sm font-medium">{invoice.date}</p>
-                          <p className="text-sm text-muted-foreground">{invoice.amount}</p>
+                          <Label htmlFor={key} className="text-base font-medium">
+                            {label}
+                          </Label>
+                          <p className="text-sm text-muted-foreground">
+                            {desc}
+                          </p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-green-600">
-                            {invoice.status}
-                          </Badge>
-                          <Button variant="ghost" size="sm">
-                            Download
-                          </Button>
-                        </div>
+                        <Switch
+                          id={key}
+                          checked={settings.privacy[key]}
+                          onCheckedChange={(checked) => setSettings({
+                            ...settings,
+                            privacy: { ...settings.privacy, [key]: checked }
+                          })}
+                        />
                       </div>
                     ))}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+
+              {/* Data & Analytics */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Database className="h-5 w-5" />
+                    Data & Analytics
+                  </CardTitle>
+                  <CardDescription>
+                    Manage how your data is used and shared
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {[
+                    { key: 'dataSharing', label: 'Analytics Data Sharing', desc: 'Help improve the product with anonymous usage data' },
+                    { key: 'searchEngineIndexing', label: 'Search Engine Indexing', desc: 'Allow search engines to index your public profile' },
+                    { key: 'downloadableData', label: 'Data Export', desc: 'Allow downloading your data in standard formats' }
+                  ].map(({ key, label, desc }) => (
+                    <div key={key} className="flex items-center justify-between p-3 rounded-lg border">
+                      <div>
+                        <Label htmlFor={key} className="text-base font-medium">
+                          {label}
+                        </Label>
+                        <p className="text-sm text-muted-foreground">
+                          {desc}
+                        </p>
+                      </div>
+                      <Switch
+                        id={key}
+                        checked={settings.privacy[key]}
+                        onCheckedChange={(checked) => setSettings({
+                          ...settings,
+                          privacy: { ...settings.privacy, [key]: checked }
+                        })}
+                      />
+                    </div>
+                  ))}
+
+                  <div className="space-y-2">
+                    <Label htmlFor="data-retention" className="text-base">Data Retention Period</Label>
+                    <Select
+                      value={settings.privacy.dataRetention}
+                      onValueChange={(value) => setSettings({
+                        ...settings,
+                        privacy: { ...settings.privacy, dataRetention: value }
+                      })}
+                    >
+                      <SelectTrigger id="data-retention">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1year">1 Year</SelectItem>
+                        <SelectItem value="2years">2 Years</SelectItem>
+                        <SelectItem value="5years">5 Years</SelectItem>
+                        <SelectItem value="forever">Forever</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      How long to keep your inactive data before automatic deletion
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Security Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Lock className="h-5 w-5" />
+                    Security Settings
+                  </CardTitle>
+                  <CardDescription>
+                    Enhance your account security
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 rounded-lg border">
+                      <div>
+                        <Label htmlFor="two-factor" className="text-base font-medium">
+                          Two-Factor Authentication
+                        </Label>
+                        <p className="text-sm text-muted-foreground">
+                          Add an extra layer of security to your account
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          id="two-factor"
+                          checked={settings.privacy.twoFactorAuth}
+                          onCheckedChange={(checked) => setSettings({
+                            ...settings,
+                            privacy: { ...settings.privacy, twoFactorAuth: checked }
+                          })}
+                        />
+                        {settings.privacy.twoFactorAuth && (
+                          <Button variant="outline" size="sm">
+                            Setup
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 rounded-lg border">
+                      <div>
+                        <Label htmlFor="login-notifications" className="text-base font-medium">
+                          Login Notifications
+                        </Label>
+                        <p className="text-sm text-muted-foreground">
+                          Get notified of new login attempts
+                        </p>
+                      </div>
+                      <Switch
+                        id="login-notifications"
+                        checked={settings.privacy.loginNotifications}
+                        onCheckedChange={(checked) => setSettings({
+                          ...settings,
+                          privacy: { ...settings.privacy, loginNotifications: checked }
+                        })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="session-timeout" className="text-base">Session Timeout</Label>
+                    <Select
+                      value={settings.privacy.sessionTimeout.toString()}
+                      onValueChange={(value) => setSettings({
+                        ...settings,
+                        privacy: { ...settings.privacy, sessionTimeout: parseInt(value) }
+                      })}
+                    >
+                      <SelectTrigger id="session-timeout">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="15">15 minutes</SelectItem>
+                        <SelectItem value="30">30 minutes</SelectItem>
+                        <SelectItem value="60">1 hour</SelectItem>
+                        <SelectItem value="240">4 hours</SelectItem>
+                        <SelectItem value="1440">24 hours</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      Automatically log out after this period of inactivity
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Account Management */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="h-5 w-5" />
+                    Account Management
+                  </CardTitle>
+                  <CardDescription>
+                    Export your data and manage account deletion
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="p-4 border rounded-lg">
+                      <h4 className="font-medium mb-2 flex items-center gap-2">
+                        <Download className="h-4 w-4" />
+                        Data Export
+                      </h4>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Download all your data in JSON format
+                      </p>
+                      <Button variant="outline" size="sm" className="w-full">
+                        Export All Data
+                      </Button>
+                    </div>
+                    
+                    <div className="p-4 border rounded-lg">
+                      <h4 className="font-medium mb-2 flex items-center gap-2">
+                        <Shield className="h-4 w-4" />
+                        Privacy Report
+                      </h4>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        See what data we collect about you
+                      </p>
+                      <Button variant="outline" size="sm" className="w-full">
+                        Generate Report
+                      </Button>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-4">
+                    <h4 className="font-medium text-red-600 flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4" />
+                      Danger Zone
+                    </h4>
+                    <div className="p-4 border border-red-200 rounded-lg bg-red-50 dark:bg-red-950">
+                      <div className="space-y-3">
+                        <div>
+                          <h5 className="font-medium text-red-800 dark:text-red-200">Account Deletion</h5>
+                          <p className="text-sm text-red-600 dark:text-red-300">
+                            Permanently delete your account and all associated data. This action cannot be undone.
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-red-600 border-red-600 hover:bg-red-600 hover:text-white"
+                          >
+                            <Trash className="h-4 w-4 mr-2" />
+                            Delete Account
+                          </Button>
+                          <div className="text-xs text-red-600 dark:text-red-300">
+                            {settings.privacy.accountDeletion.deleteAfterDays} day grace period
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end">
+                    <Button 
+                      onClick={() => handleSave('privacy', settings.privacy)} 
+                      disabled={isSaving}
+                      size="lg"
+                    >
+                      {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                      {!isSaving && <Save className="h-4 w-4 mr-2" />}
+                      Save Privacy Settings
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
+
         </Tabs>
       </div>
     </div>

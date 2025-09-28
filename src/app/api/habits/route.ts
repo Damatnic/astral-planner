@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     try {
       accountData = getAccountData(userId);
     } catch (accountError) {
-      console.error('Failed to get account data:', accountError);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to get account data:', accountError);
       return NextResponse.json(
         { error: 'Failed to retrieve account data', habits: [], stats: {} },
         { status: 200 } // Return 200 with empty data instead of 500
@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Failed to fetch habits:', error);
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to fetch habits:', error);
     return NextResponse.json(
       { 
         error: 'Failed to fetch habits', 
@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
       message: 'Habit created successfully'
     });
   } catch (error) {
-    console.error('Failed to create habit:', error);
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to create habit:', error);
     return NextResponse.json(
       { error: 'Failed to create habit' },
       { status: 500 }
@@ -141,7 +141,7 @@ export async function PATCH(req: NextRequest) {
       message: completed ? 'Habit completed!' : 'Habit updated'
     });
   } catch (error) {
-    console.error('Failed to log habit:', error);
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to log habit:', error);
     return NextResponse.json(
       { error: 'Failed to log habit' },
       { status: 500 }
@@ -171,7 +171,7 @@ export async function DELETE(req: NextRequest) {
       habitId
     });
   } catch (error) {
-    console.error('Failed to delete habit:', error);
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to delete habit:', error);
     return NextResponse.json(
       { error: 'Failed to delete habit' },
       { status: 500 }

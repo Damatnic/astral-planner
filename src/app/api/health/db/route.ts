@@ -34,7 +34,7 @@ export async function GET() {
       database: 'neon-postgresql'
     });
   } catch (error) {
-    console.error('Database health check failed:', error);
+    // TODO: Replace with proper logging - console.error('Database health check failed:', error);
     return NextResponse.json(
       { 
         ok: false, 

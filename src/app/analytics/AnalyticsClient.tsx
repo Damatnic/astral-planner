@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import {
   BarChart3,
@@ -29,28 +29,31 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import {
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  PieChart as RePieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar
-} from 'recharts';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Dynamic imports for better performance
+const DynamicCharts = {
+  ResponsiveContainer: null as any,
+  LineChart: null as any,
+  Line: null as any,
+  AreaChart: null as any,
+  Area: null as any,
+  BarChart: null as any,
+  Bar: null as any,
+  PieChart: null as any,
+  Pie: null as any,
+  Cell: null as any,
+  XAxis: null as any,
+  YAxis: null as any,
+  CartesianGrid: null as any,
+  Tooltip: null as any,
+  Legend: null as any,
+  RadarChart: null as any,
+  PolarGrid: null as any,
+  PolarAngleAxis: null as any,
+  PolarRadiusAxis: null as any,
+  Radar: null as any,
+};
 
 // Mock data - would come from API
 const productivityData = [
@@ -99,365 +102,424 @@ const focusPatterns = [
   { hour: '2PM', productivity: 70 },
   { hour: '3PM', productivity: 80 },
   { hour: '4PM', productivity: 75 },
-  { hour: '5PM', productivity: 55 },
-  { hour: '6PM', productivity: 30 },
+  { hour: '5PM', productivity: 50 },
+  { hour: '6PM', productivity: 35 },
   { hour: '7PM', productivity: 25 }
 ];
 
-const weeklyStats = {
-  tasksCompleted: 89,
-  totalTasks: 105,
-  focusTime: 28.5,
-  targetFocus: 35,
-  productivityScore: 82,
-  previousScore: 78,
-  streakDays: 21,
-  longestStreak: 45
-};
-
 const skillsRadar = [
-  { skill: 'Focus', A: 85, fullMark: 100 },
-  { skill: 'Consistency', A: 75, fullMark: 100 },
-  { skill: 'Planning', A: 90, fullMark: 100 },
-  { skill: 'Execution', A: 80, fullMark: 100 },
-  { skill: 'Balance', A: 70, fullMark: 100 },
-  { skill: 'Growth', A: 85, fullMark: 100 }
+  { skill: 'Time Management', A: 80, B: 90, fullMark: 100 },
+  { skill: 'Focus', A: 90, B: 85, fullMark: 100 },
+  { skill: 'Productivity', A: 75, B: 80, fullMark: 100 },
+  { skill: 'Planning', A: 85, B: 70, fullMark: 100 },
+  { skill: 'Execution', A: 70, B: 85, fullMark: 100 },
+  { skill: 'Balance', A: 60, B: 75, fullMark: 100 }
 ];
 
-export default function AnalyticsPage() {
-  const [timeRange, setTimeRange] = useState('week');
-  const [view, setView] = useState('overview');
+// Chart skeleton component
+const ChartSkeleton = ({ height = 300 }: { height?: number }) => (
+  <div className="w-full space-y-3" style={{ height }}>
+    <div className="flex justify-between items-center">
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-4 w-16" />
+    </div>
+    <Skeleton className="h-full w-full rounded-lg" />
+  </div>
+);
+
+// Smart chart component that loads charts only when needed
+const SmartChart = ({ type, data, config, height = 300 }: {
+  type: 'area' | 'pie' | 'bar' | 'radar';
+  data: any;
+  config: any;
+  height?: number;
+}) => {
+  const [chartsLoaded, setChartsLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!chartsLoaded && !loading) {
+      setLoading(true);
+      import('recharts').then((recharts) => {
+        DynamicCharts.ResponsiveContainer = recharts.ResponsiveContainer;
+        DynamicCharts.LineChart = recharts.LineChart;
+        DynamicCharts.Line = recharts.Line;
+        DynamicCharts.AreaChart = recharts.AreaChart;
+        DynamicCharts.Area = recharts.Area;
+        DynamicCharts.BarChart = recharts.BarChart;
+        DynamicCharts.Bar = recharts.Bar;
+        DynamicCharts.PieChart = recharts.PieChart;
+        DynamicCharts.Pie = recharts.Pie;
+        DynamicCharts.Cell = recharts.Cell;
+        DynamicCharts.XAxis = recharts.XAxis;
+        DynamicCharts.YAxis = recharts.YAxis;
+        DynamicCharts.CartesianGrid = recharts.CartesianGrid;
+        DynamicCharts.Tooltip = recharts.Tooltip;
+        DynamicCharts.Legend = recharts.Legend;
+        DynamicCharts.RadarChart = recharts.RadarChart;
+        DynamicCharts.PolarGrid = recharts.PolarGrid;
+        DynamicCharts.PolarAngleAxis = recharts.PolarAngleAxis;
+        DynamicCharts.PolarRadiusAxis = recharts.PolarRadiusAxis;
+        DynamicCharts.Radar = recharts.Radar;
+        setChartsLoaded(true);
+        setLoading(false);
+      });
+    }
+  }, [chartsLoaded, loading]);
+
+  if (!chartsLoaded) {
+    return <ChartSkeleton height={height} />;
+  }
+
+  // Pre-destructure all components to avoid scoping conflicts
+  const {
+    ResponsiveContainer,
+    AreaChart,
+    Area,
+    CartesianGrid,
+    XAxis,
+    YAxis,
+    Tooltip,
+    PieChart,
+    Pie,
+    Cell,
+    BarChart,
+    Bar,
+    RadarChart,
+    PolarGrid,
+    PolarAngleAxis,
+    PolarRadiusAxis,
+    Radar
+  } = DynamicCharts;
+
+  switch (type) {
+    case 'area':
+      return (
+        <ResponsiveContainer width="100%" height={height}>
+          <AreaChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey={config.xKey} />
+            <YAxis />
+            <Tooltip />
+            <Area 
+              type="monotone" 
+              dataKey={config.dataKey} 
+              stroke={config.color} 
+              fill={config.color} 
+              fillOpacity={0.3}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      );
+
+    case 'pie':
+      return (
+        <ResponsiveContainer width="100%" height={height}>
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              outerRadius={80}
+              fill="#8884d8"
+              dataKey="value"
+              label={({ category, percent }: any) => `${category} ${(percent * 100).toFixed(0)}%`}
+            >
+              {data.map((entry: any, index: number) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </ResponsiveContainer>
+      );
+
+    case 'bar':
+      return (
+        <ResponsiveContainer width="100%" height={height}>
+          <BarChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey={config.xKey} />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey={config.dataKey} fill={config.color} radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      );
+
+    case 'radar':
+      return (
+        <ResponsiveContainer width="100%" height={height}>
+          <RadarChart data={data}>
+            <PolarGrid />
+            <PolarAngleAxis dataKey="skill" />
+            <PolarRadiusAxis angle={90} domain={[0, 100]} />
+            <Radar 
+              name="Current" 
+              dataKey="A" 
+              stroke="#3b82f6" 
+              fill="#3b82f6" 
+              fillOpacity={0.6} 
+            />
+            <Tooltip />
+          </RadarChart>
+        </ResponsiveContainer>
+      );
+
+    default:
+      return <ChartSkeleton height={height} />;
+  }
+};
+
+export default function AnalyticsClient() {
+  const [selectedTimeRange, setSelectedTimeRange] = useState('week');
+  const [chartsLoaded, setChartsLoaded] = useState(true); // Start with charts loaded to remove skeleton states
+
+  const stats = [
+    {
+      title: 'Productivity Score',
+      value: '87%',
+      change: '+12%',
+      trend: 'up',
+      icon: TrendingUp,
+      color: 'text-green-600'
+    },
+    {
+      title: 'Tasks Completed',
+      value: '142',
+      change: '+8',
+      trend: 'up',
+      icon: Target,
+      color: 'text-blue-600'
+    },
+    {
+      title: 'Focus Time',
+      value: '28.5h',
+      change: '+3.2h',
+      trend: 'up',
+      icon: Clock,
+      color: 'text-purple-600'
+    },
+    {
+      title: 'Active Days',
+      value: '23/30',
+      change: '+5',
+      trend: 'up',
+      icon: Calendar,
+      color: 'text-orange-600'
+    }
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      {/* Header */}
-      <div className="border-b bg-background/95 backdrop-blur">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-              <p className="text-muted-foreground mt-1">
-                Track your productivity and progress
-              </p>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <Select value={timeRange} onValueChange={setTimeRange}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="day">Today</SelectItem>
-                  <SelectItem value="week">This Week</SelectItem>
-                  <SelectItem value="month">This Month</SelectItem>
-                  <SelectItem value="year">This Year</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Button variant="outline">
-                <Filter className="h-4 w-4 mr-2" />
-                Filters
-              </Button>
-              
-              <Button>
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-8">
-        {/* Key Metrics */}
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto p-6 space-y-8">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8"
+          className="text-center space-y-4"
         >
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Productivity Score
-              </CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{weeklyStats.productivityScore}%</div>
-              <div className="flex items-center text-xs text-green-600 mt-2">
-                <TrendingUp className="h-3 w-3 mr-1" />
-                +{weeklyStats.productivityScore - weeklyStats.previousScore}% from last week
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Task Completion
-              </CardTitle>
-              <Target className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {weeklyStats.tasksCompleted}/{weeklyStats.totalTasks}
-              </div>
-              <Progress 
-                value={(weeklyStats.tasksCompleted / weeklyStats.totalTasks) * 100} 
-                className="mt-2"
-              />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Focus Time
-              </CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{weeklyStats.focusTime}h</div>
-              <div className="text-xs text-muted-foreground mt-2">
-                Target: {weeklyStats.targetFocus}h
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Current Streak
-              </CardTitle>
-              <Award className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">🔥 {weeklyStats.streakDays} days</div>
-              <div className="text-xs text-muted-foreground mt-2">
-                Best: {weeklyStats.longestStreak} days
-              </div>
-            </CardContent>
-          </Card>
+          <div className="flex items-center justify-center space-x-2">
+            <BarChart3 className="h-8 w-8 text-blue-600" />
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Analytics & Insights
+            </h1>
+          </div>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Deep insights into your productivity patterns, goal progress, and performance metrics.
+          </p>
         </motion.div>
 
-        {/* Tabs for different views */}
-        <Tabs value={view} onValueChange={setView} className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="productivity">Productivity</TabsTrigger>
-            <TabsTrigger value="goals">Goals</TabsTrigger>
-            <TabsTrigger value="habits">Habits</TabsTrigger>
-            <TabsTrigger value="insights">AI Insights</TabsTrigger>
-          </TabsList>
+        {/* Controls */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="flex items-center justify-between"
+        >
+          <div className="flex items-center space-x-4">
+            <Select value={selectedTimeRange} onValueChange={setSelectedTimeRange}>
+              <SelectTrigger className="w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="day">Today</SelectItem>
+                <SelectItem value="week">This Week</SelectItem>
+                <SelectItem value="month">This Month</SelectItem>
+                <SelectItem value="quarter">This Quarter</SelectItem>
+                <SelectItem value="year">This Year</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="outline" size="sm">
+              <Filter className="h-4 w-4 mr-2" />
+              Filters
+            </Button>
+          </div>
+          <Button>
+            <Download className="h-4 w-4 mr-2" />
+            Export Report
+          </Button>
+        </motion.div>
 
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid gap-6 lg:grid-cols-2">
-              {/* Productivity Trend */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Productivity Trend</CardTitle>
-                  <CardDescription>Your productivity score over time</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <AreaChart data={productivityData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="day" />
-                      <YAxis />
-                      <Tooltip />
-                      <Area 
-                        type="monotone" 
-                        dataKey="score" 
-                        stroke="#3b82f6" 
-                        fill="#3b82f6" 
-                        fillOpacity={0.2}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="tasks" 
-                        stroke="#10b981" 
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              {/* Time Distribution */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Time Distribution</CardTitle>
-                  <CardDescription>How you spend your time</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <RePieChart>
-                      <Pie
-                        data={timeDistribution}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={(entry) => `${entry.category}: ${entry.value}%`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {timeDistribution.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </RePieChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Focus Patterns */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Daily Focus Patterns</CardTitle>
-                <CardDescription>Your productivity throughout the day</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={focusPatterns}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="hour" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="productivity" fill="#3b82f6" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="productivity" className="space-y-6">
-            {/* Skills Radar */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Productivity Skills</CardTitle>
-                <CardDescription>Your strengths and areas for improvement</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={400}>
-                  <RadarChart data={skillsRadar}>
-                    <PolarGrid />
-                    <PolarAngleAxis dataKey="skill" />
-                    <PolarRadiusAxis angle={90} domain={[0, 100]} />
-                    <Radar 
-                      name="Current" 
-                      dataKey="A" 
-                      stroke="#3b82f6" 
-                      fill="#3b82f6" 
-                      fillOpacity={0.6} 
-                    />
-                    <Tooltip />
-                  </RadarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="goals" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Goal Progress</CardTitle>
-                <CardDescription>Track your progress towards your goals</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {goalProgress.map((goal) => (
-                    <div key={goal.goal}>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium">{goal.goal}</span>
-                        <span className="text-sm text-muted-foreground">
-                          {goal.current}%
-                        </span>
-                      </div>
-                      <Progress value={goal.current} className="h-3" />
-                    </div>
-                  ))}
+        {/* Stats Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        >
+          {stats.map((stat, index) => (
+            <Card key={index} className="relative overflow-hidden">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
+                    <p className="text-2xl font-bold">{stat.value}</p>
+                    <p className={`text-sm ${stat.color} flex items-center`}>
+                      {stat.trend === 'up' ? <TrendingUp className="h-3 w-3 mr-1" /> : null}
+                      {stat.change} from last week
+                    </p>
+                  </div>
+                  <div className={`p-3 rounded-full bg-gradient-to-r ${
+                    stat.color.includes('green') ? 'from-green-500 to-emerald-500' :
+                    stat.color.includes('blue') ? 'from-blue-500 to-cyan-500' :
+                    stat.color.includes('purple') ? 'from-purple-500 to-pink-500' :
+                    'from-orange-500 to-red-500'
+                  }`}>
+                    <stat.icon className="h-6 w-6 text-white" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          ))}
+        </motion.div>
 
-          <TabsContent value="habits" className="space-y-6">
-            <div className="grid gap-4">
-              {habitStreaks.map((habit) => (
-                <Card key={habit.habit}>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-semibold">{habit.habit}</h3>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {habit.consistency}% consistency
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold">
-                          {habit.streak === habit.best ? '🏆' : '🔥'} {habit.streak}
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          Best: {habit.best}
-                        </p>
-                      </div>
-                    </div>
-                    <Progress value={habit.consistency} className="mt-4" />
+        {/* Charts Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Tabs defaultValue="overview" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="productivity">Productivity</TabsTrigger>
+              <TabsTrigger value="goals">Goals</TabsTrigger>
+              <TabsTrigger value="habits">Habits</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="overview" className="space-y-6">
+              <div className="grid gap-6 lg:grid-cols-2">
+                {/* Productivity Trend */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Productivity Trend</CardTitle>
+                    <CardDescription>Your productivity score over time</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <SmartChart 
+                      type="area" 
+                      data={productivityData} 
+                      config={{ xKey: 'day', dataKey: 'score', color: '#3b82f6' }}
+                      height={300} 
+                    />
                   </CardContent>
                 </Card>
-              ))}
-            </div>
-          </TabsContent>
 
-          <TabsContent value="insights" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Brain className="h-5 w-5 text-primary" />
-                  AI-Generated Insights
-                </CardTitle>
-                <CardDescription>
-                  Personalized recommendations based on your data
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-                  <h4 className="font-medium mb-2">🎯 Peak Performance Time</h4>
-                  <p className="text-sm text-muted-foreground">
-                    You're most productive between 9-11 AM. Consider scheduling your most 
-                    important tasks during this window for optimal results.
-                  </p>
-                </div>
-                
-                <div className="p-4 rounded-lg bg-green-500/5 border border-green-500/20">
-                  <h4 className="font-medium mb-2">📈 Positive Trend</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Your productivity has increased by 5% this week. The main contributor 
-                    is your improved focus time management.
-                  </p>
-                </div>
-                
-                <div className="p-4 rounded-lg bg-yellow-500/5 border border-yellow-500/20">
-                  <h4 className="font-medium mb-2">💡 Suggestion</h4>
-                  <p className="text-sm text-muted-foreground">
-                    You tend to have lower energy after lunch. Try a 15-minute walk or 
-                    light exercise at 1 PM to boost afternoon productivity.
-                  </p>
-                </div>
-                
-                <div className="p-4 rounded-lg bg-purple-500/5 border border-purple-500/20">
-                  <h4 className="font-medium mb-2">🎉 Achievement Unlocked</h4>
-                  <p className="text-sm text-muted-foreground">
-                    You've maintained a 21-day streak! You're now in the top 10% of users 
-                    for consistency.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                {/* Time Distribution */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Time Distribution</CardTitle>
+                    <CardDescription>How you spend your time</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <SmartChart type="pie" data={timeDistribution} config={{}} height={300} />
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Focus Patterns */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Daily Focus Patterns</CardTitle>
+                  <CardDescription>Your productivity throughout the day</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <SmartChart 
+                    type="bar" 
+                    data={focusPatterns} 
+                    config={{ xKey: 'hour', dataKey: 'productivity', color: '#3b82f6' }}
+                    height={300} 
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="productivity" className="space-y-6">
+              {/* Skills Radar */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Productivity Skills</CardTitle>
+                  <CardDescription>Your strengths and areas for improvement</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <SmartChart type="radar" data={skillsRadar} config={{}} height={400} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="goals" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Goal Progress</CardTitle>
+                  <CardDescription>Track your progress towards your goals</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {goalProgress.map((goal) => (
+                      <div key={goal.goal}>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium">{goal.goal}</span>
+                          <span className="text-sm text-muted-foreground">
+                            {goal.current}% / {goal.target}%
+                          </span>
+                        </div>
+                        <Progress value={goal.current} className="h-2" />
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="habits" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Habit Streaks</CardTitle>
+                  <CardDescription>Your current streaks and consistency</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {habitStreaks.map((habit) => (
+                      <div key={habit.habit} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div>
+                          <h4 className="font-medium">{habit.habit}</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Current streak: {habit.streak} days
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-lg font-bold text-green-600">{habit.consistency}%</div>
+                          <div className="text-xs text-muted-foreground">Consistency</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </motion.div>
       </div>
     </div>
   );

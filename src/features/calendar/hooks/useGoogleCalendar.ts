@@ -152,7 +152,7 @@ export function useGoogleCalendar() {
     },
     onError: (error) => {
       setIsConnecting(false);
-      console.error('Failed to initiate Google Calendar connection:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to initiate Google Calendar connection:', error);
       toast.error('Failed to connect to Google Calendar');
     },
   });
@@ -165,7 +165,7 @@ export function useGoogleCalendar() {
       toast.success('Calendar synced successfully');
     },
     onError: (error) => {
-      console.error('Failed to sync calendar:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to sync calendar:', error);
       toast.error('Failed to sync calendar');
     },
   });
@@ -177,7 +177,7 @@ export function useGoogleCalendar() {
       toast.success('Event created in Google Calendar');
     },
     onError: (error) => {
-      console.error('Failed to create Google Calendar event:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to create Google Calendar event:', error);
       toast.error('Failed to create event in Google Calendar');
     },
   });
@@ -193,7 +193,7 @@ export function useGoogleCalendar() {
       toast.success('Event updated in Google Calendar');
     },
     onError: (error) => {
-      console.error('Failed to update Google Calendar event:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to update Google Calendar event:', error);
       toast.error('Failed to update event in Google Calendar');
     },
   });
@@ -206,7 +206,7 @@ export function useGoogleCalendar() {
       toast.success('Event deleted from Google Calendar');
     },
     onError: (error) => {
-      console.error('Failed to delete Google Calendar event:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to delete Google Calendar event:', error);
       toast.error('Failed to delete event from Google Calendar');
     },
   });

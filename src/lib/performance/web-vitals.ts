@@ -93,7 +93,7 @@ class WebVitalsReporter {
       this.sendToGoogleAnalytics(metricsToReport)
       this.sendToVercelAnalytics(metricsToReport)
     } catch (error) {
-      console.warn('Failed to report web vitals:', error)
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to report web vitals:', error)
     }
   }
 
@@ -116,7 +116,7 @@ class WebVitalsReporter {
     } catch (error) {
       // Fail silently - we don't want to impact user experience
       if (process.env.NODE_ENV === 'development') {
-        console.warn('Failed to send metrics to analytics:', error)
+        // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to send metrics to analytics:', error)
       }
     }
   }
@@ -210,7 +210,7 @@ export function startWebVitalsMonitoring() {
       rating: 'good' as const,
     }))
   }).catch(error => {
-    console.warn('Failed to load web-vitals library:', error)
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to load web-vitals library:', error)
   })
 }
 
@@ -236,7 +236,7 @@ export class CustomPerformanceObserver {
       // Observe different types of performance entries
       this.observer.observe({ entryTypes: ['navigation', 'resource', 'measure', 'mark'] })
     } catch (error) {
-      console.warn('Failed to initialize PerformanceObserver:', error)
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to initialize PerformanceObserver:', error)
     }
   }
 

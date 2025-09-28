@@ -1,25 +1,46 @@
-// Catalyst Dynamic Font Loading System
+// Catalyst Dynamic Font Loading System - Enhanced Performance
 import { cache } from 'react';
+
+// Font display strategies for optimal performance
+type FontDisplay = 'auto' | 'block' | 'swap' | 'fallback' | 'optional';
+
+// Performance metrics for font loading
+interface FontMetrics {
+  loadTime: number;
+  renderTime: number;
+  swapTime: number;
+  size: number;
+}
 
 interface FontConfig {
   name: string;
   variable: string;
   weights?: string[];
   fallback: string[];
+  display?: FontDisplay;
+  preload?: boolean;
+  unicodeRange?: string;
+  fontStretch?: string;
+  fontStyle?: 'normal' | 'italic' | 'oblique';
 }
 
-// Font definitions for lazy loading
+// Font definitions for lazy loading with performance optimizations
 const AVAILABLE_FONTS: Record<string, FontConfig> = {
   'dancing-script': {
     name: 'Dancing Script',
     variable: '--font-dancing-script',
-    fallback: ['cursive', 'Caveat', 'serif']
+    fallback: ['cursive', 'Caveat', 'serif'],
+    display: 'swap',
+    preload: true,
+    unicodeRange: 'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD'
   },
   'kalam': {
     name: 'Kalam',
     variable: '--font-kalam',
     weights: ['300', '400', '700'],
-    fallback: ['cursive', 'Caveat', 'sans-serif']
+    fallback: ['cursive', 'Caveat', 'sans-serif'],
+    display: 'swap',
+    preload: false
   },
   'architects-daughter': {
     name: 'Architects Daughter',
@@ -64,7 +85,7 @@ export const loadFontAsync = cache(async (fontKey: string): Promise<void> => {
 
   const config = AVAILABLE_FONTS[fontKey];
   if (!config) {
-    console.warn(`Font ${fontKey} not found in configuration`);
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn(`Font ${fontKey} not found in configuration`);
     return;
   }
 
@@ -103,7 +124,7 @@ export const loadFontAsync = cache(async (fontKey: string): Promise<void> => {
         resolve();
       })
       .catch(error => {
-        console.warn(`Failed to load font ${fontKey}:`, error);
+        // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn(`Failed to load font ${fontKey}:`, error);
         // Use fallback fonts
         document.documentElement.style.setProperty(
           config.variable,

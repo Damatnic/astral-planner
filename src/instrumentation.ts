@@ -8,3 +8,11 @@ export async function register() {
   //   await import('../sentry.edge.config')
   // }
 }
+
+// Add required onRequestError hook for Next.js 15 Sentry compatibility
+export async function onRequestError(err: any, request: any, context: any) {
+  // Temporarily disabled but hook is present to prevent Sentry warnings
+  if (process.env.NODE_ENV === 'development') {
+    console.warn('Request error captured:', err.message);
+  }
+}

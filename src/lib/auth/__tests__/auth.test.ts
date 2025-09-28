@@ -4,7 +4,7 @@
  */
 
 import { NextRequest } from 'next/server';
-import { getUserFromRequest, requireAuth, getUserId, withAuth, getTestUser, getUserForRequest } from '../auth';
+import { getUserFromRequest, requireAuth, getUserId, withAuth, getTestUser, getUserForRequest } from '../../auth';
 import Logger, { AppError } from '../../logger';
 
 // Mock fetch globally
@@ -17,9 +17,14 @@ jest.mock('../../logger', () => ({
   warn: jest.fn(),
   info: jest.fn(),
   AppError: class MockAppError extends Error {
-    constructor(message: string, public statusCode: number, public isOperational: boolean) {
+    statusCode: number;
+    isOperational: boolean;
+    
+    constructor(message: string, statusCode: number, isOperational: boolean) {
       super(message);
       this.name = 'AppError';
+      this.statusCode = statusCode;
+      this.isOperational = isOperational;
     }
   }
 }));
@@ -47,7 +52,7 @@ describe('Authentication Module', () => {
       
       // Re-import to get updated environment
       jest.resetModules();
-      const { getUserFromRequest } = require('../auth');
+      const { getUserFromRequest } = require('../../auth');
       
       expect(getUserFromRequest).toBeDefined();
     });
@@ -60,7 +65,7 @@ describe('Authentication Module', () => {
       // Should not throw and should warn about disabled auth
       expect(() => {
         jest.resetModules();
-        require('../auth');
+        require('../../auth');
       }).not.toThrow();
     });
   });
@@ -90,7 +95,7 @@ describe('Authentication Module', () => {
     it('should return null when Stack Auth is not configured', async () => {
       delete process.env.STACK_PROJECT_ID;
       jest.resetModules();
-      const { getUserFromRequest } = require('../auth');
+      const { getUserFromRequest } = require('../../auth');
       
       const request = createMockRequest();
       const result = await getUserFromRequest(request);
@@ -332,12 +337,12 @@ describe('Authentication Module', () => {
       };
 
       // Mock getUserFromRequest to return a user
-      jest.doMock('../auth', () => ({
-        ...jest.requireActual('../auth'),
+      jest.doMock('../../auth', () => ({
+        ...jest.requireActual('../../auth'),
         getUserFromRequest: jest.fn().mockResolvedValue(mockUser)
       }));
 
-      const { requireAuth } = require('../auth');
+      const { requireAuth } = require('../../auth');
       const request = {} as NextRequest;
 
       const result = await requireAuth(request);
@@ -347,12 +352,12 @@ describe('Authentication Module', () => {
 
     it('should throw AppError when not authenticated', async () => {
       // Mock getUserFromRequest to return null
-      jest.doMock('../auth', () => ({
-        ...jest.requireActual('../auth'),
+      jest.doMock('../../auth', () => ({
+        ...jest.requireActual('../../auth'),
         getUserFromRequest: jest.fn().mockResolvedValue(null)
       }));
 
-      const { requireAuth } = require('../auth');
+      const { requireAuth } = require('../../auth');
       const request = {} as NextRequest;
 
       await expect(requireAuth(request)).rejects.toThrow(AppError);
@@ -377,12 +382,12 @@ describe('Authentication Module', () => {
         updatedAt: new Date()
       };
 
-      jest.doMock('../auth', () => ({
-        ...jest.requireActual('../auth'),
+      jest.doMock('../../auth', () => ({
+        ...jest.requireActual('../../auth'),
         getUserFromRequest: jest.fn().mockResolvedValue(mockUser)
       }));
 
-      const { getUserId } = require('../auth');
+      const { getUserId } = require('../../auth');
       const request = {} as NextRequest;
 
       const result = await getUserId(request);
@@ -391,12 +396,12 @@ describe('Authentication Module', () => {
     });
 
     it('should return null when not authenticated', async () => {
-      jest.doMock('../auth', () => ({
-        ...jest.requireActual('../auth'),
+      jest.doMock('../../auth', () => ({
+        ...jest.requireActual('../../auth'),
         getUserFromRequest: jest.fn().mockResolvedValue(null)
       }));
 
-      const { getUserId } = require('../auth');
+      const { getUserId } = require('../../auth');
       const request = {} as NextRequest;
 
       const result = await getUserId(request);
@@ -420,12 +425,12 @@ describe('Authentication Module', () => {
 
       const mockHandler = jest.fn().mockResolvedValue(new Response('Success'));
 
-      jest.doMock('../auth', () => ({
-        ...jest.requireActual('../auth'),
+      jest.doMock('../../auth', () => ({
+        ...jest.requireActual('../../auth'),
         requireAuth: jest.fn().mockResolvedValue(mockUser)
       }));
 
-      const { withAuth } = require('../auth');
+      const { withAuth } = require('../../auth');
       const request = {} as NextRequest;
 
       const wrappedHandler = withAuth(mockHandler);
@@ -438,12 +443,12 @@ describe('Authentication Module', () => {
     it('should return 401 when not authenticated', async () => {
       const mockHandler = jest.fn();
 
-      jest.doMock('../auth', () => ({
-        ...jest.requireActual('../auth'),
+      jest.doMock('../../auth', () => ({
+        ...jest.requireActual('../../auth'),
         requireAuth: jest.fn().mockRejectedValue(new AppError('Authentication required', 401, true))
       }));
 
-      const { withAuth } = require('../auth');
+      const { withAuth } = require('../../auth');
       const request = {} as NextRequest;
 
       const wrappedHandler = withAuth(mockHandler);
@@ -460,12 +465,12 @@ describe('Authentication Module', () => {
     it('should return 500 on internal error', async () => {
       const mockHandler = jest.fn();
 
-      jest.doMock('../auth', () => ({
-        ...jest.requireActual('../auth'),
+      jest.doMock('../../auth', () => ({
+        ...jest.requireActual('../../auth'),
         requireAuth: jest.fn().mockRejectedValue(new Error('Internal error'))
       }));
 
-      const { withAuth } = require('../auth');
+      const { withAuth } = require('../../auth');
       const request = {} as NextRequest;
 
       const wrappedHandler = withAuth(mockHandler);
@@ -521,12 +526,12 @@ describe('Authentication Module', () => {
         updatedAt: new Date()
       };
 
-      jest.doMock('../auth', () => ({
-        ...jest.requireActual('../auth'),
+      jest.doMock('../../auth', () => ({
+        ...jest.requireActual('../../auth'),
         getUserFromRequest: jest.fn().mockResolvedValue(mockUser)
       }));
 
-      const { getUserForRequest } = require('../auth');
+      const { getUserForRequest } = require('../../auth');
       const request = {} as NextRequest;
 
       const result = await getUserForRequest(request);
@@ -538,12 +543,12 @@ describe('Authentication Module', () => {
       process.env.NODE_ENV = 'development';
       process.env.ENABLE_TEST_USER = 'true';
 
-      jest.doMock('../auth', () => ({
-        ...jest.requireActual('../auth'),
+      jest.doMock('../../auth', () => ({
+        ...jest.requireActual('../../auth'),
         getUserFromRequest: jest.fn().mockResolvedValue(null)
       }));
 
-      const { getUserForRequest } = require('../auth');
+      const { getUserForRequest } = require('../../auth');
       const request = {} as NextRequest;
 
       const result = await getUserForRequest(request);
@@ -566,12 +571,12 @@ describe('Authentication Module', () => {
       process.env.NODE_ENV = 'development';
       process.env.ENABLE_TEST_USER = 'false';
 
-      jest.doMock('../auth', () => ({
-        ...jest.requireActual('../auth'),
+      jest.doMock('../../auth', () => ({
+        ...jest.requireActual('../../auth'),
         getUserFromRequest: jest.fn().mockResolvedValue(null)
       }));
 
-      const { getUserForRequest } = require('../auth');
+      const { getUserForRequest } = require('../../auth');
       const request = {} as NextRequest;
 
       const result = await getUserForRequest(request);
@@ -594,12 +599,12 @@ describe('Authentication Module', () => {
         updatedAt: new Date()
       };
 
-      jest.doMock('../auth', () => ({
-        ...jest.requireActual('../auth'),
+      jest.doMock('../../auth', () => ({
+        ...jest.requireActual('../../auth'),
         getUserFromRequest: jest.fn().mockResolvedValue(realUser)
       }));
 
-      const { getUserForRequest } = require('../auth');
+      const { getUserForRequest } = require('../../auth');
       const request = {} as NextRequest;
 
       const result = await getUserForRequest(request);

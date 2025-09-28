@@ -1,0 +1,761 @@
+{
+  "config": {
+    "configFile": "C:\\Users\\damat\\_REPOS\\ASTRAL_PLANNER\\playwright.config.ts",
+    "rootDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "C:\\Users\\damat\\_REPOS\\ASTRAL_PLANNER\\tests\\e2e\\global-setup.ts",
+    "globalTeardown": "C:\\Users\\damat\\_REPOS\\ASTRAL_PLANNER\\tests\\e2e\\global-teardown.ts",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 16
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "junit-e2e.xml"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/e2e-results.json"
+        }
+      ],
+      [
+        "list",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/test-results/e2e",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 16
+        },
+        "id": "setup",
+        "name": "setup",
+        "testDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/.*\\.setup\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/test-results/e2e",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 16
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/test-results/e2e",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 16
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/test-results/e2e",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 16
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/test-results/e2e",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 16
+        },
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/test-results/e2e",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 16
+        },
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
+        "testDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/test-results/e2e",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 16
+        },
+        "id": "Microsoft Edge",
+        "name": "Microsoft Edge",
+        "testDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/test-results/e2e",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 16
+        },
+        "id": "Google Chrome",
+        "name": "Google Chrome",
+        "testDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/test-results/e2e",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 16
+        },
+        "id": "auth-tests-chromium",
+        "name": "auth-tests-chromium",
+        "testDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/auth\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/test-results/e2e",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 16
+        },
+        "id": "auth-tests-firefox",
+        "name": "auth-tests-firefox",
+        "testDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/auth\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/test-results/e2e",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 16
+        },
+        "id": "security-tests",
+        "name": "security-tests",
+        "testDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/.*security.*\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/test-results/e2e",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 16
+        },
+        "id": "performance-tests",
+        "name": "performance-tests",
+        "testDir": "C:/Users/damat/_REPOS/ASTRAL_PLANNER/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/.*performance.*\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.1",
+    "workers": 16,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000,
+      "stdout": "ignore",
+      "stderr": "pipe"
+    }
+  },
+  "suites": [
+    {
+      "title": "auth.setup.ts",
+      "file": "auth.setup.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "authenticate with demo account",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "setup",
+              "projectName": "setup",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 18352,
+                  "error": {
+                    "message": "TimeoutError: page.waitForURL: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
+                    "stack": "TimeoutError: page.waitForURL: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n    at C:\\Users\\damat\\_REPOS\\ASTRAL_PLANNER\\tests\\e2e\\auth.setup.ts:73:14",
+                    "location": {
+                      "file": "C:\\Users\\damat\\_REPOS\\ASTRAL_PLANNER\\tests\\e2e\\auth.setup.ts",
+                      "column": 14,
+                      "line": 73
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 71 |\u001b[39m\n \u001b[90m 72 |\u001b[39m   \u001b[90m// Wait for authentication to complete\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 73 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForURL(url \u001b[33m=>\u001b[39m url\u001b[33m.\u001b[39mpathname \u001b[33m===\u001b[39m \u001b[32m'/'\u001b[39m \u001b[33m||\u001b[39m url\u001b[33m.\u001b[39mpathname\u001b[33m.\u001b[39mincludes(\u001b[32m'/dashboard'\u001b[39m)\u001b[33m,\u001b[39m {\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 74 |\u001b[39m     timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m\n \u001b[90m 75 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 76 |\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\damat\\_REPOS\\ASTRAL_PLANNER\\tests\\e2e\\auth.setup.ts",
+                        "column": 14,
+                        "line": 73
+                      },
+                      "message": "TimeoutError: page.waitForURL: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n\n  71 |\n  72 |   // Wait for authentication to complete\n> 73 |   await page.waitForURL(url => url.pathname === '/' || url.pathname.includes('/dashboard'), {\n     |              ^\n  74 |     timeout: 10000\n  75 |   });\n  76 |\n    at C:\\Users\\damat\\_REPOS\\ASTRAL_PLANNER\\tests\\e2e\\auth.setup.ts:73:14"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-09-28T00:25:42.348Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Users\\damat\\_REPOS\\ASTRAL_PLANNER\\test-results\\e2e\\auth.setup.ts-authenticate-with-demo-account-setup\\test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "C:\\Users\\damat\\_REPOS\\ASTRAL_PLANNER\\test-results\\e2e\\auth.setup.ts-authenticate-with-demo-account-setup\\video.webm"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Users\\damat\\_REPOS\\ASTRAL_PLANNER\\test-results\\e2e\\auth.setup.ts-authenticate-with-demo-account-setup\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Users\\damat\\_REPOS\\ASTRAL_PLANNER\\tests\\e2e\\auth.setup.ts",
+                    "column": 14,
+                    "line": 73
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "17e3fe6f4d9d8bd79c6b-41b7e6225ec185b843a0",
+          "file": "auth.setup.ts",
+          "line": 10,
+          "column": 6
+        }
+      ]
+    },
+    {
+      "title": "demo-account.e2e.test.ts",
+      "file": "demo-account.e2e.test.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Demo Account E2E Tests",
+          "file": "demo-account.e2e.test.ts",
+          "line": 119,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Authentication Flow",
+              "file": "demo-account.e2e.test.ts",
+              "line": 126,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should login with demo account PIN 0000",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "44de2f9547e151b99e85-0b38e5f1284814e2086c",
+                  "file": "demo-account.e2e.test.ts",
+                  "line": 127,
+                  "column": 9
+                },
+                {
+                  "title": "should maintain authentication across page reloads",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "44de2f9547e151b99e85-15fa9773050cad9381ef",
+                  "file": "demo-account.e2e.test.ts",
+                  "line": 136,
+                  "column": 9
+                },
+                {
+                  "title": "should persist authentication across browser sessions",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "44de2f9547e151b99e85-b397ee27b9020dc89fd3",
+                  "file": "demo-account.e2e.test.ts",
+                  "line": 149,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Dashboard Functionality",
+              "file": "demo-account.e2e.test.ts",
+              "line": 167,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should display dashboard after login",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "44de2f9547e151b99e85-46d75ec33a8c7131b80a",
+                  "file": "demo-account.e2e.test.ts",
+                  "line": 168,
+                  "column": 9
+                },
+                {
+                  "title": "should show demo user information",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "44de2f9547e151b99e85-c30754b58a12b1b1da25",
+                  "file": "demo-account.e2e.test.ts",
+                  "line": 178,
+                  "column": 9
+                },
+                {
+                  "title": "should handle navigation between sections",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "44de2f9547e151b99e85-b362283e0af12364c522",
+                  "file": "demo-account.e2e.test.ts",
+                  "line": 204,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Core Features",
+              "file": "demo-account.e2e.test.ts",
+              "line": 233,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should create and display tasks",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "44de2f9547e151b99e85-0916c67f103cc363d27f",
+                  "file": "demo-account.e2e.test.ts",
+                  "line": 234,
+                  "column": 9
+                },
+                {
+                  "title": "should access goals section",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "44de2f9547e151b99e85-e3181f1fc17a6f1386cb",
+                  "file": "demo-account.e2e.test.ts",
+                  "line": 250,
+                  "column": 9
+                },
+                {
+                  "title": "should access habits section",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "44de2f9547e151b99e85-7c8c59690b6b4bb7b848",
+                  "file": "demo-account.e2e.test.ts",
+                  "line": 262,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Error Handling",
+              "file": "demo-account.e2e.test.ts",
+              "line": 275,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should reject invalid PIN",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "44de2f9547e151b99e85-c2b0b40d81e47ce47593",
+                  "file": "demo-account.e2e.test.ts",
+                  "line": 276,
+                  "column": 9
+                },
+                {
+                  "title": "should handle network errors gracefully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "44de2f9547e151b99e85-933eff695c1ca85dd3d1",
+                  "file": "demo-account.e2e.test.ts",
+                  "line": 296,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Performance",
+              "file": "demo-account.e2e.test.ts",
+              "line": 310,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should load dashboard within acceptable time",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "44de2f9547e151b99e85-1ce157b39eb0384f93e4",
+                  "file": "demo-account.e2e.test.ts",
+                  "line": 311,
+                  "column": 9
+                },
+                {
+                  "title": "should handle multiple rapid navigations",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "44de2f9547e151b99e85-5f38684582941a62d119",
+                  "file": "demo-account.e2e.test.ts",
+                  "line": 323,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Mobile Responsiveness",
+              "file": "demo-account.e2e.test.ts",
+              "line": 344,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should work on mobile viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "44de2f9547e151b99e85-1498143bcebfe295d14a",
+                  "file": "demo-account.e2e.test.ts",
+                  "line": 345,
+                  "column": 9
+                },
+                {
+                  "title": "should maintain functionality on tablet viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "44de2f9547e151b99e85-2649b633ed686004accf",
+                  "file": "demo-account.e2e.test.ts",
+                  "line": 361,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Accessibility",
+              "file": "demo-account.e2e.test.ts",
+              "line": 373,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should be accessible with keyboard navigation",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "44de2f9547e151b99e85-0dd6897c8c94785f1a98",
+                  "file": "demo-account.e2e.test.ts",
+                  "line": 374,
+                  "column": 9
+                },
+                {
+                  "title": "should have proper ARIA labels",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "44de2f9547e151b99e85-926103e5eac4fe714ec1",
+                  "file": "demo-account.e2e.test.ts",
+                  "line": 389,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-09-28T00:25:29.435Z",
+    "duration": 31930.9,
+    "expected": 0,
+    "skipped": 17,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

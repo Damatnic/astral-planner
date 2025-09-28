@@ -283,7 +283,7 @@ class CatalystImageOptimizer {
           
           // Track slow-loading images
           if (loadTime > 1000) {
-            console.warn(`Slow image detected: ${entry.name} (${loadTime.toFixed(2)}ms)`);
+            // TODO: Replace with proper logging - console.warn(`Slow image detected: ${entry.name} (${loadTime.toFixed(2)}ms)`);
           }
         }
       });

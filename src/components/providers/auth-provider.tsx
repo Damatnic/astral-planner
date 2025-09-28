@@ -8,6 +8,7 @@ interface User {
   id: string;
   name: string;
   displayName: string;
+  email?: string;
   avatar?: string;
   theme: string;
   loginTime: string;
@@ -34,15 +35,17 @@ const PUBLIC_ROUTES = ['/login', '/'];
 const SESSION_REFRESH_INTERVAL = 14 * 60 * 1000;
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  // Initialize with hydration-safe defaults - server/client will match
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [sessionValid, setSessionValid] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const refreshTimeoutRef = useRef<NodeJS.Timeout>();
   const mountedRef = useRef(true);
 
-  const isAuthenticated = !!user && sessionValid;
+  const isAuthenticated = isHydrated && !!user && sessionValid;
   const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
 
   /**
@@ -90,7 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           scheduleRefresh(); // Schedule next refresh
         }
       } catch (error) {
-        console.warn('Scheduled session refresh failed:', error);
+        // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Scheduled session refresh failed:', error);
       }
     }, SESSION_REFRESH_INTERVAL);
   }, []);
@@ -119,7 +122,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (response.status === 401) {
-        console.warn('Refresh token expired');
+        // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Refresh token expired');
         clearAuthState();
         if (!isPublicRoute) {
           router.push('/login');
@@ -128,7 +131,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return false;
     } catch (error) {
-      console.error('Session refresh failed:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Session refresh failed:', error);
       setSessionValid(false);
       return false;
     }
@@ -153,6 +156,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             id: data.user.id,
             name: data.user.firstName ? `${data.user.firstName} ${data.user.lastName || ''}`.trim() : data.user.username,
             displayName: data.user.firstName || data.user.username,
+            email: data.user.emailAddress || data.user.email,
             avatar: data.user.imageUrl || (data.user.isDemo ? '🎯' : '👤'),
             theme: data.user.isDemo ? 'green' : 'blue',
             loginTime: new Date().toISOString(),
@@ -172,58 +176,63 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return false;
     } catch (error) {
-      console.error('Session verification failed:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Session verification failed:', error);
       return false;
     }
   }, []);
 
   /**
    * Check authentication status on mount and route changes
-   * STABLE DEPS TO PREVENT HOOK REORDERING ISSUES
+   * Hydration-safe with consistent initial state
    */
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Check for existing session
-        const storedUser = localStorage.getItem('current-user');
-        if (storedUser) {
-          const userData = JSON.parse(storedUser);
-          
-          // Verify session is still valid (within 24 hours)
-          const loginTime = new Date(userData.loginTime);
-          const now = new Date();
-          const timeDiff = now.getTime() - loginTime.getTime();
-          const hoursDiff = timeDiff / (1000 * 3600);
-          
-          if (hoursDiff >= 24) {
-            // Local session expired
-            clearAuthState();
-            if (!isPublicRoute) {
-              router.push('/login');
+        // Mark as hydrated first to ensure consistent state
+        setIsHydrated(true);
+        
+        // Check for existing session only on client
+        if (typeof window !== 'undefined') {
+          const storedUser = localStorage.getItem('current-user');
+          if (storedUser) {
+            const userData = JSON.parse(storedUser);
+            
+            // Verify session is still valid (within 24 hours)
+            const loginTime = new Date(userData.loginTime);
+            const now = new Date();
+            const timeDiff = now.getTime() - loginTime.getTime();
+            const hoursDiff = timeDiff / (1000 * 3600);
+            
+            if (hoursDiff >= 24) {
+              // Local session expired
+              clearAuthState();
+              if (!isPublicRoute) {
+                router.push('/login');
+              }
+              return;
             }
-            return;
-          }
 
-          // Set local user data first
-          setUser(userData);
-          
-          // Then verify with server
-          const verified = await verifySession();
-          if (verified) {
-            scheduleRefresh();
-          } else {
-            // Server session invalid
-            clearAuthState();
-            if (!isPublicRoute) {
-              router.push('/login');
+            // Set local user data first
+            setUser(userData);
+            
+            // Then verify with server
+            const verified = await verifySession();
+            if (verified) {
+              scheduleRefresh();
+            } else {
+              // Server session invalid
+              clearAuthState();
+              if (!isPublicRoute) {
+                router.push('/login');
+              }
             }
+          } else if (!isPublicRoute) {
+            // No session and trying to access protected route
+            router.push('/login');
           }
-        } else if (!isPublicRoute) {
-          // No session and trying to access protected route
-          router.push('/login');
         }
       } catch (error) {
-        console.error('Error checking session:', error);
+        console.warn('Error checking session:', error);
         clearAuthState();
         if (!isPublicRoute) {
           router.push('/login');
@@ -286,7 +295,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         headers: { 'Content-Type': 'application/json' },
       });
     } catch (error) {
-      console.warn('Logout API call failed:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Logout API call failed:', error);
     } finally {
       // Always clear local state regardless of API success
       clearAuthState();

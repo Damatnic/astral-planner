@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Package,
@@ -37,6 +37,7 @@ import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { format, parseISO } from 'date-fns';
+import { AppHeader } from '@/components/layout/AppHeader';
 
 interface Template {
   id: string;
@@ -99,11 +100,9 @@ const sortOptions = [
   { value: 'recent', label: 'Recently Added' }
 ];
 
-// Mock user for development without authentication (moved outside component to prevent recreating on every render)
 const MOCK_USER = { id: 'test-user', firstName: 'Test', lastName: 'User' };
 
-export default function TemplatesPage() {
-  // Mock user for development without authentication
+export default function TemplatesClient() {
   const user = MOCK_USER;
   const [data, setData] = useState<TemplatesData>({
     templates: [],
@@ -127,7 +126,6 @@ export default function TemplatesPage() {
     workspaceName: ''
   });
 
-  // Fetch templates data
   useEffect(() => {
     async function fetchTemplates() {
       if (!user) return;
@@ -157,7 +155,14 @@ export default function TemplatesPage() {
           throw new Error(result.error || 'Failed to fetch templates');
         }
       } catch (error) {
-        console.error('Failed to fetch templates:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.error('Template fetch failed:', {
+          error: errorMessage,
+          timestamp: new Date().toISOString(),
+          userId: 'current-user',
+          component: 'TemplatesClient',
+          action: 'fetchTemplates'
+        });
         setData(prev => ({
           ...prev,
           loading: false,
@@ -169,7 +174,6 @@ export default function TemplatesPage() {
     fetchTemplates();
   }, [user, category, sortBy, searchTerm, showMyTemplates]);
 
-  // Like/Unlike template
   async function handleToggleLike(templateId: string, currentlyLiked: boolean) {
     try {
       const method = currentlyLiked ? 'DELETE' : 'POST';
@@ -190,11 +194,18 @@ export default function TemplatesPage() {
         }));
       }
     } catch (error) {
-      console.error('Failed to toggle like:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Template like toggle failed:', {
+        error: errorMessage,
+        timestamp: new Date().toISOString(),
+        userId: 'current-user',
+        templateId: templateId,
+        component: 'TemplatesClient',
+        action: 'toggleLike'
+      });
     }
   }
 
-  // Install template
   async function handleInstallTemplate() {
     if (!selectedTemplate) return;
 
@@ -213,10 +224,8 @@ export default function TemplatesPage() {
         setShowInstallDialog(false);
         setSelectedTemplate(null);
         
-        // Show success message
         alert(`Template installed successfully! ${result.totalItems} items added.`);
         
-        // Mark template as used
         setData(prev => ({
           ...prev,
           templates: prev.templates.map(template =>
@@ -227,33 +236,26 @@ export default function TemplatesPage() {
         }));
       } else {
         const error = await response.json();
-        console.error('Failed to install template:', error);
         alert('Failed to install template. Please try again.');
       }
     } catch (error) {
-      console.error('Failed to install template:', error);
       alert('Failed to install template. Please try again.');
     }
   }
 
-  // Get category config
   function getCategoryConfig(categoryValue: string) {
     return templateCategories.find(c => c.value === categoryValue) || templateCategories[0];
   }
 
-  // Render template card
   function renderTemplateCard(template: Template) {
     const categoryConfig = getCategoryConfig(template.category);
 
     return (
       <Card key={template.id} className="group hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
         <CardContent className="p-4">
-          {/* Template Header */}
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-3">
-              <div 
-                className={`w-10 h-10 rounded-lg flex items-center justify-center text-lg bg-${categoryConfig.color}-100 text-${categoryConfig.color}-600`}
-              >
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-lg bg-${categoryConfig.color}-100 text-${categoryConfig.color}-600`}>
                 {categoryConfig.icon}
               </div>
               <div>
@@ -272,7 +274,6 @@ export default function TemplatesPage() {
             )}
           </div>
 
-          {/* Preview Image */}
           {template.previewImage ? (
             <div className="mb-3 overflow-hidden rounded-lg">
               <img 
@@ -287,12 +288,10 @@ export default function TemplatesPage() {
             </div>
           )}
 
-          {/* Description */}
           <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
             {template.description}
           </p>
 
-          {/* Tags */}
           <div className="flex flex-wrap gap-1 mb-3">
             {template.tags.slice(0, 3).map(tag => (
               <Badge key={tag} variant="outline" className="text-xs">
@@ -306,7 +305,6 @@ export default function TemplatesPage() {
             )}
           </div>
 
-          {/* Stats */}
           <div className="grid grid-cols-3 gap-2 mb-4 text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
               <Download className="h-3 w-3" />
@@ -322,7 +320,6 @@ export default function TemplatesPage() {
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex gap-2">
             <Button 
               variant="outline" 
@@ -378,38 +375,41 @@ export default function TemplatesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      {/* Header */}
-      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur">
-        <div className="container flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <Package className="h-6 w-6 text-primary" />
-              <span className="text-lg font-bold">Templates</span>
-            </Link>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" asChild>
-              <Link href="/templates/create">
-                <Plus className="h-4 w-4 mr-2" />
-                Create Template
-              </Link>
-            </Button>
-            <Button
-              variant={showMyTemplates ? "default" : "outline"}
-              size="sm"
-              onClick={() => setShowMyTemplates(!showMyTemplates)}
-            >
-              <Bookmark className="h-4 w-4 mr-2" />
-              My Templates
-            </Button>
+    <div className="min-h-screen bg-background">
+      <AppHeader />
+      
+      <div className="bg-background border-b">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Package className="h-8 w-8 text-primary" />
+              <div>
+                <h1 className="text-2xl font-bold">Templates</h1>
+                <p className="text-muted-foreground">Discover and create productivity templates</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/templates/create">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Template
+                </Link>
+              </Button>
+              <Button
+                variant={showMyTemplates ? "default" : "outline"}
+                size="sm"
+                onClick={() => setShowMyTemplates(!showMyTemplates)}
+              >
+                <Bookmark className="h-4 w-4 mr-2" />
+                My Templates
+              </Button>
+            </div>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="container mx-auto px-4 py-8">
-        {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -421,7 +421,6 @@ export default function TemplatesPage() {
             Jump-start your workflow with proven systems and structures.
           </p>
 
-          {/* Category Pills */}
           <div className="flex flex-wrap justify-center gap-2 mb-8">
             <Button
               variant={category === 'all' ? "default" : "outline"}
@@ -445,7 +444,6 @@ export default function TemplatesPage() {
           </div>
         </motion.div>
 
-        {/* Filters and Search */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <div className="flex-1">
             <div className="relative">
@@ -490,7 +488,6 @@ export default function TemplatesPage() {
           </div>
         </div>
 
-        {/* Results Count */}
         <div className="flex justify-between items-center mb-6">
           <p className="text-sm text-muted-foreground">
             {data.loading ? 'Loading...' : `${data.pagination.total} template${data.pagination.total !== 1 ? 's' : ''} found`}
@@ -500,7 +497,6 @@ export default function TemplatesPage() {
           )}
         </div>
 
-        {/* Templates Grid */}
         <div className="space-y-6">
           {data.loading ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -545,7 +541,6 @@ export default function TemplatesPage() {
           )}
         </div>
 
-        {/* Load More */}
         {data.pagination.hasMore && (
           <div className="text-center mt-8">
             <Button variant="outline">
@@ -554,16 +549,13 @@ export default function TemplatesPage() {
           </div>
         )}
 
-        {/* Template Preview Dialog */}
         <Dialog open={showPreviewDialog} onOpenChange={setShowPreviewDialog}>
           <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-3">
                 {selectedTemplate && (
                   <>
-                    <div 
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm bg-${getCategoryConfig(selectedTemplate.category).color}-100 text-${getCategoryConfig(selectedTemplate.category).color}-600`}
-                    >
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm bg-${getCategoryConfig(selectedTemplate.category).color}-100 text-${getCategoryConfig(selectedTemplate.category).color}-600`}>
                       {getCategoryConfig(selectedTemplate.category).icon}
                     </div>
                     {selectedTemplate.name}
@@ -582,7 +574,6 @@ export default function TemplatesPage() {
             
             {selectedTemplate && (
               <div className="space-y-6">
-                {/* Author Info */}
                 <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
                   <Avatar>
                     <AvatarImage src={selectedTemplate.creator?.imageUrl} />
@@ -598,7 +589,6 @@ export default function TemplatesPage() {
                   </div>
                 </div>
 
-                {/* Template Stats */}
                 <div className="grid grid-cols-4 gap-4 text-center">
                   <div className="p-3 bg-muted/50 rounded-lg">
                     <Download className="h-5 w-5 mx-auto mb-1 text-blue-600" />
@@ -622,7 +612,6 @@ export default function TemplatesPage() {
                   </div>
                 </div>
 
-                {/* Template Content Preview */}
                 <div className="space-y-4">
                   <h4 className="font-medium">What's included:</h4>
                   
@@ -675,7 +664,6 @@ export default function TemplatesPage() {
                   )}
                 </div>
 
-                {/* Tags */}
                 <div>
                   <h4 className="font-medium mb-2">Tags:</h4>
                   <div className="flex flex-wrap gap-2">
@@ -687,7 +675,6 @@ export default function TemplatesPage() {
 
                 <Separator />
 
-                {/* Action Buttons */}
                 <div className="flex gap-3">
                   <Button
                     variant="outline"
@@ -728,7 +715,6 @@ export default function TemplatesPage() {
           </DialogContent>
         </Dialog>
 
-        {/* Install Template Dialog */}
         <Dialog open={showInstallDialog} onOpenChange={setShowInstallDialog}>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>

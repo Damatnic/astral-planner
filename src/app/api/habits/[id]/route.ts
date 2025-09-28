@@ -21,7 +21,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       habitId: id
     });
   } catch (error) {
-    console.error('Failed to delete habit:', error);
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to delete habit:', error);
     return NextResponse.json(
       { error: 'Failed to delete habit' },
       { status: 500 }
@@ -87,7 +87,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       habit: demoHabit
     });
   } catch (error) {
-    console.error('Failed to fetch habit:', error);
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to fetch habit:', error);
     return NextResponse.json(
       { error: 'Failed to fetch habit' },
       { status: 500 }
@@ -139,7 +139,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       message: 'Habit updated successfully'
     });
   } catch (error) {
-    console.error('Failed to update habit:', error);
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to update habit:', error);
     return NextResponse.json(
       { error: 'Failed to update habit' },
       { status: 500 }

@@ -39,7 +39,7 @@ export function BackupRestore() {
         description: 'Your data has been exported successfully',
       })
     } catch (error) {
-      console.error('Backup error:', error)
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Backup error:', error)
       toast({
         title: 'Backup failed',
         description: 'Failed to create backup. Please try again.',
@@ -88,7 +88,7 @@ export function BackupRestore() {
         window.location.reload()
       }, 2000)
     } catch (error) {
-      console.error('Restore error:', error)
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Restore error:', error)
       toast({
         title: 'Restore failed',
         description: error instanceof Error ? error.message : 'Failed to restore backup',

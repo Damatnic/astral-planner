@@ -1,20 +1,37 @@
 // Jest setup file
-import '@testing-library/jest-dom'
+require('@testing-library/jest-dom')
 
-// Mock window.matchMedia (required for many UI components)
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn().mockImplementation(query => ({
+// Setup MSW for API mocking (temporarily disabled due to import issues)
+// import './src/test-utils/msw/server'
+
+// Mock window.matchMedia (required for many UI components) - only for browser environment
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: jest.fn().mockImplementation(query => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: jest.fn(), // deprecated
+      removeListener: jest.fn(), // deprecated
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      dispatchEvent: jest.fn(),
+    })),
+  })
+} else {
+  // For Node environment, create a global matchMedia mock
+  global.matchMedia = jest.fn().mockImplementation(query => ({
     matches: false,
     media: query,
     onchange: null,
-    addListener: jest.fn(), // deprecated
-    removeListener: jest.fn(), // deprecated
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
     dispatchEvent: jest.fn(),
-  })),
-})
+  }))
+}
 
 // Mock IntersectionObserver
 global.IntersectionObserver = jest.fn().mockImplementation(() => ({
@@ -65,25 +82,90 @@ jest.mock('@clerk/nextjs/server', () => ({
   }),
 }))
 
-jest.mock('@clerk/nextjs', () => ({
-  useAuth: () => ({
-    userId: 'test-user-id',
-    isSignedIn: true,
-    signOut: jest.fn(),
-  }),
-  useUser: () => ({
-    user: {
-      id: 'test-user-id',
+// Mock custom hooks
+jest.mock('@/hooks/use-auth', () => ({
+  useAuth: jest.fn(() => ({
+    user: null,
+    loading: false,
+    error: null,
+    isAuthenticated: false,
+    lockoutUntil: undefined,
+    attemptsRemaining: undefined,
+    login: jest.fn(),
+    logout: jest.fn(),
+    refreshSession: jest.fn(),
+    clearError: jest.fn(),
+  })),
+}), { virtual: true });
+
+jest.mock('@/hooks/use-onboarding', () => ({
+  useOnboarding: jest.fn(() => ({
+    isCompleted: true,
+    onboardingData: {
       firstName: 'Test',
       lastName: 'User',
-      emailAddresses: [{ emailAddress: 'test@example.com' }],
+      role: 'user',
+      goals: ['productivity'],
+      categories: ['work'],
+      planningStyle: 'daily',
+      enabledFeatures: ['tasks', 'habits'],
+      onboardingCompleted: true,
+      onboardingCompletedAt: '2023-01-01T00:00:00Z',
     },
-    isLoaded: true,
-  }),
-  SignIn: ({ children }) => children,
-  SignUp: ({ children }) => children,
-  UserButton: () => <div data-testid="user-button">User Button</div>,
-}))
+    isHydrated: true,
+    completeOnboarding: jest.fn(),
+    resetOnboarding: jest.fn(),
+  })),
+}), { virtual: true });
+
+// Mock UI Components and Error Boundary
+jest.mock('@/components/ui/error-boundary', () => {
+  const mockReact = require('react');
+  return {
+    MinimalErrorBoundary: ({ children, fallback }) => {
+      return mockReact.createElement('div', { 
+        'data-testid': 'error-boundary'
+      }, children);
+    },
+    ErrorBoundary: ({ children, fallback }) => {
+      return mockReact.createElement('div', { 
+        'data-testid': 'error-boundary'
+      }, children);
+    },
+  };
+}, { virtual: true });
+
+jest.mock('@/components/layout/AppHeader', () => {
+  const mockReact = require('react');
+  return {
+    AppHeader: () => mockReact.createElement('div', { 
+      'data-testid': 'app-header'
+    }, 'App Header'),
+  };
+}, { virtual: true });
+
+jest.mock('@clerk/nextjs', () => {
+  const React = require('react');
+  return {
+    useAuth: () => ({
+      userId: 'test-user-id',
+      isSignedIn: true,
+      signOut: jest.fn(),
+    }),
+    useUser: () => ({
+      user: {
+        id: 'test-user-id',
+        firstName: 'Test',
+        lastName: 'User',
+        emailAddresses: [{ emailAddress: 'test@example.com' }],
+      },
+      isLoaded: true,
+    }),
+    SignIn: ({ children }) => children,
+    SignUp: ({ children }) => children,
+    UserButton: () => React.createElement('div', { 'data-testid': 'user-button' }, 'User Button'),
+  };
+})
 
 // Mock React Query
 jest.mock('@tanstack/react-query', () => ({
@@ -117,14 +199,17 @@ jest.mock('pusher-js', () => {
 })
 
 // Mock Framer Motion
-jest.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }) => <div {...props}>{children}</div>,
-    span: ({ children, ...props }) => <span {...props}>{children}</span>,
-    button: ({ children, ...props }) => <button {...props}>{children}</button>,
-  },
-  AnimatePresence: ({ children }) => children,
-}))
+jest.mock('framer-motion', () => {
+  const React = require('react');
+  return {
+    motion: {
+      div: ({ children, ...props }) => React.createElement('div', props, children),
+      span: ({ children, ...props }) => React.createElement('span', props, children),
+      button: ({ children, ...props }) => React.createElement('button', props, children),
+    },
+    AnimatePresence: ({ children }) => children,
+  };
+})
 
 // Mock Sonner (toast notifications)
 jest.mock('sonner', () => ({
@@ -136,8 +221,77 @@ jest.mock('sonner', () => ({
   },
 }))
 
+// Mock UI Components - Use require inside the factory function
+jest.mock('@/components/ui/card', () => {
+  const mockReact = require('react');
+  return {
+    Card: ({ children, className = '', ...props }) => mockReact.createElement('div', { 
+      'data-testid': 'card',
+      className: `card ${className}`,
+      ...props 
+    }, children),
+    CardContent: ({ children, className = '', ...props }) => mockReact.createElement('div', { 
+      'data-testid': 'card-content',
+      className: `card-content ${className}`,
+      ...props 
+    }, children),
+    CardHeader: ({ children, className = '', ...props }) => mockReact.createElement('div', { 
+      'data-testid': 'card-header',
+      className: `card-header ${className}`,
+      ...props 
+    }, children),
+    CardTitle: ({ children, className = '', ...props }) => mockReact.createElement('h3', { 
+      'data-testid': 'card-title',
+      className: `card-title ${className}`, 
+      ...props 
+    }, children),
+    CardDescription: ({ children, className = '', ...props }) => mockReact.createElement('p', { 
+      'data-testid': 'card-description',
+      className: `card-description ${className}`, 
+      ...props 
+    }, children),
+  };
+}, { virtual: true });
+
+jest.mock('@/components/ui/button', () => {
+  const mockReact = require('react');
+  return {
+    Button: ({ children, className = '', ...props }) => mockReact.createElement('button', { 
+      'data-testid': 'button',
+      className: `button ${className}`, 
+      ...props 
+    }, children),
+  };
+}, { virtual: true });
+
+jest.mock('@/components/ui/tabs', () => {
+  const mockReact = require('react');
+  return {
+    Tabs: ({ children, className = '', ...props }) => mockReact.createElement('div', { 
+      'data-testid': 'tabs',
+      className: `tabs ${className}`,
+      ...props 
+    }, children),
+    TabsContent: ({ children, className = '', ...props }) => mockReact.createElement('div', { 
+      'data-testid': 'tabs-content',
+      className: `tabs-content ${className}`,
+      ...props 
+    }, children),
+    TabsList: ({ children, className = '', ...props }) => mockReact.createElement('div', { 
+      'data-testid': 'tabs-list',
+      className: `tabs-list ${className}`,
+      ...props 
+    }, children),
+    TabsTrigger: ({ children, className = '', ...props }) => mockReact.createElement('button', { 
+      'data-testid': 'tabs-trigger',
+      className: `tabs-trigger ${className}`, 
+      ...props 
+    }, children),
+  };
+}, { virtual: true });
+
 // Polyfills for Node.js environment
-import { TextEncoder, TextDecoder } from 'util'
+const { TextEncoder, TextDecoder } = require('util')
 global.TextEncoder = TextEncoder
 global.TextDecoder = TextDecoder
 

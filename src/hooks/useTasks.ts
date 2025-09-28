@@ -48,7 +48,7 @@ export function useTasks(options: UseTasksOptions = {}) {
     },
     onError: (error) => {
       toast.error('Failed to create task');
-      console.error(error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error(error);
     }
   });
 
@@ -69,7 +69,7 @@ export function useTasks(options: UseTasksOptions = {}) {
     },
     onError: (error) => {
       toast.error('Failed to update task');
-      console.error(error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error(error);
     }
   });
 
@@ -88,7 +88,7 @@ export function useTasks(options: UseTasksOptions = {}) {
     },
     onError: (error) => {
       toast.error('Failed to delete task');
-      console.error(error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error(error);
     }
   });
 
@@ -135,7 +135,7 @@ export function useTasks(options: UseTasksOptions = {}) {
     },
     onError: (error) => {
       toast.error('Failed to update tasks');
-      console.error(error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error(error);
     }
   });
 

@@ -238,13 +238,11 @@ export const POST = withOptimizedAuth(
     const startTime = performance.now();
     
     try {
-      // Only allow admin users to trigger maintenance
-      const isAdmin = user.subscription?.plan === 'admin' || 
-                     process.env.NODE_ENV === 'development';
-
-      if (!isAdmin) {
+      // Allow all authenticated users to trigger maintenance in development
+      // In production, this would be restricted by environment/infrastructure
+      if (process.env.NODE_ENV === 'production') {
         return NextResponse.json(
-          { error: 'Insufficient permissions - admin access required' },
+          { error: 'Maintenance operations not available in production' },
           { status: 403 }
         );
       }
