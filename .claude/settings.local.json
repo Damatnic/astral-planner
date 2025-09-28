@@ -102,7 +102,9 @@
       "Bash(CTRL+C)",
       "Bash(PERFORMANCE_TEST_URL=http://localhost:7001 CONCURRENT_USERS=10 TEST_DURATION=30 npm run performance:test)",
       "Bash(npm run perf:lighthouse:*)",
-      "Bash(git remote set-url:*)"
+      "Bash(git remote set-url:*)",
+      "WebFetch(domain:astral-planner-hsbqw8azc-astral-productions.vercel.app)",
+      "WebFetch(domain:astral-planner.vercel.app)"
     ],
     "deny": [],
     "ask": []

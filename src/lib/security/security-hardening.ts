@@ -79,13 +79,37 @@ export function generateCSPNonce(): string {
 export function getSecureCSP(nonce?: string): string {
   const isDevelopment = process.env.NODE_ENV === 'development';
   
-  // More permissive CSP for production to support Next.js runtime features
-  // This allows Next.js to work properly while maintaining reasonable security
+  // Next.js compatible CSP that allows required runtime features
+  // This configuration balances security with Next.js functionality
   const nonceStr = nonce ? `'nonce-${nonce}'` : '';
+  
+  // Get specific hashes from the error messages to whitelist known scripts
+  const knownScriptHashes = [
+    "'sha256-6nvG1C/mEoCWAcSkHsFfaiJWmJ9SNk5yOvknC6V2Opk='",
+    "'sha256-9lEWXf2Hn2ieCK1KQ/S66sQ4keHF188UUDCKoduzMsE='",
+    "'sha256-OBTN3RiyCV4Bq7dFqZ5a2pAXjnCcCYeTJMO2I/LYKeo='",
+    "'sha256-L9Kk9iAgvOo4F+tNuX+vA20eb3nmkdVgO3Lun5m0HKE='",
+    "'sha256-hqUl3T/0qZRtIN8ucdJQg/QLY9Fpu9SEiSMuK6VscRM='",
+    "'sha256-ODiyWGpk3ai4W7JKpPqCtydnW8TgOer/4fVOkzgVx+g='",
+    "'sha256-vIqb4kNPhpAR1NRKMcLGzbkYO8krHm3ztJpRep2+oSM='",
+    "'sha256-ZKRTrEp3SK3KTk9DuSopbgaICywsZFZJdPH6SN1vMWc='",
+    "'sha256-TnkFpSNK5gikNZg0QSRIQ9bqtnioaENlqoyam0yFSRg='",
+    "'sha256-zlmxiox02siGltNlorvFS7iuu75seOt8KYXvDCZ8rAA='",
+    "'sha256-2UkHY4aL45zJS9ILl4BmSK5hPAdZhC+F3WDmXmwwO6k='",
+    "'sha256-BgwPRjL3Y3O9chB5VYIiyBUZ7emEWzfwuzOT5fkypRs='",
+    "'sha256-J4hDrKZaPjVCO2Nrf8PIJHLSoThQM+eaplEmvNFociw='",
+    "'sha256-AYMkpfPmrAtiYXbZ+TZx/jPnAV5jy5fkR7fNf1rWZb0='",
+    "'sha256-iqDQ5UmX/puDk+yOQ3YMg58GyYigW0+I3qtXCBbjwkw='",
+    "'sha256-tTb/fLqlXhO4WxBRp9dm6/gpq2Ae5Jjp13ppccwnzDg='",
+    "'sha256-H4K9zv0cLkIfOYR1NUNZI/USAfqhNWhh1AQWOMf2zF8='",
+    "'sha256-w5OIGPTeC92edgorRuMUTqBE8Tw17hrrCY5jrqG4Kww='",
+    "'sha256-I2nBKt5VIqh/HJimmWebdN53eP9axUaJglRSR4cj/BE='"
+  ].join(' ');
+  
   const directives = [
     "default-src 'self'",
-    // Allow inline scripts and eval for Next.js runtime, plus specific hashes for known scripts
-    `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${nonceStr} https://vercel.live https://va.vercel-scripts.com`,
+    // Allow specific script hashes, nonce, and required Next.js domains
+    `script-src 'self' ${nonceStr} ${knownScriptHashes} 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai",
     "img-src 'self' data: https: blob:",

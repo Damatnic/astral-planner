@@ -1,3 +1,6 @@
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 import { NextRequest, NextResponse } from 'next/server';
 
 // DELETE /api/habits/[id] - Delete specific habit (Demo version)

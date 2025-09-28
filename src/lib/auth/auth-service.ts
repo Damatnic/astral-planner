@@ -57,58 +57,10 @@ export interface AuthContext {
   deviceId: string | null;
 }
 
-// CATALYST CRITICAL FIX: In-memory stores with size limits and cleanup
-const MAX_CACHE_SIZE = 1000;
-const CLEANUP_INTERVAL = 5 * 60 * 1000; // 5 minutes
-const MAX_ENTRY_AGE = 60 * 60 * 1000; // 1 hour
-
+// In-memory stores (in production, use Redis or database)
 const loginAttempts = new Map<string, { count: number; lockoutUntil?: number; lastAttempt: number }>();
 const activeSessions = new Map<string, { userId: string; createdAt: number; lastActivity: number; deviceId?: string }>();
 const deviceFingerprints = new Map<string, { userId: string; trusted: boolean; lastSeen: number }>();
-
-// CRITICAL: Memory cleanup to prevent server crashes
-function cleanupMemoryStores() {
-  const now = Date.now();
-  
-  // Clean expired login attempts
-  for (const [key, value] of loginAttempts.entries()) {
-    if (now - value.lastAttempt > MAX_ENTRY_AGE) {
-      loginAttempts.delete(key);
-    }
-  }
-  
-  // Clean old sessions
-  for (const [key, value] of activeSessions.entries()) {
-    if (now - value.lastActivity > SESSION_TIMEOUT) {
-      activeSessions.delete(key);
-    }
-  }
-  
-  // Clean old device fingerprints
-  for (const [key, value] of deviceFingerprints.entries()) {
-    if (now - value.lastSeen > MAX_ENTRY_AGE) {
-      deviceFingerprints.delete(key);
-    }
-  }
-  
-  // Enforce size limits
-  if (loginAttempts.size > MAX_CACHE_SIZE) {
-    const entries = Array.from(loginAttempts.entries());
-    entries.slice(0, entries.length - MAX_CACHE_SIZE).forEach(([key]) => {
-      loginAttempts.delete(key);
-    });
-  }
-  
-  if (activeSessions.size > MAX_CACHE_SIZE) {
-    const entries = Array.from(activeSessions.entries());
-    entries.slice(0, entries.length - MAX_CACHE_SIZE).forEach(([key]) => {
-      activeSessions.delete(key);
-    });
-  }
-}
-
-// Start cleanup interval
-setInterval(cleanupMemoryStores, CLEANUP_INTERVAL);
 
 // Rate limiters
 const loginRateLimit = new RateLimiter(5, 60 * 1000); // 5 attempts per minute

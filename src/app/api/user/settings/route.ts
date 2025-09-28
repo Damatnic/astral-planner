@@ -87,7 +87,7 @@ async function handlePUT(req: NextRequest) {
       message: 'Settings updated successfully'
     });
   } catch (error) {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Settings update error:', error);
+    console.error('Settings update error:', error);
     return NextResponse.json(
       { error: 'Failed to update settings' },
       { status: 500 }
@@ -148,7 +148,7 @@ async function handleGET(req: NextRequest) {
       }
     });
   } catch (error) {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Settings fetch error:', error);
+    console.error('Settings fetch error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch settings' },
       { status: 500 }

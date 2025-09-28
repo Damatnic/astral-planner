@@ -1,3 +1,6 @@
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 /**
  * Phoenix System Status API
  * Comprehensive backend performance and health monitoring endpoint

@@ -28,7 +28,6 @@ export async function verifyToken(token: string): Promise<AuthUser | null> {
     const { payload } = await jwtVerify(token, SECRET_KEY);
     return payload as unknown as AuthUser;
   } catch (error) {
-    // TODO: Replace with proper logging
     console.error('Token verification failed:', error);
     return null;
   }
@@ -99,7 +98,6 @@ export async function getAuthContext(request: NextRequest): Promise<AuthContext>
         };
       }
     } catch (error) {
-      // TODO: Replace with proper logging
       console.warn('Token verification failed:', error);
     }
   }
@@ -210,7 +208,6 @@ export function withAuth(
       await requireAuth(req);
       return await handler(req, context);
     } catch (error: unknown) {
-      // TODO: Replace with proper logging
       console.warn('Authentication required:', { path: req.nextUrl.pathname });
       return NextResponse.json(
         { error: 'Authentication required', code: 'AUTH_REQUIRED' },
@@ -244,7 +241,6 @@ export function withRole(
       return await handler(req, context);
     } catch (error: unknown) {
       const user = await getUserFromRequest(req);
-      // TODO: Replace with proper logging
       console.warn('Role requirement not met:', { 
         userId: user?.id, 
         requiredRole,
@@ -276,7 +272,6 @@ export function withFeature(
       return await handler(req, context);
     } catch (error: unknown) {
       const user = await getUserFromRequest(req);
-      // TODO: Replace with proper logging
       console.warn('Feature not available:', { 
         userId: user?.id, 
         feature,
@@ -309,7 +304,6 @@ export function withUsageLimit(
       
       if (!usage.allowed) {
         const user = await getUserFromRequest(req);
-        // TODO: Replace with proper logging
         console.warn('Usage limit exceeded:', { 
           userId: user?.id, 
           resource,
@@ -333,7 +327,6 @@ export function withUsageLimit(
       
       return await handler(req, context);
     } catch (error: unknown) {
-      // TODO: Replace with proper logging
       console.error('Usage limit check failed:', error);
       return NextResponse.json(
         { error: 'Internal server error' },
