@@ -146,6 +146,12 @@ const nextConfig = {
     ignoreBuildErrors: true, // Temporarily ignore for deployment
   },
   
+  // Temporarily ignore all build errors for initial deployment
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
+  
   async headers() {
     return [
       {

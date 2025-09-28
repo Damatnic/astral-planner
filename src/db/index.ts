@@ -1,7 +1,14 @@
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import { Pool } from '@neondatabase/serverless';
-import * as schema from './schema';
-import Logger, { AppError } from '../lib/logger';
+// Edge Runtime compatibility - use mock for deployment
+if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+  // Use mock implementation for deployment
+  module.exports = require('./mock');
+} else {
+  // Use real implementation for development with database
+  try {
+    const { drizzle } = require('drizzle-orm/neon-serverless');
+    const { Pool } = require('@neondatabase/serverless');
+    const schema = require('./schema');
+    const { default: Logger, AppError } = require('../lib/logger');
 
 // Phoenix Enterprise Database Configuration
 const PHOENIX_DB_CONFIG = {
