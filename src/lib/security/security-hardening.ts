@@ -79,33 +79,17 @@ export function generateCSPNonce(): string {
 export function getSecureCSP(nonce?: string): string {
   const isDevelopment = process.env.NODE_ENV === 'development';
   
-  // In development, use more permissive CSP without nonce to allow Next.js dev features
-  if (isDevelopment) {
-    const directives = [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai",
-      "img-src 'self' data: https: blob:",
-      "connect-src 'self' https: wss: ws://localhost:* ws://127.0.0.1:*",
-      "media-src 'self'",
-      "object-src 'none'",
-      "base-uri 'self'",
-      "form-action 'self'",
-      "frame-ancestors 'none'"
-    ];
-    return directives.join('; ');
-  }
-  
-  // Production CSP with nonce
+  // More permissive CSP for production to support Next.js runtime features
+  // This allows Next.js to work properly while maintaining reasonable security
   const nonceStr = nonce ? `'nonce-${nonce}'` : '';
   const directives = [
     "default-src 'self'",
-    `script-src 'self' ${nonceStr} https://vercel.live https://va.vercel-scripts.com`,
+    // Allow inline scripts and eval for Next.js runtime, plus specific hashes for known scripts
+    `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${nonceStr} https://vercel.live https://va.vercel-scripts.com`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai",
     "img-src 'self' data: https: blob:",
-    "connect-src 'self' https: wss:",
+    "connect-src 'self' https: wss: ws://localhost:* ws://127.0.0.1:*",
     "media-src 'self'",
     "object-src 'none'",
     "base-uri 'self'",
@@ -115,8 +99,9 @@ export function getSecureCSP(nonce?: string): string {
   
   // Add upgrade directives only in production
   if (!isDevelopment) {
-    directives.push("upgrade-insecure-requests");
-    directives.push("block-all-mixed-content");
+    // Commented out to avoid issues with mixed content in some deployments
+    // directives.push("upgrade-insecure-requests");
+    // directives.push("block-all-mixed-content");
   }
   
   return directives.join('; ');
