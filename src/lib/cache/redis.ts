@@ -1,7 +1,6 @@
 import { Redis } from '@upstash/redis'
-import { logger } from '@/lib/logger';    } catch (error) {
-      logger.error('Cache get error', { key }, error as Error);
-      return null;
+import { logger } from '@/lib/logger'
+
 // Create Redis client
 const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
   ? new Redis({
@@ -39,7 +38,7 @@ export class Cache {
       const data = await this.redis.get(key)
       return data as T
     } catch (error) {
-      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Cache get error:', error)
+      logger.error('Cache get error', { key }, error as Error);
       return null
     }
   }

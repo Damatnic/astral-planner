@@ -220,10 +220,11 @@ export default function SettingsPage() {
         setSettings(prevSettings => ({
           ...prevSettings,
           appearance: {
-            theme: data.settings?.theme || 'system',
-            accentColor: data.settings?.accentColor || 'blue',
-            fontSize: data.settings?.fontSize || 'medium',
-            reducedMotion: data.settings?.reducedMotion || false
+            ...prevSettings.appearance,
+            theme: data.settings?.theme || prevSettings.appearance.theme,
+            accentColor: data.settings?.accentColor || prevSettings.appearance.accentColor,
+            fontSize: data.settings?.fontSize || prevSettings.appearance.fontSize,
+            reducedMotion: data.settings?.reducedMotion || prevSettings.appearance.reducedMotion
           },
           notifications: {
             ...prevSettings.notifications,
@@ -603,6 +604,11 @@ export default function SettingsPage() {
                             firstName: 'John',
                             lastName: 'Doe',
                             email: 'john.doe@example.com',
+                            username: 'johndoe',
+                            bio: '',
+                            phone: '',
+                            company: '',
+                            avatarUrl: '',
                             timezone: 'America/New_York',
                             language: 'en'
                           }
@@ -648,9 +654,9 @@ export default function SettingsPage() {
                       onClick={() => {
                         // Enable all notifications
                         const allEnabled = { ...settings.notifications };
-                        Object.keys(allEnabled.email).forEach(key => allEnabled.email[key] = true);
-                        Object.keys(allEnabled.push).forEach(key => allEnabled.push[key] = true);
-                        Object.keys(allEnabled.inApp).forEach(key => allEnabled.inApp[key] = true);
+                        Object.keys(allEnabled.email).forEach(key => (allEnabled.email as any)[key] = true);
+                        Object.keys(allEnabled.push).forEach(key => (allEnabled.push as any)[key] = true);
+                        Object.keys(allEnabled.inApp).forEach(key => (allEnabled.inApp as any)[key] = true);
                         setSettings({ ...settings, notifications: allEnabled });
                       }}
                     >
@@ -663,9 +669,9 @@ export default function SettingsPage() {
                       onClick={() => {
                         // Disable all notifications
                         const allDisabled = { ...settings.notifications };
-                        Object.keys(allDisabled.email).forEach(key => allDisabled.email[key] = false);
-                        Object.keys(allDisabled.push).forEach(key => allDisabled.push[key] = false);
-                        Object.keys(allDisabled.inApp).forEach(key => allDisabled.inApp[key] = false);
+                        Object.keys(allDisabled.email).forEach(key => (allDisabled.email as any)[key] = false);
+                        Object.keys(allDisabled.push).forEach(key => (allDisabled.push as any)[key] = false);
+                        Object.keys(allDisabled.inApp).forEach(key => (allDisabled.inApp as any)[key] = false);
                         setSettings({ ...settings, notifications: allDisabled });
                       }}
                     >
@@ -723,7 +729,7 @@ export default function SettingsPage() {
                       </div>
                       <Switch
                         id={`email-${key}`}
-                        checked={settings.notifications.email[key]}
+                        checked={(settings.notifications.email as any)[key]}
                         onCheckedChange={(checked) => setSettings({
                           ...settings,
                           notifications: {
@@ -772,7 +778,7 @@ export default function SettingsPage() {
                       </div>
                       <Switch
                         id={`push-${key}`}
-                        checked={settings.notifications.push[key]}
+                        checked={(settings.notifications.push as any)[key]}
                         onCheckedChange={(checked) => setSettings({
                           ...settings,
                           notifications: {
@@ -819,7 +825,7 @@ export default function SettingsPage() {
                       </div>
                       <Switch
                         id={`inapp-${key}`}
-                        checked={settings.notifications.inApp[key]}
+                        checked={(settings.notifications.inApp as any)[key]}
                         onCheckedChange={(checked) => setSettings({
                           ...settings,
                           notifications: {
@@ -1720,7 +1726,7 @@ export default function SettingsPage() {
                         </div>
                         <Switch
                           id={key}
-                          checked={settings.privacy[key]}
+                          checked={(settings.privacy as any)[key]}
                           onCheckedChange={(checked) => setSettings({
                             ...settings,
                             privacy: { ...settings.privacy, [key]: checked }
@@ -1760,7 +1766,7 @@ export default function SettingsPage() {
                       </div>
                       <Switch
                         id={key}
-                        checked={settings.privacy[key]}
+                        checked={(settings.privacy as any)[key]}
                         onCheckedChange={(checked) => setSettings({
                           ...settings,
                           privacy: { ...settings.privacy, [key]: checked }

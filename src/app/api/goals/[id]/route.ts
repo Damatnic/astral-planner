@@ -59,7 +59,7 @@ export async function GET(
         : null;
       
       // Get active child goals
-      const childGoals = await db.select().from(goals).where(and(eq(goals.parentGoalId, goal.id), eq(goals.status, 'active')));
+      const childGoals = await db.select().from(goals).where(and(eq(goals.parentGoalId, goal.id), eq(goals.status, 'active'))).then((r: any) => r as Goal[]);
       
       // Combine all data
       Object.assign(goal, { parentGoal, childGoals });
@@ -220,7 +220,10 @@ export async function DELETE(
     const existingGoal = await db.select().from(goals).where(and(eq(goals.id, id), eq(goals.createdBy, userRecord.id))).limit(1).then(r => r[0] || null) as Goal | null;
     
     // Get child goals if goal exists
-    const childGoals = existingGoal ? await db.select().from(goals).where(eq(goals.parentGoalId, existingGoal.id)) as Goal[] : [];
+    let childGoals: Goal[] = [];
+    if (existingGoal) {
+      childGoals = await db.select().from(goals).where(eq(goals.parentGoalId, existingGoal.id)).then((r: any) => r as Goal[]);
+    }
     if (existingGoal) {
       Object.assign(existingGoal, { childGoals });
     }

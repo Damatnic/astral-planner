@@ -193,9 +193,9 @@ async function handleGET(req: NextRequest) {
     } else {
       // Get all user's workspace IDs
       const userWorkspaces = await db.select({ id: workspaces.id }).from(workspaces)
-        .where(eq(workspaces.ownerId, user.id));
+        .where(eq(workspaces.ownerId, user.id)).then((r: any) => r as Array<{ id: string }>);
       
-      const workspaceIds = userWorkspaces.map(w => w.id);
+      const workspaceIds = userWorkspaces.map((w: { id: string }) => w.id);
       if (workspaceIds.length === 0) {
         return NextResponse.json({ tasks: [] });
       }
@@ -219,9 +219,10 @@ async function handleGET(req: NextRequest) {
     const tasks = await db.select().from(blocks)
       .where(and(...conditions))
       .limit(limit)
-      .orderBy(blocks.createdAt);
+      .orderBy(blocks.createdAt)
+      .then((r: any) => r);
 
-    const formattedTasks = tasks.map(task => ({
+    const formattedTasks = tasks.map((task: any) => ({
       id: task.id,
       title: task.title,
       description: task.description,
