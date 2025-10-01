@@ -1,4 +1,6 @@
 // Edge Runtime compatible pusher implementation
+import { logger } from '@/lib/logger';
+
 let pusherServer: any = null
 
 export function getPusherServer() {
@@ -18,17 +20,17 @@ export function getPusherServer() {
         // Mock pusher for deployment without configuration
         pusherServer = {
           trigger: (channel: string, event: string, data: any) => {
-            console.log('Mock pusher trigger:', { channel, event, data });
+            logger.debug('Mock pusher trigger', { channel, event });
             return Promise.resolve();
           }
         };
       }
     } catch (error) {
       // Fallback to mock if Pusher fails to initialize
-      console.warn('Pusher initialization failed, using mock:', error);
+      logger.warn('Pusher initialization failed, using mock', {}, error as Error);
       pusherServer = {
         trigger: (channel: string, event: string, data: any) => {
-          console.log('Mock pusher trigger:', { channel, event, data });
+          logger.debug('Mock pusher trigger', { channel, event });
           return Promise.resolve();
         }
       };

@@ -1,5 +1,6 @@
 import Pusher from 'pusher-js';
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 
 let pusherClient: Pusher | null = null;
 
@@ -10,7 +11,7 @@ export function getPusherClient() {
     if (!pusherKey) {
       // Only log in development mode to reduce console noise in production
       if (process.env.NODE_ENV === 'development') {
-        console.log('Pusher key not configured - real-time features disabled');
+        logger.info('Pusher key not configured - real-time features disabled');
       }
       return null;
     }
@@ -26,7 +27,7 @@ export function getPusherClient() {
         },
       });
     } catch (error) {
-      // TODO: Replace with proper logging - console.error('Failed to initialize Pusher client:', error);
+      logger.error('Failed to initialize Pusher client', {}, error as Error);
       return null;
     }
   }
@@ -200,7 +201,7 @@ export function useRealtimePresence(channelName: string) {
     if (!pusher) {
       // Only log in development mode
       if (process.env.NODE_ENV === 'development') {
-        console.log('Pusher not available for presence channel:', channelName);
+        logger.info('Pusher not available for presence channel', { channelName });
       }
       return;
     }
