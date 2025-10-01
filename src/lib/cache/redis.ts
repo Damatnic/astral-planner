@@ -1,5 +1,7 @@
 import { Redis } from '@upstash/redis'
-
+import { logger } from '@/lib/logger';    } catch (error) {
+      logger.error('Cache get error', { key }, error as Error);
+      return null;
 // Create Redis client
 const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
   ? new Redis({
@@ -59,7 +61,7 @@ export class Cache {
         }
       }
     } catch (error) {
-      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Cache set error:', error)
+      logger.error('Cache set error', { key }, error as Error);
     }
   }
 
@@ -69,7 +71,7 @@ export class Cache {
     try {
       await this.redis.del(key)
     } catch (error) {
-      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Cache delete error:', error)
+      logger.error('Cache delete error', { key }, error as Error);
     }
   }
 
@@ -85,7 +87,7 @@ export class Cache {
         ])
       }
     } catch (error) {
-      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Cache invalidate tag error:', error)
+      logger.error('Cache invalidate tag error', { tag }, error as Error);
     }
   }
 
@@ -95,7 +97,7 @@ export class Cache {
     try {
       await this.redis.flushdb()
     } catch (error) {
-      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Cache flush error:', error)
+      logger.error('Cache flush error', {}, error as Error);
     }
   }
 
@@ -128,10 +130,10 @@ export function withCache<T extends (...args: any[]) => any>(
       : JSON.stringify(args)
 
     // Try to get from cache
-    const cached = await cache.get(key)
+    const cached = await cache.get(key);
     if (cached) {
-      console.log(`Cache hit: ${key}`)
-      return cached
+      logger.debug('Cache hit', { key });
+      return cached;
     }
 
     // Execute handler and cache result
