@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth/auth-utils';
 import { db } from '@/db';
-import { goals, goalProgress, users } from '@/db/schema';
+import { goals, goalProgress, users, type Goal, type User } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { z } from 'zod';
 import Logger from '@/lib/logger';
@@ -38,8 +38,8 @@ export async function GET(
       );
     }
 
-    // Get user from database
-    const userRecord = await db.select().from(users).where(eq(users.clerkId, user.id)).limit(1).then(r => r[0] || null);
+    // Get user from database  
+    const userRecord = await db.select().from(users).where(eq(users.clerkId, user.id)).limit(1).then(r => r[0] || null) as User | null;
 
     if (!userRecord) {
       return NextResponse.json(
@@ -50,7 +50,7 @@ export async function GET(
 
     // Get goal with full details
     const { id } = await params;
-    const goal = await db.select().from(goals).where(and(eq(goals.id, id), eq(goals.createdBy, userRecord!.id))).limit(1).then(r => r[0] || null);
+    const goal = await db.select().from(goals).where(and(eq(goals.id, id), eq(goals.createdBy, userRecord.id))).limit(1).then(r => r[0] || null) as Goal | null;
     
     if (goal) {
       // Get parent goal if exists
@@ -115,7 +115,7 @@ export async function PATCH(
     const validated = UpdateGoalSchema.parse(body);
 
     // Get user from database
-    const userRecord = await db.select().from(users).where(eq(users.clerkId, user.id)).limit(1).then(r => r[0] || null);
+    const userRecord = await db.select().from(users).where(eq(users.clerkId, user.id)).limit(1).then(r => r[0] || null) as User | null;
 
     if (!userRecord) {
       return NextResponse.json(
@@ -126,7 +126,7 @@ export async function PATCH(
 
     // Check if goal exists and belongs to user
     const { id } = await params;
-    const existingGoal = await db.select().from(goals).where(and(eq(goals.id, id), eq(goals.createdBy, userRecord.id))).limit(1).then(r => r[0] || null);
+    const existingGoal = await db.select().from(goals).where(and(eq(goals.id, id), eq(goals.createdBy, userRecord.id))).limit(1).then(r => r[0] || null) as Goal | null;
 
     if (!existingGoal) {
       return NextResponse.json(
@@ -206,7 +206,7 @@ export async function DELETE(
     }
 
     // Get user from database
-    const userRecord = await db.select().from(users).where(eq(users.clerkId, user.id)).limit(1).then(r => r[0] || null);
+    const userRecord = await db.select().from(users).where(eq(users.clerkId, user.id)).limit(1).then(r => r[0] || null) as User | null;
 
     if (!userRecord) {
       return NextResponse.json(
@@ -217,10 +217,10 @@ export async function DELETE(
 
     // Check if goal exists and belongs to user
     const { id } = await params;
-    const existingGoal = await db.select().from(goals).where(and(eq(goals.id, id), eq(goals.createdBy, userRecord.id))).limit(1).then(r => r[0] || null);
+    const existingGoal = await db.select().from(goals).where(and(eq(goals.id, id), eq(goals.createdBy, userRecord.id))).limit(1).then(r => r[0] || null) as Goal | null;
     
     // Get child goals if goal exists
-    const childGoals = existingGoal ? await db.select().from(goals).where(eq(goals.parentGoalId, existingGoal.id)) : [];
+    const childGoals = existingGoal ? await db.select().from(goals).where(eq(goals.parentGoalId, existingGoal.id)) as Goal[] : [];
     if (existingGoal) {
       Object.assign(existingGoal, { childGoals });
     }
