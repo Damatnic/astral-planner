@@ -9,7 +9,7 @@ import { apiLogger } from '@/lib/logger';
 import { db } from '@/db';
 import { blocks } from '@/db/schema/blocks';
 import { workspaces } from '@/db/schema/workspaces';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, desc } from 'drizzle-orm';
 
 async function handlePOST(req: NextRequest) {
   try {
@@ -44,7 +44,8 @@ async function handlePOST(req: NextRequest) {
     if (!targetWorkspaceId) {
       const userWorkspaces = await db.select().from(workspaces)
         .where(eq(workspaces.ownerId, user.id))
-        .limit(1);
+        .limit(1)
+        .then((r: any) => r);
       
       if (userWorkspaces.length === 0) {
         return NextResponse.json(
@@ -192,8 +193,9 @@ async function handleGET(req: NextRequest) {
       workspaceCondition = eq(blocks.workspaceId, workspaceId);
     } else {
       // Get all user's workspace IDs
-      const userWorkspaces = await db.select({ id: workspaces.id }).from(workspaces)
-        .where(eq(workspaces.ownerId, user.id)).then((r: any) => r as Array<{ id: string }>);
+      const userWorkspaces = await db.select().from(workspaces)
+        .where(eq(workspaces.ownerId, user.id))
+        .then((r: any) => r as Array<{ id: string }>);
       
       const workspaceIds = userWorkspaces.map((w: { id: string }) => w.id);
       if (workspaceIds.length === 0) {
@@ -219,7 +221,7 @@ async function handleGET(req: NextRequest) {
     const tasks = await db.select().from(blocks)
       .where(and(...conditions))
       .limit(limit)
-      .orderBy(blocks.createdAt)
+      .orderBy(desc(blocks.createdAt))
       .then((r: any) => r);
 
     const formattedTasks = tasks.map((task: any) => ({
