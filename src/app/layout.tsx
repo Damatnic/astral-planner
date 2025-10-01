@@ -163,6 +163,22 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Prevent flash by setting theme before render */}
+        <script
+          nonce={cspNonce}
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const theme = localStorage.getItem('astral-theme') || 'dark';
+                const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                const finalTheme = theme === 'system' ? systemTheme : theme;
+                document.documentElement.classList.add(finalTheme);
+              } catch (e) {
+                document.documentElement.classList.add('dark');
+              }
+            `,
+          }}
+        />
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
