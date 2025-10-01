@@ -25,7 +25,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       habitId: id
     });
   } catch (error) {
-    apiLogger.error('Failed to delete habit', { action: 'deleteHabit' }, error as Error);
+    apiLogger.error('Failed to delete habit', error as Error);
     return NextResponse.json(
       { error: 'Failed to delete habit' },
       { status: 500 }
@@ -91,7 +91,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       habit: demoHabit
     });
   } catch (error) {
-    apiLogger.error('Failed to fetch habit', { action: 'getHabit' }, error as Error);
+    apiLogger.error('Failed to fetch habit', error as Error);
     return NextResponse.json(
       { error: 'Failed to fetch habit' },
       { status: 500 }
@@ -143,7 +143,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       message: 'Habit updated successfully'
     });
   } catch (error) {
-    apiLogger.error('Failed to update habit', { action: 'updateHabit' }, error as Error);
+    apiLogger.error('Failed to update habit', error as Error);
     return NextResponse.json(
       { error: 'Failed to update habit' },
       { status: 500 }

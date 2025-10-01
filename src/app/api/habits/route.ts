@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     try {
       accountData = getAccountData(userId);
     } catch (accountError) {
-      apiLogger.error('Failed to get account data', { userId, action: 'getHabits' }, accountError as Error);
+      apiLogger.error('Failed to get account data', accountError as Error);
       return NextResponse.json(
         { error: 'Failed to retrieve account data', habits: [], stats: {} },
         { status: 200 } // Return 200 with empty data instead of 500

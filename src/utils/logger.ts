@@ -1,27 +1,8 @@
-import winston from 'winston';
+﻿/**
+ * Legacy logger re-export for backward compatibility
+ */
 
-const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.errors({ stack: true }),
-    winston.format.json()
-  ),
-  defaultMeta: { service: 'astral-planner' },
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple()
-      )
-    })
-  ]
-});
+import { Logger } from '../lib/logger/edge';
 
-// Add file transport in production
-if (process.env.NODE_ENV === 'production') {
-  logger.add(new winston.transports.File({ filename: 'error.log', level: 'error' }));
-  logger.add(new winston.transports.File({ filename: 'combined.log' }));
-}
-
-export { logger };
+export const logger = Logger;
+export default Logger;

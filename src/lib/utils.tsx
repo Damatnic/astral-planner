@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { logger } from "@/lib/logger"
+import Logger from "@/lib/logger"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -132,7 +132,7 @@ export function copyToClipboard(text: string): Promise<void> {
   try {
     document.execCommand("copy")
   } catch (error) {
-    logger.error('Failed to copy text to clipboard', error as Error);
+    Logger.error('Failed to copy text to clipboard', error as Error);
     throw new Error("Failed to copy to clipboard")
   } finally {
     textArea.remove()
@@ -236,11 +236,7 @@ export function getFromStorage<T>(key: string, defaultValue: T): T {
     const item = localStorage.getItem(key)
     return item ? JSON.parse(item) : defaultValue
   } catch (error) {
-    logger.warn('Error reading from localStorage', {
-      component: 'utils',
-      action: 'getFromStorage',
-      metadata: { key }
-    });
+    Logger.warn('Error reading from localStorage');
     return defaultValue
   }
 }
@@ -251,11 +247,7 @@ export function setToStorage<T>(key: string, value: T): void {
   try {
     localStorage.setItem(key, JSON.stringify(value))
   } catch (error) {
-    logger.error('Error writing to localStorage', {
-      component: 'utils',
-      action: 'setToStorage',
-      metadata: { key }
-    }, error as Error);
+    Logger.error('Error writing to localStorage', error as Error);
   }
 }
 
@@ -265,10 +257,6 @@ export function removeFromStorage(key: string): void {
   try {
     localStorage.removeItem(key)
   } catch (error) {
-    logger.error('Error removing from localStorage', {
-      component: 'utils',
-      action: 'removeFromStorage',
-      metadata: { key }
-    }, error as Error);
+    Logger.error('Error removing from localStorage', error as Error);
   }
 }

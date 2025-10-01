@@ -104,15 +104,7 @@ async function handlePOST(req: NextRequest) {
     });
   } catch (error) {
     // Enhanced error logging with security considerations
-    apiLogger.error('Task creation failed', {
-      userId: 'anonymous', // user scope may not be available in catch block
-      action: 'createTask',
-      metadata: {
-        timestamp: new Date().toISOString(),
-        userAgent: req.headers.get('user-agent'),
-        ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown'
-      }
-    }, error as Error);
+    apiLogger.error('Task creation failed', error as Error);
     
     // Return generic error message for security (don't expose internals)
     return NextResponse.json(
@@ -247,16 +239,7 @@ async function handleGET(req: NextRequest) {
     return NextResponse.json({ tasks: formattedTasks });
   } catch (error) {
     // Enhanced error logging with security considerations
-    apiLogger.error('Task fetch failed', {
-      userId: 'anonymous', // user scope may not be available in catch block
-      action: 'getTasks',
-      metadata: {
-        timestamp: new Date().toISOString(),
-        userAgent: req.headers.get('user-agent'),
-        ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
-        requestUrl: req.url
-      }
-    }, error as Error);
+    apiLogger.error('Task fetch failed', error as Error);
     
     // Return generic error message for security (don't expose internals)
     return NextResponse.json(

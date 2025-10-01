@@ -196,7 +196,7 @@ async function handlePOST(req: NextRequest) {
         );
       }
     } catch (broadcastError) {
-      apiLogger.warn('Failed to broadcast task creation', { action: 'createQuickTask' }, broadcastError as Error);
+      apiLogger.warn('Failed to broadcast task creation', broadcastError as Error);
       // Don't fail the request if broadcasting fails
     }
 
