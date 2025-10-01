@@ -1,5 +1,6 @@
 // Catalyst Performance Dashboard - Elite Monitoring System
 import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals';
+import { performanceLogger } from '@/lib/logger';
 
 interface PerformanceMetrics {
   // Core Web Vitals
@@ -211,7 +212,8 @@ class CatalystPerformanceDashboard {
       const measure = performance.getEntriesByName(`catalyst:${metricName}`)[0];
       
       if (measure) {
-        this.metrics[metricName] = measure.duration;
+        // Type assertion: we know this is a numeric metric
+        (this.metrics as any)[metricName] = measure.duration;
         this.checkThreshold(metricName, measure.duration);
       }
     } catch (e) {
@@ -310,7 +312,7 @@ class CatalystPerformanceDashboard {
   private logMetric(name: string, value: number, rating?: string) {
     if (process.env.NODE_ENV === 'development') {
       const color = rating === 'good' ? '🟢' : rating === 'needs-improvement' ? '🟡' : '🔴';
-      console.log(`[Catalyst] ${color} ${name}: ${this.formatValue(name, value)} (${rating})`);
+      performanceLogger.debug('Catalyst metric', { name, value: this.formatValue(name, value), rating, color });
     }
   }
 
@@ -412,7 +414,7 @@ class CatalystPerformanceDashboard {
           return measure.duration;
         }
       } catch (e) {
-        console.warn(`Failed to measure ${name}:`, e);
+        performanceLogger.warn('Failed to measure metric', { name }, e as Error);
       }
     }
     return 0;

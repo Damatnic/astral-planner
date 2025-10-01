@@ -1,5 +1,6 @@
 // Catalyst Image Optimization System
 import React, { useState, useEffect } from 'react';
+import { performanceLogger } from '@/lib/logger';
 
 interface ImageOptions {
   quality?: number;
@@ -277,13 +278,18 @@ class CatalystImageOptimizer {
           const loadTime = resourceEntry.responseEnd - resourceEntry.startTime;
           const size = resourceEntry.transferSize || 0;
           
-          console.log(`Image loaded: ${resourceEntry.name}`);
-          console.log(`Load time: ${loadTime.toFixed(2)}ms`);
-          console.log(`Size: ${(size / 1024).toFixed(2)}KB`);
+          performanceLogger.debug('Image loaded', {
+            name: resourceEntry.name,
+            loadTime: `${loadTime.toFixed(2)}ms`,
+            size: `${(size / 1024).toFixed(2)}KB`
+          });
           
           // Track slow-loading images
           if (loadTime > 1000) {
-            // TODO: Replace with proper logging - console.warn(`Slow image detected: ${entry.name} (${loadTime.toFixed(2)}ms)`);
+            performanceLogger.warn('Slow image detected', {
+              name: entry.name,
+              loadTime: `${loadTime.toFixed(2)}ms`
+            });
           }
         }
       });
