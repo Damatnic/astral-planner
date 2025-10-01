@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { authLogger } from '@/lib/logger';
 
 export interface AuthUser {
   id: string;
@@ -333,7 +334,7 @@ export function useAuth(): UseAuthReturn {
       });
 
       if (response.ok) {
-        console.log('Session refreshed successfully');
+        authLogger.info('Session refreshed successfully');
         return true;
       }
 
@@ -413,7 +414,7 @@ export function useAuth(): UseAuthReturn {
         if (mounted) updateState({ loading: false });
 
       } catch (error) {
-        console.warn('Auth status check failed:', error);
+        authLogger.warn('Auth status check failed', {}, error as Error);
         clearAuthState();
         if (mounted) updateState({ loading: false });
       }
