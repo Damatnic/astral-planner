@@ -208,7 +208,7 @@ async function handleGET(req: NextRequest) {
     }
 
     // Build conditions array
-    const conditions = [workspaceCondition];
+    const conditions: any[] = [workspaceCondition];
     
     if (type) {
       conditions.push(eq(blocks.type, type));
@@ -218,11 +218,16 @@ async function handleGET(req: NextRequest) {
       conditions.push(eq(blocks.status, status));
     }
 
-    const tasks = await db.select().from(blocks)
-      .where(and(...conditions))
-      .limit(limit)
-      .orderBy(desc(blocks.createdAt))
-      .then((r: any) => r);
+    // Build query with proper type chaining
+    let query: any = db.select().from(blocks);
+    
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+    }
+    
+    query = query.limit(limit).orderBy(desc(blocks.createdAt));
+    
+    const tasks = await query;
 
     const formattedTasks = tasks.map((task: any) => ({
       id: task.id,

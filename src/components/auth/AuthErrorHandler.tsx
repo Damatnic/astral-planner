@@ -125,6 +125,7 @@ export default function AuthErrorHandler({
       setIsVisible(false);
       setAutoCloseCountdown(null);
     }
+    return undefined;
   }, [error]);
 
   const handleClose = () => {

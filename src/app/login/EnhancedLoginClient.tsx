@@ -131,6 +131,7 @@ export default function EnhancedLoginClient() {
         }
       };
     }
+    return undefined;
   }, [lockoutUntil]);
 
   // Calculate security score based on PIN

@@ -93,6 +93,7 @@ function NotificationCard({ notification, onDismiss }: NotificationCardProps) {
       }, 5000);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [notification.type, onDismiss]);
 
   const getTypeStyles = () => {
