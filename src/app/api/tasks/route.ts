@@ -4,6 +4,7 @@ export const runtime = "nodejs";
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth/auth-utils';
 import { withAuth, withUsageLimit } from '@/lib/auth/auth-utils';
+import { apiLogger } from '@/lib/logger';
 
 import { db } from '@/db';
 import { blocks } from '@/db/schema/blocks';
@@ -76,11 +77,12 @@ async function handlePOST(req: NextRequest) {
       updatedAt: new Date(),
     }).returning();
 
-    console.log('Task created:', { 
+    apiLogger.info('Task created', { 
       taskId: newTask.id, 
       userId: user.id, 
       title: newTask.title,
-      aiGenerated: newTask.aiGenerated || false
+      aiGenerated: newTask.aiGenerated || false,
+      action: 'createTask'
     });
 
     return NextResponse.json({
@@ -101,17 +103,15 @@ async function handlePOST(req: NextRequest) {
     });
   } catch (error) {
     // Enhanced error logging with security considerations
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    const errorStack = error instanceof Error ? error.stack : 'No stack trace';
-    
-    console.error('Task creation failed:', {
-      error: errorMessage,
-      stack: errorStack,
+    apiLogger.error('Task creation failed', {
       userId: 'anonymous', // user scope may not be available in catch block
-      timestamp: new Date().toISOString(),
-      userAgent: req.headers.get('user-agent'),
-      ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown'
-    });
+      action: 'createTask',
+      metadata: {
+        timestamp: new Date().toISOString(),
+        userAgent: req.headers.get('user-agent'),
+        ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown'
+      }
+    }, error as Error);
     
     // Return generic error message for security (don't expose internals)
     return NextResponse.json(
@@ -130,7 +130,7 @@ async function handleGET(req: NextRequest) {
     const user = await getUserFromRequest(req);
     if (!user) {
       // Demo user fallback for development
-      console.log('Tasks API: No authentication found, using demo user fallback');
+      apiLogger.debug('No authentication found, using demo user fallback', { action: 'getTasks' });
       const demoUser = { id: 'demo-user', email: 'demo@example.com', username: 'demo' };
       
       // Return sample tasks for demo user
@@ -239,18 +239,16 @@ async function handleGET(req: NextRequest) {
     return NextResponse.json({ tasks: formattedTasks });
   } catch (error) {
     // Enhanced error logging with security considerations
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    const errorStack = error instanceof Error ? error.stack : 'No stack trace';
-    
-    console.error('Task fetch failed:', {
-      error: errorMessage,
-      stack: errorStack,
+    apiLogger.error('Task fetch failed', {
       userId: 'anonymous', // user scope may not be available in catch block
-      timestamp: new Date().toISOString(),
-      userAgent: req.headers.get('user-agent'),
-      ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
-      requestUrl: req.url
-    });
+      action: 'getTasks',
+      metadata: {
+        timestamp: new Date().toISOString(),
+        userAgent: req.headers.get('user-agent'),
+        ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
+        requestUrl: req.url
+      }
+    }, error as Error);
     
     // Return generic error message for security (don't expose internals)
     return NextResponse.json(

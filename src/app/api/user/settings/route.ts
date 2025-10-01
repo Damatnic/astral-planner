@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthContext } from '@/lib/auth/auth-utils';
+import { apiLogger } from '@/lib/logger';
 
 const defaultSettings = {
   appearance: {
@@ -68,7 +69,7 @@ async function handlePUT(req: NextRequest) {
         };
       }
     } catch (authError) {
-      console.log('Settings PUT: Auth error, using demo user fallback:', authError);
+      apiLogger.warn('Settings PUT: Auth error, using demo user fallback', { action: 'updateSettings', error: authError });
     }
 
     const body = await req.json();
@@ -87,7 +88,7 @@ async function handlePUT(req: NextRequest) {
       message: 'Settings updated successfully'
     });
   } catch (error) {
-    console.error('Settings update error:', error);
+    apiLogger.error('Settings update error', { action: 'updateSettings' }, error as Error);
     return NextResponse.json(
       { error: 'Failed to update settings' },
       { status: 500 }
@@ -124,12 +125,12 @@ async function handleGET(req: NextRequest) {
             email: realAuthContext.user.email
           }
         };
-        console.log('Settings API: Using authenticated user:', realAuthContext.user.id);
+        apiLogger.debug('Using authenticated user', { userId: realAuthContext.user.id, action: 'getSettings' });
       } else {
-        console.log('Settings API: No authentication found, using demo user fallback');
+        apiLogger.debug('No authentication found, using demo user fallback', { action: 'getSettings' });
       }
     } catch (authError) {
-      console.log('Settings API: Auth error, using demo user fallback:', authError);
+      apiLogger.warn('Auth error, using demo user fallback', { action: 'getSettings', error: authError });
     }
 
     const userId = authContext.user.id;
@@ -148,7 +149,7 @@ async function handleGET(req: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Settings fetch error:', error);
+    apiLogger.error('Settings fetch error', { action: 'getSettings' }, error as Error);
     return NextResponse.json(
       { error: 'Failed to fetch settings' },
       { status: 500 }
