@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { 
   User, 
   Bell, 
@@ -197,8 +198,7 @@ export default function SettingsPage() {
     } catch (error) {
       // Enhanced error logging with security considerations
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.warn('Auth headers retrieval failed:', {
-        error: errorMessage,
+      logger.warn('Auth headers retrieval failed', {
         timestamp: new Date().toISOString(),
         component: 'SettingsClient',
         action: 'getAuthHeaders'
@@ -365,7 +365,7 @@ export default function SettingsPage() {
                             return;
                           }
                           // Handle file upload logic here
-                          console.log('File selected:', file);
+                          logger.debug('File selected', { fileName: file.name, fileSize: file.size });
                         }
                       }}
                     />

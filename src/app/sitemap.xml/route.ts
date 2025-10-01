@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://astralplanner.app';
 
@@ -124,7 +125,7 @@ async function getDynamicUrls(): Promise<SitemapUrl[]> {
     // });
 
   } catch (error) {
-    console.error('Error fetching dynamic URLs for sitemap:', error);
+    logger.error('Error fetching dynamic URLs for sitemap', {}, error as Error);
   }
 
   return dynamicUrls;
@@ -155,7 +156,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error generating sitemap:', error);
+    logger.error('Error generating sitemap', {}, error as Error);
     return new NextResponse('Error generating sitemap', { status: 500 });
   }
 }

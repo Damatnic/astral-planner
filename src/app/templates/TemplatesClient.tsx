@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { logger } from '@/lib/logger';
 import { 
   Package,
   Plus,
@@ -156,13 +157,12 @@ export default function TemplatesClient() {
         }
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        console.error('Template fetch failed:', {
-          error: errorMessage,
+        logger.error('Template fetch failed', {
           timestamp: new Date().toISOString(),
           userId: 'current-user',
           component: 'TemplatesClient',
           action: 'fetchTemplates'
-        });
+        }, error as Error);
         setData(prev => ({
           ...prev,
           loading: false,
@@ -195,14 +195,13 @@ export default function TemplatesClient() {
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.error('Template like toggle failed:', {
-        error: errorMessage,
+      logger.error('Template like toggle failed', {
         timestamp: new Date().toISOString(),
         userId: 'current-user',
         templateId: templateId,
         component: 'TemplatesClient',
         action: 'toggleLike'
-      });
+      }, error as Error);
     }
   }
 

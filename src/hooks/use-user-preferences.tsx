@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useContext, createContext } from 'react';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export interface UserPreferences {
   appearance: {
@@ -252,7 +253,7 @@ export function UserPreferencesProvider({ children }: { children: React.ReactNod
         applyTheme(mergedPreferences.appearance.theme);
       } else {
         // Any error - use defaults (401s should not happen anymore due to API fallbacks)
-        console.log('Settings API returned error, using defaults. Status:', response.status);
+        logger.info('Settings API returned error, using defaults', { status: response.status });
         setPreferences(defaultPreferences);
         applyTheme(defaultPreferences.appearance.theme);
       }

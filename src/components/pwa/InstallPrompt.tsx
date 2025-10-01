@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Download, X, Smartphone } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { logger } from '@/lib/logger';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>
@@ -107,9 +108,9 @@ export function InstallPrompt({ className }: InstallPromptProps) {
     const choiceResult = await deferredPrompt.userChoice
 
     if (choiceResult.outcome === 'accepted') {
-      console.log('User accepted the install prompt')
+      logger.info('User accepted the install prompt');
     } else {
-      console.log('User dismissed the install prompt')
+      logger.info('User dismissed the install prompt');
     }
 
     // Clear the stored prompt

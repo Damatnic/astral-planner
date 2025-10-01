@@ -3,6 +3,7 @@
 import * as React from "react"
 import { InstallPrompt } from "@/components/pwa/InstallPrompt"
 import { OfflineIndicator } from "@/components/pwa/OfflineIndicator"
+import { logger } from '@/lib/logger';
 
 export function PWAProvider({ children }: { children: React.ReactNode }) {
   const [isClient, setIsClient] = React.useState(false)
@@ -48,7 +49,7 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
           // Service Worker registration failed - continue without PWA features (silent)
           // Only log in development
           if (process.env.NODE_ENV === 'development') {
-            console.log('Service Worker registration failed:', error)
+            logger.info('Service Worker registration failed', {}, error as Error);
           }
         })
     }

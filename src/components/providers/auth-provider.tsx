@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import type { AuthUser } from '@/hooks/use-auth';
+import { authLogger } from '@/lib/logger';
 
 interface User {
   id: string;
@@ -116,7 +117,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (response.ok) {
-        console.log('Session refreshed successfully');
+        authLogger.info('Session refreshed successfully');
         setSessionValid(true);
         return true;
       }
@@ -232,7 +233,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         }
       } catch (error) {
-        console.warn('Error checking session:', error);
+        authLogger.warn('Error checking session', {}, error as Error);
         clearAuthState();
         if (!isPublicRoute) {
           router.push('/login');

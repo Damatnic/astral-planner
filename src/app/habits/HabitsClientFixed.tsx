@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { logger } from '@/lib/logger';
 import { 
   Repeat,
   Plus,
@@ -157,7 +158,7 @@ export default function HabitsClientFixed() {
 
   const toggleHabit = (habitId: string) => {
     // In a real app, this would update the habit completion status
-    console.log('Toggling habit:', habitId);
+    logger.debug('Toggling habit', { habitId });
   };
 
   const getStreakColor = (streak: number) => {

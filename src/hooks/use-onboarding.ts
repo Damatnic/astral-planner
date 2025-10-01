@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 
 interface OnboardingData {
   firstName: string;
@@ -33,7 +34,7 @@ export function useOnboarding() {
         try {
           setOnboardingData(JSON.parse(data));
         } catch (error) {
-          console.warn('Failed to parse onboarding data:', error);
+          logger.warn('Failed to parse onboarding data', {}, error as Error);
         }
       }
     }
