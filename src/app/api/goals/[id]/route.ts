@@ -50,7 +50,7 @@ export async function GET(
 
     // Get goal with full details
     const { id } = await params;
-    const goal = await db.select().from(goals).where(and(eq(goals.id, id), eq(goals.createdBy, userRecord.id))).limit(1).then(r => r[0] || null);
+    const goal = await db.select().from(goals).where(and(eq(goals.id, id), eq(goals.createdBy, userRecord!.id))).limit(1).then(r => r[0] || null);
     
     if (goal) {
       // Get parent goal if exists

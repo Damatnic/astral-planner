@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 // Edge Runtime compatible crypto functions
+/* Unused - kept for future use
 const createHash = (algorithm: string) => {
   return {
     update: (data: string) => ({
@@ -19,6 +20,7 @@ const createHash = (algorithm: string) => {
     })
   };
 };
+*/
 
 const timingSafeEqual = (a: Buffer | string, b: Buffer | string) => {
   const strA = typeof a === 'string' ? a : a.toString();
@@ -500,7 +502,7 @@ export class InputSanitizer {
  * Security Middleware
  */
 export function createSecurityMiddleware() {
-  return async (request: NextRequest) => {
+  return async (_request: NextRequest) => {
     const response = NextResponse.next();
     
     // Add security headers

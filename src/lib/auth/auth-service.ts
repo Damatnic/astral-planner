@@ -9,7 +9,6 @@ import {
   createDemoAuthTokens, 
   verifyToken, 
   refreshAccessToken, 
-  validateSessionToken,
   blacklistToken,
   isTokenBlacklisted,
   extractTokenFromRequest,
@@ -22,13 +21,14 @@ import {
 import { RateLimiter } from './rate-limiter';
 import { InputValidator } from './input-validator';
 import Logger from '@/lib/logger';
-import { createHash, randomBytes, timingSafeEqual } from 'crypto';
+import { createHash, timingSafeEqual } from 'crypto';
 
 // Security Configuration
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
 const SESSION_TIMEOUT = 24 * 60 * 60 * 1000; // 24 hours
-const DEMO_PIN_HASH = createHash('sha256').update('0000').digest('hex');
+// Demo PIN hash for validation - kept for future use
+// const DEMO_PIN_HASH = createHash('sha256').update('0000').digest('hex');
 
 export interface LoginRequest {
   accountId: string;
@@ -60,7 +60,8 @@ export interface AuthContext {
 // In-memory stores (in production, use Redis or database)
 const loginAttempts = new Map<string, { count: number; lockoutUntil?: number; lastAttempt: number }>();
 const activeSessions = new Map<string, { userId: string; createdAt: number; lastActivity: number; deviceId?: string }>();
-const deviceFingerprints = new Map<string, { userId: string; trusted: boolean; lastSeen: number }>();
+// Device fingerprints for future use
+// const deviceFingerprints = new Map<string, { userId: string; trusted: boolean; lastSeen: number }>();
 
 // Rate limiters
 const loginRateLimit = new RateLimiter(5, 60 * 1000); // 5 attempts per minute

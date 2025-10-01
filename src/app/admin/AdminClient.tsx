@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { 
-  Users, Activity, Database, Settings, TrendingUp, 
+  Users, Activity, Database, TrendingUp, 
   AlertCircle, CheckCircle, XCircle, RefreshCw,
-  Download, Upload, Search, Filter
+  Download, Filter
 } from 'lucide-react'
 import {
   Table,
@@ -22,7 +22,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 import Logger from '@/lib/logger'
-import type { AdminUser, AdminActivity, AdminStats } from '@/types'
+import type { AdminUser, AdminActivity } from '@/types'
 
 interface DashboardStats {
   totalUsers: number

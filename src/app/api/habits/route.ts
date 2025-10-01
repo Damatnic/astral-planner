@@ -1,23 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAccountData } from '@/lib/account-data';
+import { apiLogger } from '@/lib/logger';
 
 // GET /api/habits - List habits with logs (Demo version) 
 export async function GET(req: NextRequest) {
   try {
-    console.log('Fetching habits with account-specific data');
+    apiLogger.debug('Fetching habits with account-specific data', { action: 'getHabits' });
     
     // Get user ID from query params or headers (fallback to demo)
     const url = new URL(req.url);
     const userId = url.searchParams.get('userId') || 'demo-user';
     
-    console.log('Fetching habits for user:', userId);
+    apiLogger.debug('Fetching habits for user', { userId, action: 'getHabits' });
 
     // Get account-specific data with error handling
     let accountData;
     try {
       accountData = getAccountData(userId);
     } catch (accountError) {
-      console.error('Failed to get account data:', accountError);
+      apiLogger.error('Failed to get account data', { userId, action: 'getHabits' }, accountError as Error);
       return NextResponse.json(
         { error: 'Failed to retrieve account data', habits: [], stats: {} },
         { status: 200 } // Return 200 with empty data instead of 500
@@ -47,7 +48,7 @@ export async function GET(req: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Failed to fetch habits:', error);
+    apiLogger.error('Failed to fetch habits', { action: 'getHabits' }, error as Error);
     return NextResponse.json(
       { 
         error: 'Failed to fetch habits', 
@@ -74,7 +75,7 @@ export async function GET(req: NextRequest) {
 // POST /api/habits - Create habit (Demo version)
 export async function POST(req: NextRequest) {
   try {
-    console.log('Creating habit with demo response');
+    apiLogger.info('Creating habit', { action: 'createHabit' });
     
     const body = await req.json();
     
@@ -101,7 +102,7 @@ export async function POST(req: NextRequest) {
       message: 'Habit created successfully'
     });
   } catch (error) {
-    console.error('Failed to create habit:', error);
+    apiLogger.error('Failed to create habit', { action: 'createHabit' }, error as Error);
     return NextResponse.json(
       { error: 'Failed to create habit' },
       { status: 500 }
@@ -112,7 +113,7 @@ export async function POST(req: NextRequest) {
 // PATCH /api/habits - Update habit completion (Demo version)
 export async function PATCH(req: NextRequest) {
   try {
-    console.log('Updating habit completion with demo response');
+    apiLogger.info('Updating habit completion', { action: 'updateHabitCompletion' });
     
     const body = await req.json();
     const { habitId, date, completed, value, notes } = body;
@@ -141,7 +142,7 @@ export async function PATCH(req: NextRequest) {
       message: completed ? 'Habit completed!' : 'Habit updated'
     });
   } catch (error) {
-    console.error('Failed to log habit:', error);
+    apiLogger.error('Failed to log habit', { action: 'updateHabitCompletion' }, error as Error);
     return NextResponse.json(
       { error: 'Failed to log habit' },
       { status: 500 }
@@ -152,7 +153,7 @@ export async function PATCH(req: NextRequest) {
 // DELETE /api/habits - Delete habit (Demo version)
 export async function DELETE(req: NextRequest) {
   try {
-    console.log('Deleting habit with demo response');
+    apiLogger.info('Deleting habit', { action: 'deleteHabit' });
     
     const { searchParams } = new URL(req.url);
     const habitId = searchParams.get('id');
@@ -171,7 +172,7 @@ export async function DELETE(req: NextRequest) {
       habitId
     });
   } catch (error) {
-    console.error('Failed to delete habit:', error);
+    apiLogger.error('Failed to delete habit', { action: 'deleteHabit' }, error as Error);
     return NextResponse.json(
       { error: 'Failed to delete habit' },
       { status: 500 }

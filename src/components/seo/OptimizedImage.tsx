@@ -66,7 +66,8 @@ export function OptimizedImage({
 
     // For internal images, generate optimized formats
     const basePath = originalSrc.replace(/\.[^/.]+$/, '');
-    const extension = originalSrc.split('.').pop();
+    // Extension extraction for future format validation
+    // const extension = originalSrc.split('.').pop();
 
     return {
       avif: `${basePath}.avif`,
