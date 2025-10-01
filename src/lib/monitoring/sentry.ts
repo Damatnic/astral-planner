@@ -1,7 +1,8 @@
 import * as Sentry from '@sentry/nextjs'
+import { logger } from '@/lib/logger';
 
 export function captureException(error: Error | unknown, context?: Record<string, any>) {
-  // TODO: Replace with proper logging - console.error('Error captured:', error)
+  logger.error('Error captured', context || {}, error as Error);
   
   if (process.env.NODE_ENV === 'production') {
     Sentry.captureException(error, {

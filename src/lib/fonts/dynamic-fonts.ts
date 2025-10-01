@@ -1,5 +1,6 @@
 // Catalyst Dynamic Font Loading System - Enhanced Performance
 import { cache } from 'react';
+import { logger } from '@/lib/logger';
 
 // Font display strategies for optimal performance
 type FontDisplay = 'auto' | 'block' | 'swap' | 'fallback' | 'optional';
@@ -85,7 +86,7 @@ export const loadFontAsync = cache(async (fontKey: string): Promise<void> => {
 
   const config = AVAILABLE_FONTS[fontKey];
   if (!config) {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn(`Font ${fontKey} not found in configuration`);
+    logger.warn('Font not found in configuration', { fontKey });
     return;
   }
 
@@ -124,7 +125,7 @@ export const loadFontAsync = cache(async (fontKey: string): Promise<void> => {
         resolve();
       })
       .catch(error => {
-        // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn(`Failed to load font ${fontKey}:`, error);
+        logger.warn('Failed to load font', { fontKey }, error as Error);
         // Use fallback fonts
         document.documentElement.style.setProperty(
           config.variable,
