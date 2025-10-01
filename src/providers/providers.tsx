@@ -8,7 +8,13 @@ import { PWAProvider } from '@/components/providers/pwa-provider';
 import { ShortcutsProvider } from './shortcuts-provider';
 import { CollaborationProvider } from '@/components/collaboration/CollaborationProvider';
 import { UserPreferencesProvider } from '@/hooks/use-user-preferences';
-import { useState } from 'react';
+import { createContext, useContext, useState } from 'react';
+
+const CspNonceContext = createContext<string | undefined>(undefined);
+
+export function useCspNonce(): string | undefined {
+  return useContext(CspNonceContext);
+}
 
 // CATALYST CRITICAL: Ultra-lazy loading for DevTools (production excluded)
 const ReactQueryDevtools = process.env.NODE_ENV === 'development' 
@@ -21,7 +27,7 @@ const ReactQueryDevtools = process.env.NODE_ENV === 'development'
     )
   : () => null;
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({ children, cspNonce }: { children: React.ReactNode; cspNonce?: string }) {
   // CATALYST CRITICAL: Ultra-optimized query client for performance
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
@@ -34,9 +40,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
         networkMode: 'offlineFirst', // CRITICAL: Offline-first for better performance
         retry: (failureCount, error: unknown) => {
           const apiError = error as { status?: number };
+          const status = apiError?.status;
           // CRITICAL: Stop infinite retries immediately for known errors
-          if (apiError?.status === 404 || apiError?.status === 401 || 
-              apiError?.status === 403 || apiError?.status >= 500) {
+          if (status !== undefined && (status === 404 || status === 401 || status === 403 || status >= 500)) {
             return false;
           }
           return failureCount < 1; // REDUCED to 1 retry only
@@ -54,29 +60,31 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }));
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="dark"
-        enableSystem={true}
-        disableTransitionOnChange
-        storageKey="astral-theme"
-      >
-        <AuthProvider>
-          <UserPreferencesProvider>
-            <PWAProvider>
-              <CollaborationProvider workspaceId="default-workspace">
-                <ShortcutsProvider>
-                  {children}
-                </ShortcutsProvider>
-              </CollaborationProvider>
-            </PWAProvider>
-          </UserPreferencesProvider>
-        </AuthProvider>
-      </ThemeProvider>
-      {process.env.NODE_ENV === 'development' && (
-        <ReactQueryDevtools initialIsOpen={false} />
-      )}
-    </QueryClientProvider>
+    <CspNonceContext.Provider value={cspNonce}>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={true}
+          disableTransitionOnChange
+          storageKey="astral-theme"
+        >
+          <AuthProvider>
+            <UserPreferencesProvider>
+              <PWAProvider>
+                <CollaborationProvider workspaceId="default-workspace">
+                  <ShortcutsProvider>
+                    {children}
+                  </ShortcutsProvider>
+                </CollaborationProvider>
+              </PWAProvider>
+            </UserPreferencesProvider>
+          </AuthProvider>
+        </ThemeProvider>
+        {process.env.NODE_ENV === 'development' && (
+          <ReactQueryDevtools initialIsOpen={false} />
+        )}
+      </QueryClientProvider>
+    </CspNonceContext.Provider>
   );
 }

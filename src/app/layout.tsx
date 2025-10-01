@@ -4,6 +4,7 @@ import { Providers } from '@/providers/providers';
 import { Analytics } from '@/components/analytics/Analytics';
 import { Toaster } from 'sonner';
 import './globals.css';
+import { headers } from 'next/headers';
 
 // CATALYST CRITICAL FIX: Import performance monitor
 import { PerformanceMonitor } from '@/components/PerformanceMonitor';
@@ -149,27 +150,35 @@ export const viewport = {
   viewportFit: 'cover',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const incomingHeaders = await headers();
+  const cspNonce = process.env.NODE_ENV === 'development'
+    ? undefined
+    : incomingHeaders.get('x-csp-nonce') ?? undefined;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
+          nonce={cspNonce}
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(generateAppJsonLd()),
           }}
         />
         <script
           type="application/ld+json"
+          nonce={cspNonce}
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(generateOrganizationJsonLd()),
           }}
         />
+        {cspNonce && <meta name="csp-nonce" content={cspNonce} />}
         
         {/* Preconnect to external domains */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -179,8 +188,8 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://api.astralplanner.app" />
         <link rel="dns-prefetch" href="https://analytics.astralplanner.app" />
       </head>
-      <body className={`${inter.className} ${caveat.variable}`}>
-        <Providers>
+      <body className={`${inter.className} ${caveat.variable}`} data-csp-nonce={cspNonce}>
+        <Providers cspNonce={cspNonce}>
           <div className="min-h-screen bg-background text-foreground">
             {children}
           </div>
@@ -198,7 +207,7 @@ export default function RootLayout({
           <PerformanceMonitor />
         </Providers>
         <script
-          nonce={process.env.NODE_ENV === 'development' ? undefined : 'CSP_NONCE_PLACEHOLDER'}
+          nonce={cspNonce}
           dangerouslySetInnerHTML={{
             __html: `
               // Development: Service worker completely disabled

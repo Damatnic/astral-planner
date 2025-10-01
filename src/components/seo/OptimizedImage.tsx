@@ -7,6 +7,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import { useCspNonce } from '@/providers/providers';
 
 interface OptimizedImageProps {
   src: string;
@@ -293,6 +294,7 @@ export function GalleryImage({
   height = 300,
   className = '',
 }: GalleryImageProps) {
+  const cspNonce = useCspNonce();
   // Generate structured data for the image
   const imageStructuredData = {
     '@context': 'https://schema.org',
@@ -315,6 +317,7 @@ export function GalleryImage({
     <figure className={`${className}`} itemScope itemType="https://schema.org/ImageObject">
       <script
         type="application/ld+json"
+        nonce={cspNonce}
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(imageStructuredData),
         }}

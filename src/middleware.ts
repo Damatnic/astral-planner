@@ -13,6 +13,9 @@ import {
  */
 export default async function guardianMiddleware(req: NextRequest) {
   const startTime = Date.now();
+  const nonce = generateCSPNonce();
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set('x-csp-nonce', nonce);
   
   try {
     const pathname = req.nextUrl.pathname;
@@ -30,18 +33,27 @@ export default async function guardianMiddleware(req: NextRequest) {
         details: { pathname, method, rateLimitExceeded: true }
       });
       
+      const rateLimitHeaders = getSecurityHeaders(nonce, true);
       return new NextResponse('Rate limit exceeded', { 
         status: 429,
         headers: {
           'Retry-After': '60',
-          ...getSecurityHeaders(undefined, true)
+          ...rateLimitHeaders,
+          'X-CSP-Nonce': nonce
         }
       });
     }
     
     // Skip middleware for static assets and system routes
     if (shouldIgnoreRoute(pathname)) {
-      return addEnhancedSecurityHeaders(NextResponse.next());
+      return addEnhancedSecurityHeaders(
+        NextResponse.next({
+          request: {
+            headers: new Headers(requestHeaders)
+          }
+        }),
+        nonce
+      );
     }
     
     // Security logging for API routes
@@ -58,14 +70,22 @@ export default async function guardianMiddleware(req: NextRequest) {
     
     // Public route check
     if (isPublicRoute(pathname)) {
-      const response = NextResponse.next();
-      addEnhancedSecurityHeaders(response, isApiRoute);
+      const response = NextResponse.next({
+        request: {
+          headers: new Headers(requestHeaders)
+        }
+      });
+      addEnhancedSecurityHeaders(response, nonce, isApiRoute);
       return response;
     }
     
     // For now, allow all other routes (authentication can be added later)
-    const response = NextResponse.next();
-    addEnhancedSecurityHeaders(response, isApiRoute);
+    const response = NextResponse.next({
+      request: {
+        headers: new Headers(requestHeaders)
+      }
+    });
+    addEnhancedSecurityHeaders(response, nonce, isApiRoute);
     
     // Performance monitoring
     const processingTime = Date.now() - startTime;
@@ -83,8 +103,12 @@ export default async function guardianMiddleware(req: NextRequest) {
     });
     
     // Fail gracefully
-    const response = NextResponse.next();
-    addEnhancedSecurityHeaders(response, false);
+    const response = NextResponse.next({
+      request: {
+        headers: new Headers(requestHeaders)
+      }
+    });
+    addEnhancedSecurityHeaders(response, nonce, false);
     return response;
   }
 }
@@ -125,8 +149,7 @@ function generateRequestId(): string {
 /**
  * Add enhanced security headers to response
  */
-function addEnhancedSecurityHeaders(response: NextResponse, isApiRoute: boolean = false): NextResponse {
-  const nonce = generateCSPNonce();
+function addEnhancedSecurityHeaders(response: NextResponse, nonce: string, isApiRoute: boolean = false): NextResponse {
   const headers = getSecurityHeaders(nonce, isApiRoute);
   
   Object.entries(headers).forEach(([key, value]) => {

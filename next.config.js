@@ -73,22 +73,6 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin'
-          },
-          {
-            key: 'Content-Security-Policy',
-            value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com 'sha256-6nvG1C/mEoCWAcSkHsFfaiJWmJ9SNk5yOvknC6V2Opk=' 'sha256-9lEWXf2Hn2ieCK1KQ/S66sQ4keHF188UUDCKoduzMsE=' 'sha256-OBTN3RiyCV4Bq7dFqZ5a2pAXjnCcCYeTJMO2I/LYKeo=' 'sha256-L9Kk9iAgvOo4F+tNuX+vA20eb3nmkdVgO3Lun5m0HKE=' 'sha256-hqUl3T/0qZRtIN8ucdJQg/QLY9Fpu9SEiSMuK6VscRM=' 'sha256-ODiyWGpk3ai4W7JKpPqCtydnW8TgOer/4fVOkzgVx+g=' 'sha256-vIqb4kNPhpAR1NRKMcLGzbkYO8krHm3ztJpRep2+oSM=' 'sha256-ZKRTrEp3SK3KTk9DuSopbgaICywsZFZJdPH6SN1vMWc=' 'sha256-TnkFpSNK5gikNZg0QSRIQ9bqtnioaENlqoyam0yFSRg=' 'sha256-zlmxiox02siGltNlorvFS7iuu75seOt8KYXvDCZ8rAA=' 'sha256-2UkHY4aL45zJS9ILl4BmSK5hPAdZhC+F3WDmXmwwO6k=' 'sha256-BgwPRjL3Y3O9chB5VYIiyBUZ7emEWzfwuzOT5fkypRs=' 'sha256-J4hDrKZaPjVCO2Nrf8PIJHLSoThQM+eaplEmvNFociw=' 'sha256-AYMkpfPmrAtiYXbZ+TZx/jPnAV5jy5fkR7fNf1rWZb0=' 'sha256-iqDQ5UmX/puDk+yOQ3YMg58GyYigW0+I3qtXCBbjwkw=' 'sha256-tTb/fLqlXhO4WxBRp9dm6/gpq2Ae5Jjp13ppccwnzDg=' 'sha256-H4K9zv0cLkIfOYR1NUNZI/USAfqhNWhh1AQWOMf2zF8=' 'sha256-w5OIGPTeC92edgorRuMUTqBE8Tw17hrrCY5jrqG4Kww=' 'sha256-I2nBKt5VIqh/HJimmWebdN53eP9axUaJglRSR4cj/BE=' 'sha256-UKdfPBNaaMNVaM/bTU3RiexaOMyMqtCpJInkDCTrlNs=' 'sha256-+wCMzcEZjvVkJKX8fGYLAbWvMI65zEOqiriLj5pD+MU=' 'sha256-bDD5YtEP0H0BAz7IUdKpyR8fjXs1bUQkFJmIfLZJ0K0=' 'sha256-yhycP12wTAwsJhfYgUco4U46C2S/sYGYxgIaqd0ckWg=' 'sha256-TM0gfv7DcirldRw2OO/I78A5HijnDirCZ4kD6oxdYSg=' 'sha256-DlvvmRWxqUMKtpoqEL0k9BOSUR5CSic14MG8ffhhWHs=' 'sha256-qVJ6zdcE738yylw/idbJYnqp1PLPUvhb1iQOsxsYBRQ=' 'sha256-7HMdOk1pnG4eP4lpln4d71gFnH3wLD8880bFLYhfdnM=' 'sha256-wH8P7UmZPoaNqTHZsPKNAyAKhMqNzHvjec9OnkWD24o=' 'sha256-l8qTUavRBQcY6lxRkQXJZxKstmNb6EuQCDnwKhj8zyk=' 'sha256-4zed+JBas++l0jx2rNqmjViUqCcJGfkrohwTm51Jjys=' 'sha256-YNeqeJLx79iODEhVx313jdR4P04nRRbRBRWKyleaPD8=' 'sha256-hJUCrsoceF51eVHqWy+9LwBAHjNY0UG2GLaBPP4TBOw=' 'sha256-aIZRQrxInXB41Gwa0ceIs4NySmhxEUJP6q+FUFZywQs='",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai",
-              "img-src 'self' data: https: blob:",
-              "connect-src 'self' https: wss: ws://localhost:* ws://127.0.0.1:*",
-              "media-src 'self'",
-              "object-src 'none'",
-              "base-uri 'self'",
-              "form-action 'self'",
-              "frame-ancestors 'none'"
-            ].join('; ')
           }
         ]
       }

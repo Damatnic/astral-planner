@@ -6,12 +6,15 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useCspNonce } from '@/providers/providers';
 
 interface JsonLdProps {
   data: object | object[];
 }
 
 export function JsonLd({ data }: JsonLdProps) {
+  const cspNonce = useCspNonce();
+
   useEffect(() => {
     // Ensure we're in the browser environment
     if (typeof window === 'undefined') return;
@@ -21,7 +24,7 @@ export function JsonLd({ data }: JsonLdProps) {
 
     // Create and inject script tags for each structured data object
     dataArray.forEach((item, index) => {
-      const scriptId = `jsonld-${index}-${Date.now()}`;
+      const scriptId = `jsonld-${index}`;
       
       // Remove existing script if it exists
       const existingScript = document.getElementById(scriptId);
@@ -33,6 +36,9 @@ export function JsonLd({ data }: JsonLdProps) {
       const script = document.createElement('script');
       script.id = scriptId;
       script.type = 'application/ld+json';
+      if (cspNonce) {
+        script.setAttribute('nonce', cspNonce);
+      }
       script.textContent = JSON.stringify(item);
       
       // Append to head
@@ -42,14 +48,14 @@ export function JsonLd({ data }: JsonLdProps) {
     // Cleanup function to remove scripts when component unmounts
     return () => {
       dataArray.forEach((_, index) => {
-        const scriptId = `jsonld-${index}-${Date.now()}`;
+        const scriptId = `jsonld-${index}`;
         const script = document.getElementById(scriptId);
         if (script) {
           script.remove();
         }
       });
     };
-  }, [data]);
+  }, [data, cspNonce]);
 
   // This component doesn't render anything visible
   return null;
@@ -61,6 +67,7 @@ export function JsonLd({ data }: JsonLdProps) {
  */
 export function JsonLdScript({ data }: JsonLdProps) {
   const dataArray = Array.isArray(data) ? data : [data];
+  const cspNonce = useCspNonce();
 
   return (
     <>
@@ -68,6 +75,7 @@ export function JsonLdScript({ data }: JsonLdProps) {
         <script
           key={index}
           type="application/ld+json"
+          nonce={cspNonce}
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(item, null, 0),
           }}
