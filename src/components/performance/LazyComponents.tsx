@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -91,39 +92,12 @@ export const LazySettingsClient = dynamic(
   }
 );
 
-// CATALYST CRITICAL: Heavy UI components
-export const LazyFramerMotion = dynamic(
-  () => import('framer-motion').then(mod => ({ default: mod.motion })),
-  {
-    loading: () => <div className="opacity-0" />,
-    ssr: false,
-  }
-);
-
 export const LazyReactQueryDevtools = dynamic(
   () => import('@tanstack/react-query-devtools').then(mod => ({ 
     default: mod.ReactQueryDevtools 
   })),
   {
     loading: () => null,
-    ssr: false,
-  }
-);
-
-// CATALYST CRITICAL: Form components
-export const LazyReactHookForm = dynamic(
-  () => import('react-hook-form'),
-  {
-    loading: () => <Skeleton className="h-10 w-full" />,
-    ssr: false,
-  }
-);
-
-// CATALYST CRITICAL: Command palette
-export const LazyCmdk = dynamic(
-  () => import('cmdk'),
-  {
-    loading: () => <Skeleton className="h-64 w-full" />,
     ssr: false,
   }
 );
@@ -138,7 +112,7 @@ export const withLazyLoading = <T,>(
   }
 ) => {
   return dynamic(() => Promise.resolve(Component), {
-    loading: options?.loading || fallback || (() => <Skeleton className="h-32 w-full" />),
+    loading: options?.loading ? () => React.createElement(options.loading as any) : (fallback ? () => React.createElement(fallback as any) : () => <Skeleton className="h-32 w-full" />),
     ssr: options?.ssr ?? false,
   });
 };
