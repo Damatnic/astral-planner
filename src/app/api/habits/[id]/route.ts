@@ -2,11 +2,12 @@
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 import { NextRequest, NextResponse } from 'next/server';
+import { apiLogger } from '@/lib/logger';
 
 // DELETE /api/habits/[id] - Delete specific habit (Demo version)
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    console.log('Deleting specific habit with demo response');
+    apiLogger.info('Deleting specific habit', { action: 'deleteHabit' });
     
     const { id } = await params;
 
@@ -24,7 +25,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       habitId: id
     });
   } catch (error) {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to delete habit:', error);
+    apiLogger.error('Failed to delete habit', { action: 'deleteHabit' }, error as Error);
     return NextResponse.json(
       { error: 'Failed to delete habit' },
       { status: 500 }
@@ -35,7 +36,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 // GET /api/habits/[id] - Get specific habit (Demo version)
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    console.log('Fetching specific habit with demo response');
+    apiLogger.debug('Fetching specific habit', { action: 'getHabit' });
     
     const { id } = await params;
 
@@ -90,7 +91,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       habit: demoHabit
     });
   } catch (error) {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to fetch habit:', error);
+    apiLogger.error('Failed to fetch habit', { action: 'getHabit' }, error as Error);
     return NextResponse.json(
       { error: 'Failed to fetch habit' },
       { status: 500 }
@@ -101,7 +102,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 // PUT /api/habits/[id] - Update specific habit (Demo version)
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    console.log('Updating specific habit with demo response');
+    apiLogger.info('Updating specific habit', { action: 'updateHabit' });
     
     const { id } = await params;
     const body = await req.json();
@@ -142,7 +143,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       message: 'Habit updated successfully'
     });
   } catch (error) {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to update habit:', error);
+    apiLogger.error('Failed to update habit', { action: 'updateHabit' }, error as Error);
     return NextResponse.json(
       { error: 'Failed to update habit' },
       { status: 500 }
