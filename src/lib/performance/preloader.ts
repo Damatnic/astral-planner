@@ -1,6 +1,6 @@
 'use client'
 
-import { performanceLogger } from '@/lib/logger';
+import { Logger as performanceLogger } from '@/lib/logger/edge';
 
 // Preload critical components and assets
 export class ComponentPreloader {
@@ -24,7 +24,7 @@ export class ComponentPreloader {
         try {
           await component()
         } catch (error) {
-          performanceLogger.warn('Failed to preload critical component', {}, error as Error);
+          performanceLogger.warn('Failed to preload critical component', error as Error);
         }
       })
     })
@@ -46,7 +46,7 @@ export class ComponentPreloader {
           try {
             await component()
           } catch (error) {
-            performanceLogger.warn('Failed to preload interaction component', {}, error as Error);
+            performanceLogger.warn('Failed to preload interaction component', error as Error);
           }
         })
       })
@@ -80,7 +80,7 @@ export class ComponentPreloader {
           try {
             await component()
           } catch (error) {
-            performanceLogger.warn('Failed to preload idle component', {}, error as Error);
+            performanceLogger.warn('Failed to preload idle component', error as Error);
           }
         })
       })
@@ -109,7 +109,7 @@ export class ComponentPreloader {
           await componentLoader()
           this.preloadedModules.add(route)
         } catch (error) {
-          performanceLogger.warn('Failed to preload component for route', { route }, error as Error);
+          performanceLogger.warn('Failed to preload component for route', error as Error);
         }
       })
 

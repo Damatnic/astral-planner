@@ -2,7 +2,7 @@
  * SEO Performance Monitoring and Analytics
  * Track and optimize SEO metrics for maximum search visibility
  */
-import { logger } from '@/lib/logger';
+import { Logger as logger } from '@/lib/logger/edge';
 
 // Core Web Vitals tracking
 export interface WebVitalsMetrics {
@@ -361,7 +361,7 @@ function validateStructuredData(): boolean {
     });
     return true;
   } catch (error) {
-    logger.error('Invalid structured data', {}, error as Error);
+    logger.error('Invalid structured data', error as Error);
     return false;
   }
 }

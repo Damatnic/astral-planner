@@ -5,7 +5,7 @@
 
 import { createCipheriv, createDecipheriv, randomBytes, scrypt, timingSafeEqual, createHmac } from 'crypto';
 import { promisify } from 'util';
-import Logger from '@/lib/logger';
+import { Logger } from '@/lib/logger/edge';
 
 const scryptAsync = promisify(scrypt);
 

@@ -13,7 +13,7 @@ import {
   SecurityLogger 
 } from './security-hardening';
 import { requireAuth } from '@/lib/auth/auth-service';
-import Logger from '@/lib/logger';
+import { Logger } from '@/lib/logger/edge';
 
 export interface SecurityValidationResult {
   valid: boolean;

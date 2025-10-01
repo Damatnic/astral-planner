@@ -1,6 +1,6 @@
 // Catalyst Image Optimization System
 import React, { useState, useEffect } from 'react';
-import { performanceLogger } from '@/lib/logger';
+import { Logger as performanceLogger } from '@/lib/logger/edge';
 
 interface ImageOptions {
   quality?: number;

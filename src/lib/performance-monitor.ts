@@ -2,7 +2,7 @@
  * CATALYST CRITICAL PERFORMANCE MONITOR
  * Real-time performance tracking to prevent crashes
  */
-import { performanceLogger } from '@/lib/logger';
+import { Logger as performanceLogger } from '@/lib/logger/edge';
 
 interface PerformanceMetrics {
   memoryUsage: number;

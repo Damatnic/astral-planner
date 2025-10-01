@@ -18,7 +18,7 @@ import { AlertTriangle, RefreshCw, Home, Bug, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import Logger from '@/lib/logger';
+import { Logger } from '@/lib/logger/edge';
 
 interface ErrorBoundaryProps {
   children: ReactNode;

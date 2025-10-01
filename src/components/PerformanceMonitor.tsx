@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { performanceMonitor } from '@/lib/performance-monitor';
-import { performanceLogger } from '@/lib/logger';
+import { Logger as performanceLogger } from '@/lib/logger/edge';
 
 export function PerformanceMonitor() {
   useEffect(() => {

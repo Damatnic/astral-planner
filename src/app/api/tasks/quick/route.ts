@@ -215,7 +215,7 @@ async function handlePOST(req: NextRequest) {
     });
 
   } catch (error) {
-    apiLogger.error('Quick creation error', { action: 'createQuickTask' }, error as Error);
+    apiLogger.error('Quick creation error', error as Error);
     return NextResponse.json(
       { error: 'Failed to create item' },
       { status: 500 }

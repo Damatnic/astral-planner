@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import type { AuthUser } from '@/hooks/use-auth';
-import { authLogger } from '@/lib/logger';
+import { Logger as authLogger } from '@/lib/logger/edge';
 
 interface User {
   id: string;
@@ -233,7 +233,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         }
       } catch (error) {
-        authLogger.warn('Error checking session', {}, error as Error);
+        authLogger.warn('Error checking session', error);
         clearAuthState();
         if (!isPublicRoute) {
           router.push('/login');

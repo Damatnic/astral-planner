@@ -1,6 +1,6 @@
 import Pusher from 'pusher-js';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { logger } from '@/lib/logger';
+import { Logger as logger } from '@/lib/logger/edge';
 
 let pusherClient: Pusher | null = null;
 
@@ -27,7 +27,7 @@ export function getPusherClient() {
         },
       });
     } catch (error) {
-      logger.error('Failed to initialize Pusher client', {}, error as Error);
+      logger.error('Failed to initialize Pusher client', error as Error);
       return null;
     }
   }

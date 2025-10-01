@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { logger } from '@/lib/logger';
+import { Logger as logger } from '@/lib/logger/edge';
 import { 
   Repeat,
   Plus,

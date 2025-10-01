@@ -4,7 +4,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import Logger from '@/lib/logger';
+import { Logger } from '@/lib/logger/edge';
 import { SecurityLogger } from './security-hardening';
 
 export interface SecureErrorConfig {

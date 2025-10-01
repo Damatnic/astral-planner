@@ -1,5 +1,5 @@
 import { Redis } from '@upstash/redis'
-import { logger } from '@/lib/logger'
+import { Logger as logger } from '@/lib/logger/edge'
 
 // Create Redis client
 const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
@@ -38,7 +38,7 @@ export class Cache {
       const data = await this.redis.get(key)
       return data as T
     } catch (error) {
-      logger.error('Cache get error', { key }, error as Error);
+      logger.error('Cache get error', error as Error);
       return null
     }
   }
@@ -60,7 +60,7 @@ export class Cache {
         }
       }
     } catch (error) {
-      logger.error('Cache set error', { key }, error as Error);
+      logger.error('Cache set error', error as Error);
     }
   }
 
@@ -70,7 +70,7 @@ export class Cache {
     try {
       await this.redis.del(key)
     } catch (error) {
-      logger.error('Cache delete error', { key }, error as Error);
+      logger.error('Cache delete error', error as Error);
     }
   }
 
@@ -86,7 +86,7 @@ export class Cache {
         ])
       }
     } catch (error) {
-      logger.error('Cache invalidate tag error', { tag }, error as Error);
+      logger.error('Cache invalidate tag error', error as Error);
     }
   }
 
@@ -96,7 +96,7 @@ export class Cache {
     try {
       await this.redis.flushdb()
     } catch (error) {
-      logger.error('Cache flush error', {}, error as Error);
+      logger.error('Cache flush error', error as Error);
     }
   }
 
@@ -156,3 +156,4 @@ export const CacheTags = {
   HABIT: (habitId: string) => `habit:${habitId}`,
   TEMPLATE: (templateId: string) => `template:${templateId}`,
 } as const
+

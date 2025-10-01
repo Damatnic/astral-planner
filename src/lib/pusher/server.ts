@@ -1,5 +1,5 @@
 // Edge Runtime compatible pusher implementation
-import { logger } from '@/lib/logger';
+import { Logger as logger } from '@/lib/logger/edge';
 
 let pusherServer: any = null
 

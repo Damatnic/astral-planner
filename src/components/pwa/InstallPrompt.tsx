@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Download, X, Smartphone } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { logger } from '@/lib/logger';
+import { Logger as logger } from '@/lib/logger/edge';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>

@@ -18,7 +18,7 @@ import {
 import { phoenixRateLimiter } from './rate-limiter';
 import { DataEncryptionService, DataClassification } from './data-encryption';
 import { withAPISecurity } from './api-security';
-import Logger from '@/lib/logger';
+import { Logger } from '@/lib/logger/edge';
 
 export interface SecurityAuditResult {
   score: number;

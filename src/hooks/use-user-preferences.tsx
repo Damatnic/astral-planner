@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useContext, createContext } from 'react';
 import { toast } from 'sonner';
-import { logger } from '@/lib/logger';
+import { Logger as logger } from '@/lib/logger/edge';
 
 export interface UserPreferences {
   appearance: {

@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 import { NextRequest, NextResponse } from 'next/server';
 import { getAccountData } from '@/lib/account-data';
-import { apiLogger } from '@/lib/logger';
+import { Logger as apiLogger } from '@/lib/logger/edge';
 
 // GET /api/goals - List goals with account-specific data (Demo version)
 export async function GET(req: NextRequest) {
@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
       }
     });
   } catch (error) {
-    apiLogger.error('Failed to fetch goals', { action: 'getGoals' }, error as Error);
+    apiLogger.error('Failed to fetch goals', error);
     return NextResponse.json(
       { error: 'Failed to fetch goals' },
       { status: 500 }
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
       message: 'Goal created successfully'
     });
   } catch (error) {
-    apiLogger.error('Failed to create goal', { action: 'createGoal' }, error as Error);
+    apiLogger.error('Failed to create goal', error);
     return NextResponse.json(
       { error: 'Failed to create goal' },
       { status: 500 }

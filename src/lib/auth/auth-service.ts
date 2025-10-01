@@ -20,7 +20,8 @@ import {
 
 import { RateLimiter } from './rate-limiter';
 import { InputValidator } from './input-validator';
-import Logger from '@/lib/logger';
+import type { Goal, Task, Habit } from '@/types';
+import { Logger } from '@/lib/logger/edge';
 import { createHash, timingSafeEqual } from 'crypto';
 
 // Security Configuration

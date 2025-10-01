@@ -1,5 +1,5 @@
 import Pusher from 'pusher';
-import { logger } from '@/lib/logger';
+import { Logger as logger } from '@/lib/logger/edge';
 
 let pusherServer: Pusher | null = null;
 
@@ -257,7 +257,7 @@ export class RealtimeService {
       const result = await this.pusher.get({ path: `/channels/${channelName}` });
       return result;
     } catch (error) {
-      logger.error('Failed to get channel info', { channelName }, error as Error);
+      logger.error('Failed to get channel info', error as Error);
       return null;
     }
   }
@@ -267,7 +267,7 @@ export class RealtimeService {
       const result = await this.pusher.get({ path: '/channels' });
       return result;
     } catch (error) {
-      logger.error('Failed to get active channels', {}, error as Error);
+      logger.error('Failed to get active channels', error as Error);
       return null;
     }
   }

@@ -88,7 +88,7 @@ async function handlePUT(req: NextRequest) {
       message: 'Settings updated successfully'
     });
   } catch (error) {
-    apiLogger.error('Settings update error', { action: 'updateSettings' }, error as Error);
+    apiLogger.error('Settings update error', error as Error);
     return NextResponse.json(
       { error: 'Failed to update settings' },
       { status: 500 }
@@ -149,7 +149,7 @@ async function handleGET(req: NextRequest) {
       }
     });
   } catch (error) {
-    apiLogger.error('Settings fetch error', { action: 'getSettings' }, error as Error);
+    apiLogger.error('Settings fetch error', error as Error);
     return NextResponse.json(
       { error: 'Failed to fetch settings' },
       { status: 500 }

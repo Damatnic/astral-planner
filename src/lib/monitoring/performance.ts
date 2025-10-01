@@ -1,5 +1,5 @@
 import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals'
-import { performanceLogger } from '@/lib/logger';
+import { Logger as performanceLogger } from '@/lib/logger/edge';
 
 const vitalsUrl = 'https://vitals.vercel-analytics.com/v1/vitals'
 
@@ -65,7 +65,7 @@ export function reportWebVitals() {
     onFCP(sendToAnalytics)
     onINP(sendToAnalytics)
   } catch (err) {
-    performanceLogger.error('Web Vitals failed to report', {}, err as Error);
+    performanceLogger.error('Web Vitals failed to report', err);
   }
 }
 
@@ -90,7 +90,7 @@ export function measurePerformance(name: string, startMark: string, endMark: str
         })
       }
     } catch (err) {
-      performanceLogger.error('Performance measurement failed', { name }, err as Error);
+      performanceLogger.error('Performance measurement failed', err);
     }
   }
 }
@@ -161,7 +161,7 @@ export function monitorLongTasks(): (() => void) | undefined {
     
     return () => observer.disconnect()
   } catch (err) {
-    performanceLogger.error('Long task monitoring failed', {}, err as Error);
+    performanceLogger.error('Long task monitoring failed', err);
     return undefined;
   }
 }

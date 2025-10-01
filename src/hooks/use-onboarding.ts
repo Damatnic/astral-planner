@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { logger } from '@/lib/logger';
+import { Logger as logger } from '@/lib/logger/edge';
 
 interface OnboardingData {
   firstName: string;
@@ -34,7 +34,7 @@ export function useOnboarding() {
         try {
           setOnboardingData(JSON.parse(data));
         } catch (error) {
-          logger.warn('Failed to parse onboarding data', {}, error as Error);
+          logger.warn('Failed to parse onboarding data', error);
         }
       }
     }

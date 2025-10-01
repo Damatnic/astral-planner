@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { authLogger } from '@/lib/logger';
+import { Logger as authLogger } from '@/lib/logger/edge';
 
 export interface AuthUser {
   id: string;
@@ -414,7 +414,7 @@ export function useAuth(): UseAuthReturn {
         if (mounted) updateState({ loading: false });
 
       } catch (error) {
-        authLogger.warn('Auth status check failed', {}, error as Error);
+        authLogger.warn('Auth status check failed', error as Error);
         clearAuthState();
         if (mounted) updateState({ loading: false });
       }

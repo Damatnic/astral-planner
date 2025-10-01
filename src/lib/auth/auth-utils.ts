@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { authLogger } from '@/lib/logger';
+import { headers } from 'next/headers';
+import { Logger as authLogger } from '@/lib/logger/edge';
 
 export interface AuthUser {
   id: string;
@@ -29,7 +30,7 @@ export async function verifyToken(token: string): Promise<AuthUser | null> {
     const { payload } = await jwtVerify(token, SECRET_KEY);
     return payload as unknown as AuthUser;
   } catch (error) {
-    authLogger.error('Token verification failed', { action: 'verifyToken' }, error as Error);
+    authLogger.error('Token verification failed', error as Error);
     return null;
   }
 }
@@ -340,7 +341,7 @@ export function withUsageLimit(
       
       return await handler(req, context);
     } catch (error: unknown) {
-      authLogger.error('Usage limit check failed', { action: 'withUsageLimit' }, error as Error);
+      authLogger.error('Usage limit check failed', error as Error);
       return NextResponse.json(
         { error: 'Internal server error' },
         { status: 500 }

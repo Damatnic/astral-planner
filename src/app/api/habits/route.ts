@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
       }
     });
   } catch (error) {
-    apiLogger.error('Failed to fetch habits', { action: 'getHabits' }, error as Error);
+    apiLogger.error('Failed to fetch habits', error as Error);
     return NextResponse.json(
       { 
         error: 'Failed to fetch habits', 
@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
       message: 'Habit created successfully'
     });
   } catch (error) {
-    apiLogger.error('Failed to create habit', { action: 'createHabit' }, error as Error);
+    apiLogger.error('Failed to create habit', error as Error);
     return NextResponse.json(
       { error: 'Failed to create habit' },
       { status: 500 }
@@ -142,7 +142,7 @@ export async function PATCH(req: NextRequest) {
       message: completed ? 'Habit completed!' : 'Habit updated'
     });
   } catch (error) {
-    apiLogger.error('Failed to log habit', { action: 'updateHabitCompletion' }, error as Error);
+    apiLogger.error('Failed to log habit', error as Error);
     return NextResponse.json(
       { error: 'Failed to log habit' },
       { status: 500 }
@@ -172,7 +172,7 @@ export async function DELETE(req: NextRequest) {
       habitId
     });
   } catch (error) {
-    apiLogger.error('Failed to delete habit', { action: 'deleteHabit' }, error as Error);
+    apiLogger.error('Failed to delete habit', error as Error);
     return NextResponse.json(
       { error: 'Failed to delete habit' },
       { status: 500 }

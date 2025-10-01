@@ -11,7 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { logger } from '@/lib/logger';
+import { Logger as logger } from '@/lib/logger/edge';
 import { 
   Search, 
   Zap, 
@@ -46,7 +46,7 @@ export function SEODashboard({ className = '' }: SEODashboardProps) {
       setCriticalIssues(report.criticalIssues);
       setLastUpdated(new Date());
     } catch (error) {
-      logger.error('SEO analysis failed', {}, error as Error);
+      logger.error('SEO analysis failed', error as Error);
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,6 @@
 'use client'
 
-import { performanceLogger } from '@/lib/logger';
+import { Logger as performanceLogger } from '@/lib/logger/edge';
 
 // Web Vitals monitoring and reporting
 export interface WebVitalsMetric {
@@ -95,7 +95,7 @@ class WebVitalsReporter {
       this.sendToGoogleAnalytics(metricsToReport)
       this.sendToVercelAnalytics(metricsToReport)
     } catch (error) {
-      performanceLogger.warn('Failed to report web vitals', {}, error as Error);
+      performanceLogger.warn('Failed to report web vitals', error as Error);
     }
   }
 
@@ -118,7 +118,7 @@ class WebVitalsReporter {
     } catch (error) {
       // Fail silently - we don't want to impact user experience
       if (process.env.NODE_ENV === 'development') {
-        performanceLogger.warn('Failed to send metrics to analytics', {}, error as Error);
+        performanceLogger.warn('Failed to send metrics to analytics', error as Error);
       }
     }
   }
@@ -212,7 +212,7 @@ export function startWebVitalsMonitoring() {
       rating: 'good' as const,
     }))
   }).catch(error => {
-    performanceLogger.warn('Failed to load web-vitals library', {}, error as Error);
+    performanceLogger.warn('Failed to load web-vitals library', error as Error);
   })
 }
 
@@ -238,7 +238,7 @@ export class CustomPerformanceObserver {
       // Observe different types of performance entries
       this.observer.observe({ entryTypes: ['navigation', 'resource', 'measure', 'mark'] })
     } catch (error) {
-      performanceLogger.warn('Failed to initialize PerformanceObserver', {}, error as Error);
+      performanceLogger.warn('Failed to initialize PerformanceObserver', error as Error);
     }
   }
 

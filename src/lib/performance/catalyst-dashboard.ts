@@ -1,6 +1,6 @@
 // Catalyst Performance Dashboard - Elite Monitoring System
 import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals';
-import { performanceLogger } from '@/lib/logger';
+import { Logger as performanceLogger } from '@/lib/logger/edge';
 
 interface PerformanceMetrics {
   // Core Web Vitals

@@ -132,10 +132,7 @@ export function copyToClipboard(text: string): Promise<void> {
   try {
     document.execCommand("copy")
   } catch (error) {
-    logger.error('Failed to copy text to clipboard', { 
-      component: 'utils',
-      action: 'copyToClipboard'
-    }, error as Error);
+    logger.error('Failed to copy text to clipboard', error as Error);
     throw new Error("Failed to copy to clipboard")
   } finally {
     textArea.remove()

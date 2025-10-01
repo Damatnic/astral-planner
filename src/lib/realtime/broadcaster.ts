@@ -1,5 +1,5 @@
 import { broadcast, broadcastToWorkspace, broadcastToUser } from '@/lib/pusher/server';
-import Logger from '@/lib/logger';
+import { Logger } from '@/lib/logger/edge';
 
 export interface BroadcastOptions {
   workspaceId: string;

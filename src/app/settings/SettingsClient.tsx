@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { logger } from '@/lib/logger';
+import { Logger as logger } from '@/lib/logger/edge';
 import { 
   User, 
   Bell, 

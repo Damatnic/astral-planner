@@ -26,7 +26,7 @@ export async function GET() {
       status: hasDbUrl ? 200 : 503
     });
   } catch (error) {
-    apiLogger.error('Database health check failed', { action: 'healthCheck' }, error as Error);
+    apiLogger.error('Database health check failed', error as Error);
     return NextResponse.json(
       { 
         ok: false, 

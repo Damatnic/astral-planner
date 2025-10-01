@@ -95,15 +95,25 @@ class EdgeLogger {
   /**
    * Log warning messages
    */
-  warn(message: string, meta?: LogMetadata): void {
-    this.log('warn', message, meta);
+  warn(message: string, meta?: LogMetadata | unknown): void {
+    // Handle unknown type by converting if needed
+    if (meta && typeof meta === 'object' && !(meta instanceof Error)) {
+      this.log('warn', message, meta as LogMetadata);
+    } else {
+      this.log('warn', message, meta as LogMetadata);
+    }
   }
 
   /**
    * Log error messages
    */
-  error(message: string, error?: Error | LogMetadata): void {
-    this.log('error', message, error);
+  error(message: string, error?: Error | LogMetadata | unknown): void {
+    // Handle unknown type by converting to Error if needed
+    if (error && !(error instanceof Error) && typeof error === 'object') {
+      this.log('error', message, error as LogMetadata);
+    } else {
+      this.log('error', message, error as Error | LogMetadata);
+    }
   }
 
   /**

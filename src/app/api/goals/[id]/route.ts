@@ -8,7 +8,7 @@ import { db } from '@/db';
 import { goals, goalProgress, users, type Goal, type User } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { z } from 'zod';
-import Logger from '@/lib/logger';
+import { Logger } from '@/lib/logger/edge';
 
 const UpdateGoalSchema = z.object({
   title: z.string().min(1).max(200).optional(),

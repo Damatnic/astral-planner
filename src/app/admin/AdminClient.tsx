@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/table'
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
-import Logger from '@/lib/logger'
+import { Logger } from '@/lib/logger/edge'
 import type { AdminUser, AdminActivity } from '@/types'
 
 interface DashboardStats {

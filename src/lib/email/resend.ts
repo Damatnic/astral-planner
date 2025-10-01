@@ -1,5 +1,5 @@
 import { Resend } from 'resend'
-import { logger } from '@/lib/logger';
+import { Logger as logger } from '@/lib/logger/edge';
 
 export const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -29,7 +29,7 @@ export async function sendEmail(options: EmailOptions) {
 
     return { success: true, data }
   } catch (error) {
-    logger.error('Failed to send email', { to, subject }, error as Error);
+    logger.error('Failed to send email', error as Error);
     return { success: false, error }
   }
 }
