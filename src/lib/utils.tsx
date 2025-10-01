@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { logger } from "@/lib/logger"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -131,7 +132,10 @@ export function copyToClipboard(text: string): Promise<void> {
   try {
     document.execCommand("copy")
   } catch (error) {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error("Failed to copy text: ", error)
+    logger.error('Failed to copy text to clipboard', { 
+      component: 'utils',
+      action: 'copyToClipboard'
+    }, error as Error);
     throw new Error("Failed to copy to clipboard")
   } finally {
     textArea.remove()
@@ -235,7 +239,11 @@ export function getFromStorage<T>(key: string, defaultValue: T): T {
     const item = localStorage.getItem(key)
     return item ? JSON.parse(item) : defaultValue
   } catch (error) {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error(`Error reading from localStorage key "${key}":`, error)
+    logger.warn('Error reading from localStorage', {
+      component: 'utils',
+      action: 'getFromStorage',
+      metadata: { key }
+    });
     return defaultValue
   }
 }
@@ -246,7 +254,11 @@ export function setToStorage<T>(key: string, value: T): void {
   try {
     localStorage.setItem(key, JSON.stringify(value))
   } catch (error) {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error(`Error writing to localStorage key "${key}":`, error)
+    logger.error('Error writing to localStorage', {
+      component: 'utils',
+      action: 'setToStorage',
+      metadata: { key }
+    }, error as Error);
   }
 }
 
@@ -256,6 +268,10 @@ export function removeFromStorage(key: string): void {
   try {
     localStorage.removeItem(key)
   } catch (error) {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error(`Error removing from localStorage key "${key}":`, error)
+    logger.error('Error removing from localStorage', {
+      component: 'utils',
+      action: 'removeFromStorage',
+      metadata: { key }
+    }, error as Error);
   }
 }

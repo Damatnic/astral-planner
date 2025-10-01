@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authLogger } from '@/lib/logger';
 
 export interface AuthUser {
   id: string;
@@ -28,7 +29,7 @@ export async function verifyToken(token: string): Promise<AuthUser | null> {
     const { payload } = await jwtVerify(token, SECRET_KEY);
     return payload as unknown as AuthUser;
   } catch (error) {
-    console.error('Token verification failed:', error);
+    authLogger.error('Token verification failed', { action: 'verifyToken' }, error as Error);
     return null;
   }
 }
@@ -47,7 +48,7 @@ export async function getAuthContext(request: NextRequest): Promise<AuthContext>
       demoToken === 'demo-token-2024' ||
       userDataHeader?.includes('demo-user') ||
       pinHeader === '0000') {
-    console.log('[DEMO MODE] Demo user authenticated via headers');
+    authLogger.debug('Demo user authenticated via headers', { action: 'demoAuth' });
     return {
       user: {
         id: 'demo-user',
@@ -66,7 +67,7 @@ export async function getAuthContext(request: NextRequest): Promise<AuthContext>
 
   // Nick's planner authentication
   if (userDataHeader?.includes('nick-planner') || pinHeader === '7347') {
-    console.log('[PREMIUM] Nick planner authenticated via headers');
+    authLogger.debug('Premium user authenticated via headers', { action: 'premiumAuth', userId: 'nick-planner' });
     return {
       user: {
         id: 'nick-planner',
@@ -98,7 +99,7 @@ export async function getAuthContext(request: NextRequest): Promise<AuthContext>
         };
       }
     } catch (error) {
-      console.warn('Token verification failed:', error);
+      authLogger.warn('Token verification failed', { action: 'tokenAuth' });
     }
   }
 
@@ -162,13 +163,13 @@ export async function getUserFromRequest(request: NextRequest): Promise<AuthUser
 export async function requirePermission(request: NextRequest, permission: string): Promise<void> {
   const user = await requireAuth(request);
   // Simple permission check - in production this would check against a permissions database
-  console.log(`Permission check: ${user.id} requesting ${permission}`);
+  authLogger.debug('Permission check', { userId: user.id, action: 'permissionCheck', metadata: { permission } });
 }
 
 export async function requireFeature(request: NextRequest, feature: string): Promise<void> {
   const user = await requireAuth(request);
   // Simple feature check - in production this would check against feature flags
-  console.log(`Feature check: ${user.id} requesting ${feature}`);
+  authLogger.debug('Feature check', { userId: user.id, action: 'featureCheck', metadata: { feature } });
 }
 
 export async function hasPermission(request: NextRequest, permission: string): Promise<boolean> {
@@ -189,7 +190,7 @@ interface UsageResult {
 export async function checkUsageLimits(request: NextRequest, resource: string): Promise<UsageResult> {
   const user = await requireAuth(request);
   // Simple usage check - in production this would check against usage database
-  console.log(`Usage check: ${user.id} for resource ${resource}`);
+  authLogger.debug('Usage check', { userId: user.id, action: 'usageCheck', metadata: { resource } });
   return {
     allowed: true,
     current: 0,
@@ -208,7 +209,10 @@ export function withAuth(
       await requireAuth(req);
       return await handler(req, context);
     } catch (error: unknown) {
-      console.warn('Authentication required:', { path: req.nextUrl.pathname });
+      authLogger.warn('Authentication required', { 
+        action: 'withAuth',
+        metadata: { path: req.nextUrl.pathname }
+      });
       return NextResponse.json(
         { error: 'Authentication required', code: 'AUTH_REQUIRED' },
         { status: 401 }
@@ -241,10 +245,13 @@ export function withRole(
       return await handler(req, context);
     } catch (error: unknown) {
       const user = await getUserFromRequest(req);
-      console.warn('Role requirement not met:', { 
-        userId: user?.id, 
-        requiredRole,
-        path: req.nextUrl.pathname 
+      authLogger.warn('Role requirement not met', { 
+        userId: user?.id,
+        action: 'withRole',
+        metadata: { 
+          requiredRole,
+          path: req.nextUrl.pathname
+        }
       });
       
       return NextResponse.json(
@@ -272,10 +279,13 @@ export function withFeature(
       return await handler(req, context);
     } catch (error: unknown) {
       const user = await getUserFromRequest(req);
-      console.warn('Feature not available:', { 
-        userId: user?.id, 
-        feature,
-        path: req.nextUrl.pathname 
+      authLogger.warn('Feature not available', { 
+        userId: user?.id,
+        action: 'withFeature',
+        metadata: {
+          feature,
+          path: req.nextUrl.pathname
+        }
       });
       
       return NextResponse.json(
@@ -304,12 +314,15 @@ export function withUsageLimit(
       
       if (!usage.allowed) {
         const user = await getUserFromRequest(req);
-        console.warn('Usage limit exceeded:', { 
-          userId: user?.id, 
-          resource,
-          current: usage.current,
-          limit: usage.limit,
-          path: req.nextUrl.pathname 
+        authLogger.warn('Usage limit exceeded', { 
+          userId: user?.id,
+          action: 'withUsageLimit',
+          metadata: {
+            resource,
+            current: usage.current,
+            limit: usage.limit,
+            path: req.nextUrl.pathname
+          }
         });
         
         return NextResponse.json(
@@ -327,7 +340,7 @@ export function withUsageLimit(
       
       return await handler(req, context);
     } catch (error: unknown) {
-      console.error('Usage limit check failed:', error);
+      authLogger.error('Usage limit check failed', { action: 'withUsageLimit' }, error as Error);
       return NextResponse.json(
         { error: 'Internal server error' },
         { status: 500 }

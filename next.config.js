@@ -13,14 +13,12 @@ const withPWA = require('next-pwa')({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Simplified configuration for successful deployment
-  experimental: {
-    serverComponentsExternalPackages: [
-      '@neondatabase/serverless',
-      'winston',
-      'winston-daily-rotate-file',
-      'pusher'
-    ],
-  },
+  serverExternalPackages: [
+    '@neondatabase/serverless',
+    'winston',
+    'winston-daily-rotate-file',
+    'pusher'
+  ],
   
   // Force all API routes to be dynamic
   async rewrites() {
@@ -33,11 +31,13 @@ const nextConfig = {
   },
   
   typescript: {
-    ignoreBuildErrors: true,
+    // Enabled type checking for better code quality
+    ignoreBuildErrors: false,
   },
   
   eslint: {
-    ignoreDuringBuilds: true,
+    // Enabled ESLint for better code quality
+    ignoreDuringBuilds: false,
   },
   
   images: {

@@ -35,7 +35,7 @@ const format = winston ? winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
   winston.format.colorize({ all: true }),
   winston.format.printf(
-    (info) => `${info.timestamp} ${info.level}: ${info.message}`,
+    (info: any) => `${info.timestamp} ${info.level}: ${info.message}`,
   ),
 ) : null;
 
@@ -66,7 +66,10 @@ if (winston && (process.env.NODE_ENV !== 'production' || process.env.ENABLE_FILE
       })
     );
   } catch (fsError) {
-    // TODO: Replace with proper logging - console.warn('File logging disabled due to filesystem access issues:', fsError);
+    // File logging disabled in serverless environments
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('File logging disabled:', fsError);
+    }
   }
 }
 
@@ -109,6 +112,13 @@ if (winston && typeof process !== 'undefined' && process.versions && process.ver
 }
 
 export default Logger;
+
+// Convenience exports
+export const logger = Logger;
+export const apiLogger = Logger;
+export const dbLogger = Logger;
+export const authLogger = Logger;
+export const performanceLogger = Logger;
 
 // Error handling utilities
 export class AppError extends Error {
