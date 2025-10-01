@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
 
       return NextResponse.json(
         {
-          success: true,
+          authenticated: true,
           user
         },
         { status: 200 }
