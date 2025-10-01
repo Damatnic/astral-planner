@@ -269,11 +269,11 @@ export class PhoenixQueryBuilder {
     const [user, userWorkspaces] = await Promise.all([
       db.select().from(users).where(eq(users.id, userId)).limit(1),
       db.select().from(workspaces).where(eq(workspaces.ownerId, userId)),
-    ]);
+    ]) as [any[], any[]];
 
     if (user.length === 0) return null;
 
-    const workspaceIds = userWorkspaces.map(w => w.id);
+    const workspaceIds = userWorkspaces.map((w: any) => w.id);
     if (workspaceIds.length === 0) return { user: user[0], tasks: [], events: [] };
 
     const [tasks, todayEvents] = await Promise.all([
@@ -320,7 +320,7 @@ export class PhoenixQueryBuilder {
       events: todayEvents,
       summary: {
         totalTasks: tasks.length,
-        completedTasks: tasks.filter(t => t.status === 'completed').length,
+        completedTasks: tasks.filter((t: any) => t.status === 'completed').length,
         todayEvents: todayEvents.length,
       },
     };

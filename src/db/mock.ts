@@ -28,7 +28,7 @@ export const db = {
       })
     })
   }),
-  execute: () => Promise.resolve({ rows: [] })
+  execute: (query?: any) => Promise.resolve({ rows: [] })
 };
 
 export const healthCheck = () => Promise.resolve({

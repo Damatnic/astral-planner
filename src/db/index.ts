@@ -1,17 +1,23 @@
 // Edge Runtime compatible database implementation
 import { getAccountData } from '@/lib/account-data';
 
+// Mock query result that's thenable and chainable
+const createMockQueryResult = (): any => {
+  const result = {
+    where: (condition: any) => createMockQueryResult(),
+    limit: (count: number) => createMockQueryResult(),
+    orderBy: (field: any) => createMockQueryResult(),
+    then: (fn: Function) => fn([] as any[]),
+    catch: (fn: Function) => result,
+    finally: (fn: Function) => result
+  };
+  return result;
+};
+
 // Mock database implementation that works in Edge Runtime
 const createMockDB = () => ({
-  select: () => ({
-    from: (table: any) => ({
-      where: (condition: any) => ({
-        limit: (count: number) => Promise.resolve([]),
-        then: (fn: Function) => fn([])
-      }),
-      limit: (count: number) => Promise.resolve([]),
-      orderBy: (field: any) => Promise.resolve([])
-    })
+  select: (fields?: any) => ({
+    from: (table: any) => createMockQueryResult()
   }),
   insert: (table: any) => ({
     values: (data: any) => ({
@@ -20,7 +26,7 @@ const createMockDB = () => ({
         ...data,
         createdAt: new Date(),
         updatedAt: new Date()
-      }])
+      }] as any[])
     })
   }),
   update: (table: any) => ({
@@ -30,10 +36,11 @@ const createMockDB = () => ({
           id: `mock-${Date.now()}`,
           ...data,
           updatedAt: new Date()
-        }])
+        }] as any[])
       })
     })
-  })
+  }),
+  execute: (query?: any) => Promise.resolve({ rows: [] as any[] })
 });
 
 // Initialize database

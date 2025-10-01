@@ -81,6 +81,7 @@ export interface OptimizedUser {
   timezone: string;
   locale: string;
   settings: any;
+  subscription?: any;
   aiSettings: any;
   onboardingCompleted: boolean;
   lastActiveAt: Date;
