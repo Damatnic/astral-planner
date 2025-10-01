@@ -2,6 +2,7 @@
  * CATALYST CRITICAL PERFORMANCE MONITOR
  * Real-time performance tracking to prevent crashes
  */
+import { performanceLogger } from '@/lib/logger';
 
 interface PerformanceMetrics {
   memoryUsage: number;
@@ -136,7 +137,7 @@ class PerformanceMonitor {
     }
 
     if (warnings.length > 0) {
-      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('CATALYST PERFORMANCE WARNING:', warnings.join(', '));
+      performanceLogger.warn('CATALYST PERFORMANCE WARNING', { warnings: warnings.join(', ') });
       this.reportPerformanceIssue(warnings);
     }
   }
@@ -177,7 +178,7 @@ class PerformanceMonitor {
 
   private cleanupEventListeners() {
     // Implementation would depend on specific event listeners
-    console.log('Cleaning up event listeners...');
+    performanceLogger.debug('Cleaning up event listeners');
   }
 
   private cleanupIntervals() {
@@ -206,7 +207,7 @@ class PerformanceMonitor {
     // In production, send to monitoring service
     if (process.env.NODE_ENV === 'production') {
       // Send to Sentry, DataDog, etc.
-      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Performance degradation detected:', warnings);
+      performanceLogger.error('Performance degradation detected', { warnings });
     }
   }
 

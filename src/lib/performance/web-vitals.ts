@@ -1,5 +1,7 @@
 'use client'
 
+import { performanceLogger } from '@/lib/logger';
+
 // Web Vitals monitoring and reporting
 export interface WebVitalsMetric {
   name: string
@@ -70,7 +72,7 @@ class WebVitalsReporter {
 
     // Log in development
     if (process.env.NODE_ENV === 'development') {
-      console.log(`[Web Vitals] ${metric.name}: ${metric.value} (${metric.rating})`)
+      performanceLogger.debug('Web Vitals metric', { metric: metric.name, value: metric.value, rating: metric.rating });
     }
 
     // Immediate flush for critical metrics
@@ -93,7 +95,7 @@ class WebVitalsReporter {
       this.sendToGoogleAnalytics(metricsToReport)
       this.sendToVercelAnalytics(metricsToReport)
     } catch (error) {
-      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to report web vitals:', error)
+      performanceLogger.warn('Failed to report web vitals', {}, error as Error);
     }
   }
 
@@ -116,7 +118,7 @@ class WebVitalsReporter {
     } catch (error) {
       // Fail silently - we don't want to impact user experience
       if (process.env.NODE_ENV === 'development') {
-        // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to send metrics to analytics:', error)
+        performanceLogger.warn('Failed to send metrics to analytics', {}, error as Error);
       }
     }
   }
@@ -210,7 +212,7 @@ export function startWebVitalsMonitoring() {
       rating: 'good' as const,
     }))
   }).catch(error => {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to load web-vitals library:', error)
+    performanceLogger.warn('Failed to load web-vitals library', {}, error as Error);
   })
 }
 
@@ -236,7 +238,7 @@ export class CustomPerformanceObserver {
       // Observe different types of performance entries
       this.observer.observe({ entryTypes: ['navigation', 'resource', 'measure', 'mark'] })
     } catch (error) {
-      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to initialize PerformanceObserver:', error)
+      performanceLogger.warn('Failed to initialize PerformanceObserver', {}, error as Error);
     }
   }
 
