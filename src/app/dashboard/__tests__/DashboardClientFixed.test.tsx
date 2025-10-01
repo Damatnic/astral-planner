@@ -70,11 +70,20 @@ const mockUser = {
 
 const mockOnboarding = {
   isCompleted: true,
-  currentStep: 0,
-  completeStep: jest.fn(),
-  nextStep: jest.fn(),
-  previousStep: jest.fn(),
+  onboardingData: {
+    firstName: 'John',
+    lastName: 'Doe',
+    role: 'user' as const,
+    goals: [],
+    categories: [],
+    planningStyle: 'balanced' as const,
+    enabledFeatures: [],
+    onboardingCompleted: true,
+    onboardingCompletedAt: new Date().toISOString(),
+  },
+  completeOnboarding: jest.fn(),
   resetOnboarding: jest.fn(),
+  isHydrated: true,
 };
 
 beforeEach(() => {
@@ -176,7 +185,13 @@ describe('DashboardClientFixed', () => {
         user: { ...mockUser, firstName: undefined },
         loading: false,
         isAuthenticated: true,
-        signOut: jest.fn(),
+        error: null,
+        lockoutUntil: undefined,
+        attemptsRemaining: undefined,
+        login: jest.fn(),
+        logout: jest.fn(),
+        refreshSession: jest.fn(),
+        clearError: jest.fn(),
       });
 
       render(<DashboardClientFixed />);
@@ -206,7 +221,7 @@ describe('DashboardClientFixed', () => {
       mockUseOnboarding.mockReturnValue({
         ...mockOnboarding,
         isCompleted: false,
-        currentStep: 1,
+        onboardingData: null,
       });
 
       render(<DashboardClientFixed />);
@@ -271,7 +286,7 @@ describe('DashboardClientFixed', () => {
 
   describe('Error Handling', () => {
     it('should not crash when hooks return undefined', () => {
-      mockUseOnboarding.mockReturnValue(undefined);
+      mockUseOnboarding.mockReturnValue(undefined as any);
       
       expect(() => {
         render(<DashboardClientFixed />);
@@ -391,11 +406,11 @@ describe('DashboardClientFixed', () => {
 describe('DashboardClientFixed Property Tests', () => {
   it('should handle various onboarding states', () => {
     const onboardingStates = [
-      { isCompleted: true, currentStep: 0 },
-      { isCompleted: false, currentStep: 1 },
-      { isCompleted: false, currentStep: 2 },
-      { isCompleted: false, currentStep: 3 },
-      { isCompleted: false, currentStep: 4 },
+      { isCompleted: true, onboardingData: mockOnboarding.onboardingData },
+      { isCompleted: false, onboardingData: null },
+      { isCompleted: false, onboardingData: null },
+      { isCompleted: false, onboardingData: null },
+      { isCompleted: false, onboardingData: null },
     ];
 
     onboardingStates.forEach(state => {

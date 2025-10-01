@@ -414,7 +414,7 @@ class CatalystPerformanceDashboard {
           return measure.duration;
         }
       } catch (e) {
-        performanceLogger.warn('Failed to measure metric', { name }, e as Error);
+        performanceLogger.warn('Failed to measure metric', e);
       }
     }
     return 0;

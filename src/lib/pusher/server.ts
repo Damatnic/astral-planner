@@ -27,7 +27,7 @@ export function getPusherServer() {
       }
     } catch (error) {
       // Fallback to mock if Pusher fails to initialize
-      logger.warn('Pusher initialization failed, using mock', {}, error as Error);
+      logger.warn('Pusher initialization failed, using mock', error);
       pusherServer = {
         trigger: (channel: string, event: string, data: any) => {
           logger.debug('Mock pusher trigger', { channel, event });
