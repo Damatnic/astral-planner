@@ -98,6 +98,7 @@ export function TaskItem({
         // Handle reordering logic here
         return { targetId: task.id, position: 'after' };
       }
+      return undefined;
     },
     collect: (monitor) => ({
       isOver: monitor.isOver(),

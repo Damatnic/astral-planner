@@ -106,6 +106,7 @@ export function QuickCapture({
     } else {
       setAiSuggestion('');
     }
+    return undefined;
   }, [input, showSuggestions]);
 
   const handleKeyDown = async (e: KeyboardEvent<HTMLInputElement>) => {
