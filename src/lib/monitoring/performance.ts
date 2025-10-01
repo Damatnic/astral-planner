@@ -1,4 +1,5 @@
 import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals'
+import { performanceLogger } from '@/lib/logger';
 
 const vitalsUrl = 'https://vitals.vercel-analytics.com/v1/vitals'
 
@@ -52,7 +53,7 @@ function sendToAnalytics(metric: Metric) {
 
   // Also log to console in development
   if (process.env.NODE_ENV === 'development') {
-    console.log('[Web Vitals]', metric.name, metric.value, metric.rating)
+    performanceLogger.debug('Web Vitals', { metric: metric.name, value: metric.value, rating: metric.rating });
   }
 }
 
@@ -64,7 +65,7 @@ export function reportWebVitals() {
     onFCP(sendToAnalytics)
     onINP(sendToAnalytics)
   } catch (err) {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('[Web Vitals] Failed to report:', err)
+    performanceLogger.error('Web Vitals failed to report', {}, err as Error);
   }
 }
 
@@ -89,7 +90,7 @@ export function measurePerformance(name: string, startMark: string, endMark: str
         })
       }
     } catch (err) {
-      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('[Performance] Measurement failed:', err)
+      performanceLogger.error('Performance measurement failed', { name }, err as Error);
     }
   }
 }
@@ -138,7 +139,7 @@ export function analyzeResourceTiming() {
 }
 
 // Monitor long tasks
-export function monitorLongTasks() {
+export function monitorLongTasks(): (() => void) | undefined {
   if (typeof window === 'undefined' || !('PerformanceObserver' in window)) {
     return
   }
@@ -160,6 +161,7 @@ export function monitorLongTasks() {
     
     return () => observer.disconnect()
   } catch (err) {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('[Performance] Long task monitoring failed:', err)
+    performanceLogger.error('Long task monitoring failed', {}, err as Error);
+    return undefined;
   }
 }

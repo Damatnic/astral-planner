@@ -1,5 +1,7 @@
 'use client'
 
+import { performanceLogger } from '@/lib/logger';
+
 // Preload critical components and assets
 export class ComponentPreloader {
   private preloadedModules = new Set<string>()
@@ -22,7 +24,7 @@ export class ComponentPreloader {
         try {
           await component()
         } catch (error) {
-          // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to preload critical component:', error)
+          performanceLogger.warn('Failed to preload critical component', {}, error as Error);
         }
       })
     })
@@ -44,7 +46,7 @@ export class ComponentPreloader {
           try {
             await component()
           } catch (error) {
-            // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to preload interaction component:', error)
+            performanceLogger.warn('Failed to preload interaction component', {}, error as Error);
           }
         })
       })
@@ -78,7 +80,7 @@ export class ComponentPreloader {
           try {
             await component()
           } catch (error) {
-            // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to preload idle component:', error)
+            performanceLogger.warn('Failed to preload idle component', {}, error as Error);
           }
         })
       })
@@ -107,7 +109,7 @@ export class ComponentPreloader {
           await componentLoader()
           this.preloadedModules.add(route)
         } catch (error) {
-          // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn(`Failed to preload component for route ${route}:`, error)
+          performanceLogger.warn('Failed to preload component for route', { route }, error as Error);
         }
       })
 
@@ -245,7 +247,7 @@ export class PreloadPerformanceMonitor {
       this.metrics.set(`${key}_duration`, duration)
       
       if (process.env.NODE_ENV === 'development') {
-        console.log(`[Preload] ${key}: ${duration.toFixed(2)}ms`)
+        performanceLogger.debug('Preload timer', { key, duration: `${duration.toFixed(2)}ms` });
       }
     }
   }
