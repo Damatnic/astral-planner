@@ -3,17 +3,18 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 import { NextRequest, NextResponse } from 'next/server';
 import { getAccountData } from '@/lib/account-data';
+import { apiLogger } from '@/lib/logger';
 
 // GET /api/goals - List goals with account-specific data (Demo version)
 export async function GET(req: NextRequest) {
   try {
-    console.log('Fetching goals with account-specific data');
+    apiLogger.debug('Fetching goals with account-specific data', { action: 'getGoals' });
     
     // Get user ID from query params or headers (fallback to demo)
     const url = new URL(req.url);
     const userId = url.searchParams.get('userId') || 'demo-user';
     
-    console.log('Fetching goals for user:', userId);
+    apiLogger.debug('Fetching goals for user', { userId, action: 'getGoals' });
 
     // Get account-specific data
     const accountData = getAccountData(userId);
@@ -47,7 +48,7 @@ export async function GET(req: NextRequest) {
       }
     });
   } catch (error) {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to fetch goals:', error);
+    apiLogger.error('Failed to fetch goals', { action: 'getGoals' }, error as Error);
     return NextResponse.json(
       { error: 'Failed to fetch goals' },
       { status: 500 }
@@ -58,7 +59,7 @@ export async function GET(req: NextRequest) {
 // POST /api/goals - Create goal (Demo version)
 export async function POST(req: NextRequest) {
   try {
-    console.log('Creating goal with demo response');
+    apiLogger.info('Creating goal', { action: 'createGoal' });
     
     const body = await req.json();
     
@@ -87,7 +88,7 @@ export async function POST(req: NextRequest) {
       message: 'Goal created successfully'
     });
   } catch (error) {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to create goal:', error);
+    apiLogger.error('Failed to create goal', { action: 'createGoal' }, error as Error);
     return NextResponse.json(
       { error: 'Failed to create goal' },
       { status: 500 }

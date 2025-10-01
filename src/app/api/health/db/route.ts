@@ -2,6 +2,7 @@
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 import { NextResponse } from 'next/server';
+import { apiLogger } from '@/lib/logger';
 
 export async function GET() {
   try {
@@ -25,7 +26,7 @@ export async function GET() {
       status: hasDbUrl ? 200 : 503
     });
   } catch (error) {
-    console.error('Database health check failed:', error);
+    apiLogger.error('Database health check failed', { action: 'healthCheck' }, error as Error);
     return NextResponse.json(
       { 
         ok: false, 

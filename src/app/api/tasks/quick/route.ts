@@ -4,6 +4,7 @@ export const runtime = "nodejs";
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth/auth-utils';
+import { apiLogger } from '@/lib/logger';
 
 import { db } from '@/db';
 import { blocks } from '@/db/schema/blocks';
@@ -38,7 +39,7 @@ async function handlePOST(req: NextRequest) {
     }
 
     // Get user's default workspace
-    const userWorkspaces = await db.select().from(workspaces).where(eq(workspaces.ownerId, user.id)).limit(1);
+    const userWorkspaces = await db.select().from(workspaces).where(eq(workspaces.ownerId, user.id)).limit(1) as Array<{ id: string; ownerId: string; name: string }>;
     if (userWorkspaces.length === 0) {
       return NextResponse.json(
         { error: 'No workspace found for user' },
@@ -195,15 +196,16 @@ async function handlePOST(req: NextRequest) {
         );
       }
     } catch (broadcastError) {
-      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to broadcast task creation:', broadcastError);
+      apiLogger.warn('Failed to broadcast task creation', { action: 'createQuickTask' }, broadcastError as Error);
       // Don't fail the request if broadcasting fails
     }
 
-    console.log('Quick item created:', { 
+    apiLogger.info('Quick item created', { 
       type, 
       title, 
       userId: user.id,
-      itemId: result?.id 
+      itemId: result?.id,
+      action: 'createQuickTask'
     });
 
     return NextResponse.json({
@@ -213,7 +215,7 @@ async function handlePOST(req: NextRequest) {
     });
 
   } catch (error) {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Quick creation error:', error);
+    apiLogger.error('Quick creation error', { action: 'createQuickTask' }, error as Error);
     return NextResponse.json(
       { error: 'Failed to create item' },
       { status: 500 }

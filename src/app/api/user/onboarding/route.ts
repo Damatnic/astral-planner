@@ -2,13 +2,18 @@
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 import { NextRequest, NextResponse } from 'next/server'
+import { apiLogger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   try {
-    console.log('Onboarding completion request received')
+    apiLogger.info('Onboarding completion request received', { action: 'completeOnboarding' });
     
-    const body = await req.json()
-    console.log('Onboarding data:', body)
+    const body = await req.json();
+    apiLogger.debug('Onboarding data received', { 
+      action: 'completeOnboarding',
+      role: body.role,
+      planningStyle: body.planningStyle
+    });
 
     // In production, we're using a simplified approach without database updates
     // Store onboarding data in localStorage on the client side
@@ -30,7 +35,7 @@ export async function POST(req: NextRequest) {
       }
     })
   } catch (error) {
-    // TODO: Replace with proper logging - console.error('Onboarding error:', error)
+    apiLogger.error('Onboarding error', { action: 'completeOnboarding' }, error as Error);
     return NextResponse.json(
       { error: 'Failed to complete onboarding' },
       { status: 500 }
