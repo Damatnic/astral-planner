@@ -292,11 +292,18 @@ export default function SettingsPage() {
   // }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950 relative overflow-hidden">
+      {/* Animated cosmic orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse [animation-delay:1s]"></div>
+        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl animate-pulse [animation-delay:0.5s]"></div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8 max-w-4xl relative z-10">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Settings</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">Settings</h1>
+          <p className="text-purple-300/70 mt-1">
             Manage your account settings and preferences
           </p>
         </div>
@@ -312,10 +319,10 @@ export default function SettingsPage() {
 
           {/* Profile Settings */}
           <TabsContent value="profile">
-            <Card>
+            <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
               <CardHeader>
-                <CardTitle>Profile Information</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-purple-200">Profile Information</CardTitle>
+                <CardDescription className="text-purple-300/70">
                   Update your personal information and preferences
                 </CardDescription>
               </CardHeader>
@@ -323,9 +330,9 @@ export default function SettingsPage() {
                 {/* Enhanced Avatar Section */}
                 <div className="flex items-start gap-6">
                   <div className="relative group">
-                    <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
+                    <Avatar className="h-24 w-24 border-4 border-purple-700/30 shadow-lg shadow-purple-900/50">
                       <AvatarImage src={settings.profile.avatarUrl || "/avatar.jpg"} alt="Profile picture" />
-                      <AvatarFallback className="text-lg font-semibold">
+                      <AvatarFallback className="text-lg font-semibold bg-purple-950/50 text-purple-200">
                         {settings.profile.firstName?.charAt(0) || 'U'}{settings.profile.lastName?.charAt(0) || ''}
                       </AvatarFallback>
                     </Avatar>
@@ -339,16 +346,17 @@ export default function SettingsPage() {
                         variant="outline" 
                         size="sm"
                         onClick={() => document.getElementById('avatar-upload')?.click()}
+                        className="border-purple-700/50 text-purple-200 hover:bg-purple-950/50"
                       >
                         <Upload className="h-4 w-4 mr-2" />
                         Upload New Photo
                       </Button>
-                      <Button variant="outline" size="sm" className="text-red-600 hover:text-red-600">
+                      <Button variant="outline" size="sm" className="text-red-400 hover:text-red-300 border-red-700/50 hover:bg-red-950/30">
                         <Trash2 className="h-4 w-4 mr-2" />
                         Remove
                       </Button>
                     </div>
-                    <div className="text-sm text-muted-foreground space-y-1">
+                    <div className="text-sm text-purple-300/70 space-y-1">
                       <p>• Upload JPG, PNG or GIF. Max 5MB</p>
                       <p>• Recommended size: 400x400 pixels</p>
                       <p>• Square images work best</p>
@@ -379,7 +387,7 @@ export default function SettingsPage() {
                 <div className="space-y-6">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName" className="flex items-center gap-2">
+                      <Label htmlFor="firstName" className="flex items-center gap-2 text-purple-200">
                         <User className="h-4 w-4" />
                         First Name *
                       </Label>
@@ -391,7 +399,7 @@ export default function SettingsPage() {
                           ...settings,
                           profile: { ...settings.profile, firstName: e.target.value }
                         })}
-                        className={!settings.profile.firstName ? 'border-red-200' : ''}
+                        className={!settings.profile.firstName ? 'bg-purple-950/50 border-red-500/50 text-slate-200 placeholder:text-purple-400/50' : 'bg-purple-950/50 border-purple-800/30 text-slate-200 placeholder:text-purple-400/50'}
                       />
                       {!settings.profile.firstName && (
                         <p className="text-xs text-red-500 flex items-center gap-1">
@@ -401,7 +409,7 @@ export default function SettingsPage() {
                       )}
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lastName" className="flex items-center gap-2">
+                      <Label htmlFor="lastName" className="flex items-center gap-2 text-purple-200">
                         <User className="h-4 w-4" />
                         Last Name *
                       </Label>
@@ -413,7 +421,7 @@ export default function SettingsPage() {
                           ...settings,
                           profile: { ...settings.profile, lastName: e.target.value }
                         })}
-                        className={!settings.profile.lastName ? 'border-red-200' : ''}
+                        className={!settings.profile.lastName ? 'bg-purple-950/50 border-red-500/50 text-slate-200 placeholder:text-purple-400/50' : 'bg-purple-950/50 border-purple-800/30 text-slate-200 placeholder:text-purple-400/50'}
                       />
                       {!settings.profile.lastName && (
                         <p className="text-xs text-red-500 flex items-center gap-1">
@@ -425,7 +433,7 @@ export default function SettingsPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="flex items-center gap-2">
+                    <Label htmlFor="email" className="flex items-center gap-2 text-purple-200">
                       <Mail className="h-4 w-4" />
                       Email Address *
                     </Label>
@@ -438,7 +446,7 @@ export default function SettingsPage() {
                         ...settings,
                         profile: { ...settings.profile, email: e.target.value }
                       })}
-                      className={!settings.profile.email || !settings.profile.email.includes('@') ? 'border-red-200' : ''}
+                      className={!settings.profile.email || !settings.profile.email.includes('@') ? 'bg-purple-950/50 border-red-500/50 text-slate-200 placeholder:text-purple-400/50' : 'bg-purple-950/50 border-purple-800/30 text-slate-200 placeholder:text-purple-400/50'}
                     />
                     {(!settings.profile.email || !settings.profile.email.includes('@')) && (
                       <p className="text-xs text-red-500 flex items-center gap-1">
@@ -449,7 +457,7 @@ export default function SettingsPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="username" className="flex items-center gap-2">
+                    <Label htmlFor="username" className="flex items-center gap-2 text-purple-200">
                       <User className="h-4 w-4" />
                       Username
                     </Label>
@@ -461,14 +469,15 @@ export default function SettingsPage() {
                         ...settings,
                         profile: { ...settings.profile, username: e.target.value }
                       })}
+                      className="bg-purple-950/50 border-purple-800/30 text-slate-200 placeholder:text-purple-400/50"
                     />
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-purple-300/70">
                       Your username will be visible to other users in shared workspaces
                     </p>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="bio" className="flex items-center gap-2">
+                    <Label htmlFor="bio" className="flex items-center gap-2 text-purple-200">
                       <User className="h-4 w-4" />
                       Bio
                     </Label>
@@ -480,10 +489,10 @@ export default function SettingsPage() {
                         ...settings,
                         profile: { ...settings.profile, bio: e.target.value }
                       })}
-                      className="min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+                      className="min-h-[80px] w-full rounded-md border border-purple-800/30 bg-purple-950/50 px-3 py-2 text-sm text-slate-200 ring-offset-background placeholder:text-purple-400/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
                       maxLength={500}
                     />
-                    <p className="text-xs text-muted-foreground text-right">
+                    <p className="text-xs text-purple-300/70 text-right">
                       {(settings.profile.bio || '').length}/500 characters
                     </p>
                   </div>
@@ -492,7 +501,7 @@ export default function SettingsPage() {
                 {/* Location and Preferences */}
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="timezone" className="flex items-center gap-2">
+                    <Label htmlFor="timezone" className="flex items-center gap-2 text-purple-200">
                       <MapPin className="h-4 w-4" />
                       Timezone *
                     </Label>
@@ -503,7 +512,7 @@ export default function SettingsPage() {
                         profile: { ...settings.profile, timezone: value }
                       })}
                     >
-                      <SelectTrigger id="timezone">
+                      <SelectTrigger id="timezone" className="bg-purple-950/50 border-purple-800/30 text-slate-200">
                         <SelectValue placeholder="Select your timezone" />
                       </SelectTrigger>
                       <SelectContent>
@@ -521,7 +530,7 @@ export default function SettingsPage() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="language" className="flex items-center gap-2">
+                    <Label htmlFor="language" className="flex items-center gap-2 text-purple-200">
                       <Languages className="h-4 w-4" />
                       Language
                     </Label>
@@ -532,7 +541,7 @@ export default function SettingsPage() {
                         profile: { ...settings.profile, language: value }
                       })}
                     >
-                      <SelectTrigger id="language">
+                      <SelectTrigger id="language" className="bg-purple-950/50 border-purple-800/30 text-slate-200">
                         <SelectValue placeholder="Select your language" />
                       </SelectTrigger>
                       <SelectContent>
@@ -551,10 +560,10 @@ export default function SettingsPage() {
 
                 {/* Contact Information */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Contact Information</h3>
+                  <h3 className="text-lg font-medium text-purple-200">Contact Information</h3>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="phone" className="flex items-center gap-2">
+                      <Label htmlFor="phone" className="flex items-center gap-2 text-purple-200">
                         <Smartphone className="h-4 w-4" />
                         Phone Number
                       </Label>
@@ -563,6 +572,7 @@ export default function SettingsPage() {
                         type="tel"
                         value={settings.profile.phone || ''}
                         placeholder="+1 (555) 123-4567"
+                        className="bg-purple-950/50 border-purple-800/30 text-slate-200 placeholder:text-purple-400/50"
                         onChange={(e) => setSettings({
                           ...settings,
                           profile: { ...settings.profile, phone: e.target.value }
@@ -570,7 +580,7 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="company" className="flex items-center gap-2">
+                      <Label htmlFor="company" className="flex items-center gap-2 text-purple-200">
                         <Globe className="h-4 w-4" />
                         Company/Organization
                       </Label>
@@ -578,6 +588,7 @@ export default function SettingsPage() {
                         id="company"
                         value={settings.profile.company || ''}
                         placeholder="Your company name"
+                        className="bg-purple-950/50 border-purple-800/30 text-slate-200 placeholder:text-purple-400/50"
                         onChange={(e) => setSettings({
                           ...settings,
                           profile: { ...settings.profile, company: e.target.value }
@@ -588,14 +599,15 @@ export default function SettingsPage() {
                 </div>
 
                 {/* Enhanced Save Section */}
-                <div className="flex flex-col sm:flex-row gap-3 sm:justify-between sm:items-center pt-4 border-t">
-                  <div className="text-sm text-muted-foreground">
+                <div className="flex flex-col sm:flex-row gap-3 sm:justify-between sm:items-center pt-4 border-t border-purple-800/30">
+                  <div className="text-sm text-purple-300/70">
                     <p>* Required fields</p>
                     <p>Changes are saved automatically when you click Save Changes</p>
                   </div>
                   <div className="flex gap-2">
                     <Button 
                       variant="outline" 
+                      className="border-purple-700/50 text-purple-200 hover:bg-purple-950/50"
                       onClick={() => {
                         // Reset to default values
                         setSettings({
@@ -636,13 +648,13 @@ export default function SettingsPage() {
           <TabsContent value="notifications">
             <div className="space-y-6">
               {/* Quick Actions */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-purple-200">
                     <Bell className="h-5 w-5" />
                     Notification Preferences
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-purple-300/70">
                     Customize how and when you receive notifications
                   </CardDescription>
                 </CardHeader>
@@ -651,6 +663,7 @@ export default function SettingsPage() {
                     <Button 
                       variant="outline" 
                       size="sm"
+                      className="border-purple-700/50 text-purple-200 hover:bg-purple-950/50"
                       onClick={() => {
                         // Enable all notifications
                         const allEnabled = { ...settings.notifications };
@@ -666,6 +679,7 @@ export default function SettingsPage() {
                     <Button 
                       variant="outline" 
                       size="sm"
+                      className="border-purple-700/50 text-purple-200 hover:bg-purple-950/50"
                       onClick={() => {
                         // Disable all notifications
                         const allDisabled = { ...settings.notifications };
@@ -681,6 +695,7 @@ export default function SettingsPage() {
                     <Button 
                       variant="outline" 
                       size="sm"
+                      className="border-purple-700/50 text-purple-200 hover:bg-purple-950/50"
                       onClick={() => {
                         alert('Sending test notification...');
                       }}
@@ -693,13 +708,13 @@ export default function SettingsPage() {
               </Card>
 
               {/* Email Notifications */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-purple-200">
                     <Mail className="h-5 w-5" />
                     Email Notifications
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-purple-300/70">
                     Control what email notifications you receive
                   </CardDescription>
                 </CardHeader>
@@ -715,14 +730,14 @@ export default function SettingsPage() {
                     { key: 'securityAlerts', label: 'Security Alerts', desc: 'Important security and account notifications', icon: Shield },
                     { key: 'marketingEmails', label: 'Marketing Emails', desc: 'Product updates and feature announcements', icon: Zap }
                   ].map(({ key, label, desc, icon: Icon }) => (
-                    <div key={key} className="flex items-center justify-between p-3 rounded-lg border">
+                    <div key={key} className="flex items-center justify-between p-3 rounded-lg border border-purple-800/30 bg-purple-950/30">
                       <div className="flex items-start gap-3">
-                        <Icon className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                        <Icon className="h-5 w-5 mt-0.5 text-purple-400" />
                         <div>
-                          <Label htmlFor={`email-${key}`} className="text-base font-medium">
+                          <Label htmlFor={`email-${key}`} className="text-base font-medium text-purple-200">
                             {label}
                           </Label>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-purple-300/70">
                             {desc}
                           </p>
                         </div>
@@ -744,13 +759,13 @@ export default function SettingsPage() {
               </Card>
 
               {/* Push Notifications */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-purple-200">
                     <Smartphone className="h-5 w-5" />
                     Push Notifications
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-purple-300/70">
                     Instant notifications on your device
                   </CardDescription>
                 </CardHeader>
@@ -764,14 +779,14 @@ export default function SettingsPage() {
                     { key: 'teamActivity', label: 'Team Activity', desc: 'Real-time team collaboration updates', icon: Users },
                     { key: 'systemMaintenance', label: 'System Maintenance', desc: 'Important system announcements', icon: Shield }
                   ].map(({ key, label, desc, icon: Icon }) => (
-                    <div key={key} className="flex items-center justify-between p-3 rounded-lg border">
+                    <div key={key} className="flex items-center justify-between p-3 rounded-lg border border-purple-800/30 bg-purple-950/30">
                       <div className="flex items-start gap-3">
-                        <Icon className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                        <Icon className="h-5 w-5 mt-0.5 text-purple-400" />
                         <div>
-                          <Label htmlFor={`push-${key}`} className="text-base font-medium">
+                          <Label htmlFor={`push-${key}`} className="text-base font-medium text-purple-200">
                             {label}
                           </Label>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-purple-300/70">
                             {desc}
                           </p>
                         </div>
@@ -793,13 +808,13 @@ export default function SettingsPage() {
               </Card>
 
               {/* In-App Notifications */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-purple-200">
                     <Bell className="h-5 w-5" />
                     In-App Notifications
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-purple-300/70">
                     Notifications within the application
                   </CardDescription>
                 </CardHeader>
@@ -811,14 +826,14 @@ export default function SettingsPage() {
                     { key: 'systemMessages', label: 'System Messages', desc: 'Important app messages and updates', icon: Shield },
                     { key: 'tips', label: 'Tips & Suggestions', desc: 'Helpful tips to improve productivity', icon: Zap }
                   ].map(({ key, label, desc, icon: Icon }) => (
-                    <div key={key} className="flex items-center justify-between p-3 rounded-lg border">
+                    <div key={key} className="flex items-center justify-between p-3 rounded-lg border border-purple-800/30 bg-purple-950/30">
                       <div className="flex items-start gap-3">
-                        <Icon className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                        <Icon className="h-5 w-5 mt-0.5 text-purple-400" />
                         <div>
-                          <Label htmlFor={`inapp-${key}`} className="text-base font-medium">
+                          <Label htmlFor={`inapp-${key}`} className="text-base font-medium text-purple-200">
                             {label}
                           </Label>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-purple-300/70">
                             {desc}
                           </p>
                         </div>
@@ -840,23 +855,23 @@ export default function SettingsPage() {
               </Card>
 
               {/* Enhanced Quiet Hours */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-purple-200">
                     <Moon className="h-5 w-5" />
                     Quiet Hours
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-purple-300/70">
                     Pause notifications during specific hours
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label htmlFor="quiet-hours" className="text-base font-medium">
+                      <Label htmlFor="quiet-hours" className="text-base font-medium text-purple-200">
                         Enable Quiet Hours
                       </Label>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-purple-300/70">
                         Automatically pause all notifications during specified times
                       </p>
                     </div>
@@ -874,14 +889,15 @@ export default function SettingsPage() {
                   </div>
                   
                   {settings.notifications.quietHours.enabled && (
-                    <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                    <div className="space-y-4 p-4 bg-purple-950/30 rounded-lg border border-purple-800/30">
                       <div className="grid gap-4 sm:grid-cols-2">
                         <div className="space-y-2">
-                          <Label htmlFor="quiet-start">Start Time</Label>
+                          <Label htmlFor="quiet-start" className="text-purple-200">Start Time</Label>
                           <Input
                             id="quiet-start"
                             type="time"
                             value={settings.notifications.quietHours.start}
+                            className="bg-purple-950/50 border-purple-800/30 text-slate-200"
                             onChange={(e) => setSettings({
                               ...settings,
                               notifications: {
@@ -892,11 +908,12 @@ export default function SettingsPage() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="quiet-end">End Time</Label>
+                          <Label htmlFor="quiet-end" className="text-purple-200">End Time</Label>
                           <Input
                             id="quiet-end"
                             type="time"
                             value={settings.notifications.quietHours.end}
+                            className="bg-purple-950/50 border-purple-800/30 text-slate-200"
                             onChange={(e) => setSettings({
                               ...settings,
                               notifications: {
@@ -910,10 +927,10 @@ export default function SettingsPage() {
                       
                       <div className="flex items-center justify-between">
                         <div>
-                          <Label htmlFor="weekends-only" className="text-base">
+                          <Label htmlFor="weekends-only" className="text-base text-purple-200">
                             Weekends Only
                           </Label>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-purple-300/70">
                             Apply quiet hours only on weekends
                           </p>
                         </div>
@@ -935,20 +952,20 @@ export default function SettingsPage() {
               </Card>
 
               {/* Notification Frequency */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-purple-200">
                     <Clock className="h-5 w-5" />
                     Notification Frequency
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-purple-300/70">
                     Control how often you receive different types of notifications
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid gap-4 sm:grid-cols-3">
                     <div className="space-y-2">
-                      <Label htmlFor="digest-frequency">Digest Frequency</Label>
+                      <Label htmlFor="digest-frequency" className="text-purple-200">Digest Frequency</Label>
                       <Select
                         value={settings.notifications.frequency.digest}
                         onValueChange={(value) => setSettings({
@@ -959,7 +976,7 @@ export default function SettingsPage() {
                           }
                         })}
                       >
-                        <SelectTrigger id="digest-frequency">
+                        <SelectTrigger id="digest-frequency" className="bg-purple-950/50 border-purple-800/30 text-slate-200">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -971,7 +988,7 @@ export default function SettingsPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="reminder-timing">Reminder Timing</Label>
+                      <Label htmlFor="reminder-timing" className="text-purple-200">Reminder Timing</Label>
                       <Select
                         value={settings.notifications.frequency.reminders}
                         onValueChange={(value) => setSettings({
@@ -982,7 +999,7 @@ export default function SettingsPage() {
                           }
                         })}
                       >
-                        <SelectTrigger id="reminder-timing">
+                        <SelectTrigger id="reminder-timing" className="bg-purple-950/50 border-purple-800/30 text-slate-200">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
