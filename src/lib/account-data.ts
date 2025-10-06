@@ -1,6 +1,8 @@
 // Account-specific data for different users
 
 export interface AccountData {
+  id: string;
+  displayName: string;
   habits: any[];
   goals: any[];
   tasks: any[];
@@ -12,6 +14,8 @@ export interface AccountData {
 }
 
 const NICKS_PLANNER_DATA: AccountData = {
+  id: 'nick-planner',
+  displayName: 'Nick',
   habits: [
     {
       id: 'nick-habit-1',
@@ -214,6 +218,7 @@ const NICKS_PLANNER_DATA: AccountData = {
       title: 'Review Q3 Performance Reports',
       description: 'Analyze team performance and prepare Q4 strategy',
       completed: false,
+      status: 'in-progress',
       priority: 'high',
       dueDate: '2025-09-28',
       category: 'Work',
@@ -225,6 +230,7 @@ const NICKS_PLANNER_DATA: AccountData = {
       title: 'Schedule Leadership Retreat',
       description: 'Plan and book venue for leadership team retreat',
       completed: false,
+      status: 'pending',
       priority: 'medium',
       dueDate: '2025-10-05',
       category: 'Management',
@@ -240,6 +246,8 @@ const NICKS_PLANNER_DATA: AccountData = {
 };
 
 const DEMO_ACCOUNT_DATA: AccountData = {
+  id: 'demo-user',
+  displayName: 'Demo User',
   habits: [
     {
       id: 'demo-habit-1',
@@ -378,6 +386,7 @@ const DEMO_ACCOUNT_DATA: AccountData = {
       title: 'Try the Demo Features',
       description: 'Explore habits, goals, and task management',
       completed: false,
+      status: 'pending',
       priority: 'low',
       dueDate: '2025-09-27',
       category: 'Demo',
@@ -389,6 +398,7 @@ const DEMO_ACCOUNT_DATA: AccountData = {
       title: 'Create Your First Habit',
       description: 'Use the + button to create a new habit',
       completed: false,
+      status: 'pending',
       priority: 'medium',
       dueDate: '2025-09-27',
       category: 'Demo',

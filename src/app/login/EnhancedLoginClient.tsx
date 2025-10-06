@@ -233,7 +233,7 @@ export default function EnhancedLoginClient() {
         }
       });
     } catch (error) {
-      // TODO: Replace with proper logging - console.error('Login error:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Login error:', error);
       setStep('enter-pin');
       setError('Network error. Please try again.');
       setPin('');
@@ -310,12 +310,19 @@ export default function EnhancedLoginClient() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
+        className="w-full max-w-md relative z-10"
       >
         {/* Header */}
         <div className="text-center mb-8">
@@ -323,15 +330,17 @@ export default function EnhancedLoginClient() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, duration: 0.3 }}
-            className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-4"
+            className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full mb-4 shadow-2xl shadow-purple-500/50"
           >
-            <Sparkles className="w-8 h-8 text-white" />
+            <Sparkles className="w-10 h-10 text-white" />
           </motion.div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Astral Chronos</h1>
-          <p className="text-gray-600">Secure access to your digital planner</p>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent mb-2">
+            Astral Chronos
+          </h1>
+          <p className="text-purple-200/70">Secure access to your cosmic planner</p>
           
           {/* Security indicator */}
-          <div className="flex items-center justify-center gap-2 mt-2 text-sm text-gray-500">
+          <div className="flex items-center justify-center gap-2 mt-3 text-sm text-purple-300/60">
             <Shield className="w-4 h-4" />
             <span>Enterprise-grade security</span>
           </div>
@@ -347,17 +356,17 @@ export default function EnhancedLoginClient() {
               exit={{ opacity: 0, x: 20 }}
               transition={{ duration: 0.3 }}
             >
-              <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-2xl">
-                <CardHeader className="text-center">
-                  <CardTitle className="flex items-center gap-2 justify-center">
-                    <User className="w-5 h-5" />
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 shadow-2xl shadow-purple-500/20">
+                <CardHeader className="text-center border-b border-purple-800/20">
+                  <CardTitle className="flex items-center gap-2 justify-center text-purple-100">
+                    <User className="w-5 h-5 text-purple-400" />
                     Choose Your Account
                   </CardTitle>
-                  <CardDescription>
-                    Select your workspace to continue
+                  <CardDescription className="text-purple-300/60">
+                    Select your cosmic workspace to continue
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 pt-6">
                   {DEMO_ACCOUNTS.map((account, index) => (
                     <motion.div
                       key={account.id}
@@ -367,23 +376,23 @@ export default function EnhancedLoginClient() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => handleAccountSelect(account)}
-                      className="p-4 rounded-lg border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50/50 cursor-pointer transition-all duration-200 group"
+                      className="p-4 rounded-lg border-2 border-purple-800/30 hover:border-purple-600/50 bg-slate-800/50 hover:bg-purple-900/30 cursor-pointer transition-all duration-200 group"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="text-2xl group-hover:scale-110 transition-transform">
+                        <div className="text-3xl group-hover:scale-110 transition-transform">
                           {account.avatar}
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <h3 className="font-semibold text-gray-900">{account.name}</h3>
+                            <h3 className="font-semibold text-purple-100 group-hover:text-white">{account.name}</h3>
                             {account.isPremium && (
-                              <Zap className="w-4 h-4 text-yellow-500" />
+                              <Zap className="w-4 h-4 text-yellow-400" />
                             )}
                           </div>
-                          <p className="text-sm text-gray-600">{account.description}</p>
+                          <p className="text-sm text-purple-300/60 group-hover:text-purple-200/70">{account.description}</p>
                         </div>
                         {account.isDemo && (
-                          <div className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-medium">
+                          <div className="bg-green-900/40 text-green-300 border border-green-700/30 px-2 py-1 rounded text-xs font-medium">
                             Demo
                           </div>
                         )}
@@ -391,12 +400,12 @@ export default function EnhancedLoginClient() {
                     </motion.div>
                   ))}
                   
-                  <div className="pt-4 border-t">
-                    <Alert>
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription className="text-sm">
-                        <strong>Demo Account:</strong> PIN auto-fills for easy access<br/>
-                        <strong>Premium Account:</strong> Full access to all features
+                  <div className="pt-4 border-t border-purple-800/20">
+                    <Alert className="bg-purple-900/30 border-purple-700/30">
+                      <AlertCircle className="h-4 w-4 text-purple-400" />
+                      <AlertDescription className="text-sm text-purple-200/80">
+                        <strong className="text-purple-100">Demo Account:</strong> PIN auto-fills for easy access<br/>
+                        <strong className="text-purple-100">Premium Account:</strong> Full access to all features
                       </AlertDescription>
                     </Alert>
                   </div>

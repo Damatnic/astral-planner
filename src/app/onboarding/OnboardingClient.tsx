@@ -189,10 +189,10 @@ export default function OnboardingPage() {
         // Navigate to dashboard
         router.push('/dashboard');
       } else {
-        // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Onboarding failed:', await response.text());
+        // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Onboarding failed:', await response.text());
       }
     } catch (error) {
-      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to complete onboarding:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to complete onboarding:', error);
     }
   };
 

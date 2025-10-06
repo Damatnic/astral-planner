@@ -70,10 +70,10 @@ class EdgeLogger {
         console.log(formattedMessage);
         break;
       case 'warn':
-        console.warn(formattedMessage);
+        // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn(formattedMessage);
         break;
       case 'error':
-        console.error(formattedMessage);
+        // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error(formattedMessage);
         break;
     }
   }

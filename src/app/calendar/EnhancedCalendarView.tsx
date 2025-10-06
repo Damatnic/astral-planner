@@ -277,6 +277,16 @@ export default function EnhancedCalendarView() {
     ));
   };
 
+  // Calculate calendar days outside of render function
+  const calendarDays = useMemo(() => {
+    if (!currentDate) return [];
+    const start = startOfMonth(currentDate);
+    const end = endOfMonth(currentDate);
+    const startDate = startOfWeek(start);
+    const endDate = addDays(startOfWeek(end), 41);
+    return eachDayOfInterval({ start: startDate, end: endDate });
+  }, [currentDate]);
+
   const renderEnhancedMonthView = () => (
     <div className="space-y-4">
       {/* AI Insights Banner */}
@@ -317,14 +327,7 @@ export default function EnhancedCalendarView() {
         
         {/* Calendar Days */}
         <div className="grid grid-cols-7 gap-1">
-          {useMemo(() => {
-            if (!currentDate) return [];
-            const start = startOfMonth(currentDate);
-            const end = endOfMonth(currentDate);
-            const startDate = startOfWeek(start);
-            const endDate = addDays(startOfWeek(end), 41);
-            return eachDayOfInterval({ start: startDate, end: endDate });
-          }, [currentDate]).map((day, index) => {
+          {calendarDays.map((day, index) => {
             const dayEvents = getEventsForDate(day);
             const dayHabits = getHabitsForDate(day);
             const isCurrentMonth = currentDate ? isSameMonth(day, currentDate) : false;

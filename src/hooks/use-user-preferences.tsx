@@ -185,7 +185,7 @@ export function UserPreferencesProvider({ children }: { children: React.ReactNod
           }
         }));
       } catch (error) {
-        // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to detect client timezone, keeping UTC');
+        // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to detect client timezone, keeping UTC');
       }
     }
   }, []);
@@ -211,7 +211,7 @@ export function UserPreferencesProvider({ children }: { children: React.ReactNod
         return headers;
       }
     } catch (error) {
-      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to get auth headers:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to get auth headers:', error);
     }
     return { 'Content-Type': 'application/json' };
   }, []);
@@ -258,7 +258,7 @@ export function UserPreferencesProvider({ children }: { children: React.ReactNod
         applyTheme(defaultPreferences.appearance.theme);
       }
     } catch (error) {
-      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to load preferences:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to load preferences:', error);
       // Only show error toast for non-auth errors
       if (error instanceof Error && !error.message.includes('401')) {
         toast.error('Failed to load user preferences');
@@ -316,7 +316,7 @@ export function UserPreferencesProvider({ children }: { children: React.ReactNod
       return true;
       
     } catch (error) {
-      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to update preferences:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to update preferences:', error);
       toast.error('Failed to save preferences');
       
       // Revert optimistic update
@@ -364,7 +364,7 @@ export function UserPreferencesProvider({ children }: { children: React.ReactNod
       return true;
       
     } catch (error) {
-      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to update preferences:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to update preferences:', error);
       toast.error('Failed to save preferences');
       
       // Revert optimistic update

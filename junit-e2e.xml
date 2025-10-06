@@ -1,6 +1,6 @@
-<testsuites id="" name="" tests="18" failures="1" skipped="17" errors="0" time="31.9309">
-<testsuite name="auth.setup.ts" timestamp="2025-09-28T00:25:41.832Z" hostname="setup" tests="1" failures="1" skipped="0" time="18.352" errors="0">
-<testcase name="authenticate with demo account" classname="auth.setup.ts" time="18.352">
+<testsuites id="" name="" tests="479" failures="59" skipped="420" errors="0" time="22.003566000000003">
+<testsuite name="auth.setup.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="setup" tests="1" failures="1" skipped="0" time="19.665" errors="0">
+<testcase name="authenticate with demo account" classname="auth.setup.ts" time="19.665">
 <failure message="auth.setup.ts:10:6 authenticate with demo account" type="FAILURE">
 <![CDATA[  [setup] › auth.setup.ts:10:6 › authenticate with demo account ────────────────────────────────────
 
@@ -40,7 +40,183 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="demo-account.e2e.test.ts" timestamp="2025-09-28T00:25:41.832Z" hostname="chromium" tests="17" failures="0" skipped="17" time="0" errors="0">
+<testsuite name="auth.spec.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="chromium" tests="29" failures="0" skipped="29" time="0" errors="0">
+<testcase name="Authentication E2E Tests › Public Route Access › should allow access to home page without authentication" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Public Route Access › should allow access to login page without authentication" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Public Route Access › should show appropriate UI for unauthenticated users" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should redirect to login when accessing dashboard without auth" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should redirect to login when accessing protected routes" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should preserve intended destination after login" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should successfully login demo user" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should redirect authenticated user away from login page" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should successfully logout user" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should clear all user data on logout" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should maintain session across page refreshes" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should maintain session across navigation" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should handle session expiry" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should handle corrupted session data" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Cross-Tab Authentication › should sync authentication across tabs" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Cross-Tab Authentication › should sync logout across tabs" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should call auth API endpoints correctly" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should handle API errors gracefully" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should handle network failures" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should prevent access to admin routes for regular users" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should not expose sensitive auth data in client" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should handle XSS attempts in auth data" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should load authenticated pages quickly" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should handle rapid navigation without issues" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should not cause memory leaks with repeated auth operations" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Mobile and Responsive Tests › should work on mobile devices" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Mobile and Responsive Tests › should work on tablet devices" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Accessibility Tests › should be accessible with keyboard navigation" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Accessibility Tests › should have proper ARIA labels and roles" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="dashboard.e2e.test.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="chromium" tests="14" failures="0" skipped="14" time="0" errors="0">
+<testcase name="Dashboard E2E Tests › should load dashboard successfully" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display correct welcome message based on time" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display stats cards with correct data" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should navigate between tabs correctly" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display upcoming tasks" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display recent achievements" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should be responsive across different screen sizes" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should handle loading states correctly" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should maintain accessibility standards" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should handle errors gracefully" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should perform well under load" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should work across different browsers" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard Performance Tests › should meet Core Web Vitals requirements" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard Performance Tests › should have acceptable bundle size" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="demo-account.e2e.test.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="chromium" tests="17" failures="0" skipped="17" time="0" errors="0">
 <testcase name="Demo Account E2E Tests › Authentication Flow › should login with demo account PIN 0000" classname="demo-account.e2e.test.ts" time="0">
 <skipped>
 </skipped>
@@ -108,6 +284,3255 @@
 <testcase name="Demo Account E2E Tests › Accessibility › should have proper ARIA labels" classname="demo-account.e2e.test.ts" time="0">
 <skipped>
 </skipped>
+</testcase>
+</testsuite>
+<testsuite name="auth.spec.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="firefox" tests="29" failures="0" skipped="29" time="0" errors="0">
+<testcase name="Authentication E2E Tests › Public Route Access › should allow access to home page without authentication" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Public Route Access › should allow access to login page without authentication" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Public Route Access › should show appropriate UI for unauthenticated users" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should redirect to login when accessing dashboard without auth" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should redirect to login when accessing protected routes" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should preserve intended destination after login" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should successfully login demo user" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should redirect authenticated user away from login page" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should successfully logout user" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should clear all user data on logout" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should maintain session across page refreshes" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should maintain session across navigation" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should handle session expiry" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should handle corrupted session data" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Cross-Tab Authentication › should sync authentication across tabs" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Cross-Tab Authentication › should sync logout across tabs" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should call auth API endpoints correctly" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should handle API errors gracefully" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should handle network failures" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should prevent access to admin routes for regular users" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should not expose sensitive auth data in client" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should handle XSS attempts in auth data" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should load authenticated pages quickly" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should handle rapid navigation without issues" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should not cause memory leaks with repeated auth operations" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Mobile and Responsive Tests › should work on mobile devices" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Mobile and Responsive Tests › should work on tablet devices" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Accessibility Tests › should be accessible with keyboard navigation" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Accessibility Tests › should have proper ARIA labels and roles" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="dashboard.e2e.test.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="firefox" tests="14" failures="0" skipped="14" time="0" errors="0">
+<testcase name="Dashboard E2E Tests › should load dashboard successfully" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display correct welcome message based on time" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display stats cards with correct data" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should navigate between tabs correctly" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display upcoming tasks" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display recent achievements" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should be responsive across different screen sizes" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should handle loading states correctly" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should maintain accessibility standards" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should handle errors gracefully" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should perform well under load" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should work across different browsers" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard Performance Tests › should meet Core Web Vitals requirements" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard Performance Tests › should have acceptable bundle size" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="demo-account.e2e.test.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="firefox" tests="17" failures="0" skipped="17" time="0" errors="0">
+<testcase name="Demo Account E2E Tests › Authentication Flow › should login with demo account PIN 0000" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Authentication Flow › should maintain authentication across page reloads" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Authentication Flow › should persist authentication across browser sessions" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should display dashboard after login" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should show demo user information" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should handle navigation between sections" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should create and display tasks" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should access goals section" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should access habits section" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Error Handling › should reject invalid PIN" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Error Handling › should handle network errors gracefully" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Performance › should load dashboard within acceptable time" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Performance › should handle multiple rapid navigations" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Mobile Responsiveness › should work on mobile viewport" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Mobile Responsiveness › should maintain functionality on tablet viewport" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Accessibility › should be accessible with keyboard navigation" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Accessibility › should have proper ARIA labels" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="auth.spec.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="webkit" tests="29" failures="0" skipped="29" time="0" errors="0">
+<testcase name="Authentication E2E Tests › Public Route Access › should allow access to home page without authentication" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Public Route Access › should allow access to login page without authentication" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Public Route Access › should show appropriate UI for unauthenticated users" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should redirect to login when accessing dashboard without auth" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should redirect to login when accessing protected routes" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should preserve intended destination after login" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should successfully login demo user" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should redirect authenticated user away from login page" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should successfully logout user" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should clear all user data on logout" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should maintain session across page refreshes" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should maintain session across navigation" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should handle session expiry" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should handle corrupted session data" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Cross-Tab Authentication › should sync authentication across tabs" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Cross-Tab Authentication › should sync logout across tabs" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should call auth API endpoints correctly" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should handle API errors gracefully" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should handle network failures" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should prevent access to admin routes for regular users" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should not expose sensitive auth data in client" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should handle XSS attempts in auth data" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should load authenticated pages quickly" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should handle rapid navigation without issues" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should not cause memory leaks with repeated auth operations" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Mobile and Responsive Tests › should work on mobile devices" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Mobile and Responsive Tests › should work on tablet devices" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Accessibility Tests › should be accessible with keyboard navigation" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Accessibility Tests › should have proper ARIA labels and roles" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="dashboard.e2e.test.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="webkit" tests="14" failures="0" skipped="14" time="0" errors="0">
+<testcase name="Dashboard E2E Tests › should load dashboard successfully" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display correct welcome message based on time" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display stats cards with correct data" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should navigate between tabs correctly" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display upcoming tasks" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display recent achievements" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should be responsive across different screen sizes" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should handle loading states correctly" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should maintain accessibility standards" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should handle errors gracefully" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should perform well under load" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should work across different browsers" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard Performance Tests › should meet Core Web Vitals requirements" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard Performance Tests › should have acceptable bundle size" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="demo-account.e2e.test.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="webkit" tests="17" failures="0" skipped="17" time="0" errors="0">
+<testcase name="Demo Account E2E Tests › Authentication Flow › should login with demo account PIN 0000" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Authentication Flow › should maintain authentication across page reloads" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Authentication Flow › should persist authentication across browser sessions" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should display dashboard after login" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should show demo user information" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should handle navigation between sections" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should create and display tasks" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should access goals section" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should access habits section" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Error Handling › should reject invalid PIN" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Error Handling › should handle network errors gracefully" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Performance › should load dashboard within acceptable time" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Performance › should handle multiple rapid navigations" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Mobile Responsiveness › should work on mobile viewport" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Mobile Responsiveness › should maintain functionality on tablet viewport" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Accessibility › should be accessible with keyboard navigation" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Accessibility › should have proper ARIA labels" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="auth.spec.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="Mobile Chrome" tests="29" failures="0" skipped="29" time="0" errors="0">
+<testcase name="Authentication E2E Tests › Public Route Access › should allow access to home page without authentication" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Public Route Access › should allow access to login page without authentication" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Public Route Access › should show appropriate UI for unauthenticated users" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should redirect to login when accessing dashboard without auth" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should redirect to login when accessing protected routes" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should preserve intended destination after login" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should successfully login demo user" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should redirect authenticated user away from login page" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should successfully logout user" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should clear all user data on logout" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should maintain session across page refreshes" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should maintain session across navigation" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should handle session expiry" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should handle corrupted session data" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Cross-Tab Authentication › should sync authentication across tabs" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Cross-Tab Authentication › should sync logout across tabs" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should call auth API endpoints correctly" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should handle API errors gracefully" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should handle network failures" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should prevent access to admin routes for regular users" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should not expose sensitive auth data in client" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should handle XSS attempts in auth data" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should load authenticated pages quickly" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should handle rapid navigation without issues" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should not cause memory leaks with repeated auth operations" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Mobile and Responsive Tests › should work on mobile devices" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Mobile and Responsive Tests › should work on tablet devices" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Accessibility Tests › should be accessible with keyboard navigation" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Accessibility Tests › should have proper ARIA labels and roles" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="dashboard.e2e.test.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="Mobile Chrome" tests="14" failures="0" skipped="14" time="0" errors="0">
+<testcase name="Dashboard E2E Tests › should load dashboard successfully" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display correct welcome message based on time" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display stats cards with correct data" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should navigate between tabs correctly" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display upcoming tasks" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display recent achievements" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should be responsive across different screen sizes" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should handle loading states correctly" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should maintain accessibility standards" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should handle errors gracefully" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should perform well under load" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should work across different browsers" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard Performance Tests › should meet Core Web Vitals requirements" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard Performance Tests › should have acceptable bundle size" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="demo-account.e2e.test.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="Mobile Chrome" tests="17" failures="0" skipped="17" time="0" errors="0">
+<testcase name="Demo Account E2E Tests › Authentication Flow › should login with demo account PIN 0000" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Authentication Flow › should maintain authentication across page reloads" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Authentication Flow › should persist authentication across browser sessions" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should display dashboard after login" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should show demo user information" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should handle navigation between sections" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should create and display tasks" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should access goals section" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should access habits section" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Error Handling › should reject invalid PIN" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Error Handling › should handle network errors gracefully" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Performance › should load dashboard within acceptable time" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Performance › should handle multiple rapid navigations" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Mobile Responsiveness › should work on mobile viewport" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Mobile Responsiveness › should maintain functionality on tablet viewport" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Accessibility › should be accessible with keyboard navigation" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Accessibility › should have proper ARIA labels" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="auth.spec.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="Mobile Safari" tests="29" failures="0" skipped="29" time="0" errors="0">
+<testcase name="Authentication E2E Tests › Public Route Access › should allow access to home page without authentication" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Public Route Access › should allow access to login page without authentication" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Public Route Access › should show appropriate UI for unauthenticated users" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should redirect to login when accessing dashboard without auth" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should redirect to login when accessing protected routes" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should preserve intended destination after login" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should successfully login demo user" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should redirect authenticated user away from login page" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should successfully logout user" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should clear all user data on logout" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should maintain session across page refreshes" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should maintain session across navigation" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should handle session expiry" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should handle corrupted session data" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Cross-Tab Authentication › should sync authentication across tabs" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Cross-Tab Authentication › should sync logout across tabs" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should call auth API endpoints correctly" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should handle API errors gracefully" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should handle network failures" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should prevent access to admin routes for regular users" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should not expose sensitive auth data in client" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should handle XSS attempts in auth data" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should load authenticated pages quickly" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should handle rapid navigation without issues" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should not cause memory leaks with repeated auth operations" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Mobile and Responsive Tests › should work on mobile devices" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Mobile and Responsive Tests › should work on tablet devices" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Accessibility Tests › should be accessible with keyboard navigation" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Accessibility Tests › should have proper ARIA labels and roles" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="dashboard.e2e.test.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="Mobile Safari" tests="14" failures="0" skipped="14" time="0" errors="0">
+<testcase name="Dashboard E2E Tests › should load dashboard successfully" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display correct welcome message based on time" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display stats cards with correct data" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should navigate between tabs correctly" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display upcoming tasks" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display recent achievements" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should be responsive across different screen sizes" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should handle loading states correctly" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should maintain accessibility standards" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should handle errors gracefully" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should perform well under load" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should work across different browsers" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard Performance Tests › should meet Core Web Vitals requirements" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard Performance Tests › should have acceptable bundle size" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="demo-account.e2e.test.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="Mobile Safari" tests="17" failures="0" skipped="17" time="0" errors="0">
+<testcase name="Demo Account E2E Tests › Authentication Flow › should login with demo account PIN 0000" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Authentication Flow › should maintain authentication across page reloads" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Authentication Flow › should persist authentication across browser sessions" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should display dashboard after login" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should show demo user information" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should handle navigation between sections" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should create and display tasks" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should access goals section" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should access habits section" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Error Handling › should reject invalid PIN" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Error Handling › should handle network errors gracefully" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Performance › should load dashboard within acceptable time" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Performance › should handle multiple rapid navigations" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Mobile Responsiveness › should work on mobile viewport" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Mobile Responsiveness › should maintain functionality on tablet viewport" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Accessibility › should be accessible with keyboard navigation" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Accessibility › should have proper ARIA labels" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="auth.spec.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="Microsoft Edge" tests="29" failures="0" skipped="29" time="0" errors="0">
+<testcase name="Authentication E2E Tests › Public Route Access › should allow access to home page without authentication" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Public Route Access › should allow access to login page without authentication" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Public Route Access › should show appropriate UI for unauthenticated users" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should redirect to login when accessing dashboard without auth" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should redirect to login when accessing protected routes" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should preserve intended destination after login" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should successfully login demo user" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should redirect authenticated user away from login page" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should successfully logout user" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should clear all user data on logout" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should maintain session across page refreshes" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should maintain session across navigation" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should handle session expiry" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should handle corrupted session data" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Cross-Tab Authentication › should sync authentication across tabs" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Cross-Tab Authentication › should sync logout across tabs" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should call auth API endpoints correctly" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should handle API errors gracefully" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should handle network failures" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should prevent access to admin routes for regular users" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should not expose sensitive auth data in client" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should handle XSS attempts in auth data" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should load authenticated pages quickly" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should handle rapid navigation without issues" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should not cause memory leaks with repeated auth operations" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Mobile and Responsive Tests › should work on mobile devices" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Mobile and Responsive Tests › should work on tablet devices" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Accessibility Tests › should be accessible with keyboard navigation" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Accessibility Tests › should have proper ARIA labels and roles" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="dashboard.e2e.test.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="Microsoft Edge" tests="14" failures="0" skipped="14" time="0" errors="0">
+<testcase name="Dashboard E2E Tests › should load dashboard successfully" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display correct welcome message based on time" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display stats cards with correct data" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should navigate between tabs correctly" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display upcoming tasks" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display recent achievements" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should be responsive across different screen sizes" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should handle loading states correctly" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should maintain accessibility standards" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should handle errors gracefully" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should perform well under load" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should work across different browsers" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard Performance Tests › should meet Core Web Vitals requirements" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard Performance Tests › should have acceptable bundle size" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="demo-account.e2e.test.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="Microsoft Edge" tests="17" failures="0" skipped="17" time="0" errors="0">
+<testcase name="Demo Account E2E Tests › Authentication Flow › should login with demo account PIN 0000" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Authentication Flow › should maintain authentication across page reloads" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Authentication Flow › should persist authentication across browser sessions" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should display dashboard after login" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should show demo user information" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should handle navigation between sections" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should create and display tasks" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should access goals section" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should access habits section" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Error Handling › should reject invalid PIN" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Error Handling › should handle network errors gracefully" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Performance › should load dashboard within acceptable time" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Performance › should handle multiple rapid navigations" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Mobile Responsiveness › should work on mobile viewport" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Mobile Responsiveness › should maintain functionality on tablet viewport" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Accessibility › should be accessible with keyboard navigation" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Accessibility › should have proper ARIA labels" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="auth.spec.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="Google Chrome" tests="29" failures="0" skipped="29" time="0" errors="0">
+<testcase name="Authentication E2E Tests › Public Route Access › should allow access to home page without authentication" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Public Route Access › should allow access to login page without authentication" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Public Route Access › should show appropriate UI for unauthenticated users" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should redirect to login when accessing dashboard without auth" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should redirect to login when accessing protected routes" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should preserve intended destination after login" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should successfully login demo user" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should redirect authenticated user away from login page" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should successfully logout user" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should clear all user data on logout" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should maintain session across page refreshes" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should maintain session across navigation" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should handle session expiry" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should handle corrupted session data" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Cross-Tab Authentication › should sync authentication across tabs" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Cross-Tab Authentication › should sync logout across tabs" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should call auth API endpoints correctly" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should handle API errors gracefully" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should handle network failures" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should prevent access to admin routes for regular users" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should not expose sensitive auth data in client" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should handle XSS attempts in auth data" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should load authenticated pages quickly" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should handle rapid navigation without issues" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should not cause memory leaks with repeated auth operations" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Mobile and Responsive Tests › should work on mobile devices" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Mobile and Responsive Tests › should work on tablet devices" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Accessibility Tests › should be accessible with keyboard navigation" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Authentication E2E Tests › Accessibility Tests › should have proper ARIA labels and roles" classname="auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="dashboard.e2e.test.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="Google Chrome" tests="14" failures="0" skipped="14" time="0" errors="0">
+<testcase name="Dashboard E2E Tests › should load dashboard successfully" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display correct welcome message based on time" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display stats cards with correct data" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should navigate between tabs correctly" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display upcoming tasks" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should display recent achievements" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should be responsive across different screen sizes" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should handle loading states correctly" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should maintain accessibility standards" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should handle errors gracefully" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should perform well under load" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard E2E Tests › should work across different browsers" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard Performance Tests › should meet Core Web Vitals requirements" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Dashboard Performance Tests › should have acceptable bundle size" classname="dashboard.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="demo-account.e2e.test.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="Google Chrome" tests="17" failures="0" skipped="17" time="0" errors="0">
+<testcase name="Demo Account E2E Tests › Authentication Flow › should login with demo account PIN 0000" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Authentication Flow › should maintain authentication across page reloads" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Authentication Flow › should persist authentication across browser sessions" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should display dashboard after login" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should show demo user information" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Dashboard Functionality › should handle navigation between sections" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should create and display tasks" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should access goals section" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Core Features › should access habits section" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Error Handling › should reject invalid PIN" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Error Handling › should handle network errors gracefully" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Performance › should load dashboard within acceptable time" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Performance › should handle multiple rapid navigations" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Mobile Responsiveness › should work on mobile viewport" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Mobile Responsiveness › should maintain functionality on tablet viewport" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Accessibility › should be accessible with keyboard navigation" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Demo Account E2E Tests › Accessibility › should have proper ARIA labels" classname="demo-account.e2e.test.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="auth.spec.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="auth-tests-chromium" tests="29" failures="29" skipped="0" time="16.936" errors="0">
+<testcase name="Authentication E2E Tests › Public Route Access › should allow access to home page without authentication" classname="auth.spec.ts" time="0.681">
+<failure message="auth.spec.ts:147:9 should allow access to home page without authentication" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:147:9 › Authentication E2E Tests › Public Route Access › should allow access to home page without authentication 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-ace2d-page-without-authentication-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-ace2d-page-without-authentication-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-ace2d-page-without-authentication-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-ace2d-page-without-authentication-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Public Route Access › should allow access to login page without authentication" classname="auth.spec.ts" time="0.686">
+<failure message="auth.spec.ts:156:9 should allow access to login page without authentication" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:156:9 › Authentication E2E Tests › Public Route Access › should allow access to login page without authentication 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-efe1c-page-without-authentication-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-efe1c-page-without-authentication-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-efe1c-page-without-authentication-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-efe1c-page-without-authentication-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Public Route Access › should show appropriate UI for unauthenticated users" classname="auth.spec.ts" time="0.688">
+<failure message="auth.spec.ts:164:9 should show appropriate UI for unauthenticated users" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:164:9 › Authentication E2E Tests › Public Route Access › should show appropriate UI for unauthenticated users 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-b3e85-I-for-unauthenticated-users-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-b3e85-I-for-unauthenticated-users-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-b3e85-I-for-unauthenticated-users-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-b3e85-I-for-unauthenticated-users-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should redirect to login when accessing dashboard without auth" classname="auth.spec.ts" time="0.684">
+<failure message="auth.spec.ts:176:9 should redirect to login when accessing dashboard without auth" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:176:9 › Authentication E2E Tests › Protected Route Access › should redirect to login when accessing dashboard without auth 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-cef62-sing-dashboard-without-auth-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-cef62-sing-dashboard-without-auth-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-cef62-sing-dashboard-without-auth-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-cef62-sing-dashboard-without-auth-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should redirect to login when accessing protected routes" classname="auth.spec.ts" time="0.631">
+<failure message="auth.spec.ts:184:9 should redirect to login when accessing protected routes" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:184:9 › Authentication E2E Tests › Protected Route Access › should redirect to login when accessing protected routes 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-bc6ba--accessing-protected-routes-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-bc6ba--accessing-protected-routes-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-bc6ba--accessing-protected-routes-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-bc6ba--accessing-protected-routes-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should preserve intended destination after login" classname="auth.spec.ts" time="0.623">
+<failure message="auth.spec.ts:193:9 should preserve intended destination after login" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:193:9 › Authentication E2E Tests › Protected Route Access › should preserve intended destination after login 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-1d460-ded-destination-after-login-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-1d460-ded-destination-after-login-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-1d460-ded-destination-after-login-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-1d460-ded-destination-after-login-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should successfully login demo user" classname="auth.spec.ts" time="0.627">
+<failure message="auth.spec.ts:208:9 should successfully login demo user" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:208:9 › Authentication E2E Tests › Authentication Flow › should successfully login demo user 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-f7389-uccessfully-login-demo-user-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-f7389-uccessfully-login-demo-user-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-f7389-uccessfully-login-demo-user-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-f7389-uccessfully-login-demo-user-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should redirect authenticated user away from login page" classname="auth.spec.ts" time="0.688">
+<failure message="auth.spec.ts:228:9 should redirect authenticated user away from login page" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:228:9 › Authentication E2E Tests › Authentication Flow › should redirect authenticated user away from login page 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-150b3-d-user-away-from-login-page-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-150b3-d-user-away-from-login-page-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-150b3-d-user-away-from-login-page-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-150b3-d-user-away-from-login-page-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should successfully logout user" classname="auth.spec.ts" time="0.628">
+<failure message="auth.spec.ts:239:9 should successfully logout user" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:239:9 › Authentication E2E Tests › Authentication Flow › should successfully logout user 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-41504-ld-successfully-logout-user-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-41504-ld-successfully-logout-user-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-41504-ld-successfully-logout-user-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-41504-ld-successfully-logout-user-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should clear all user data on logout" classname="auth.spec.ts" time="0.625">
+<failure message="auth.spec.ts:257:9 should clear all user data on logout" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:257:9 › Authentication E2E Tests › Authentication Flow › should clear all user data on logout 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-aa194-ear-all-user-data-on-logout-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-aa194-ear-all-user-data-on-logout-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-aa194-ear-all-user-data-on-logout-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-aa194-ear-all-user-data-on-logout-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should maintain session across page refreshes" classname="auth.spec.ts" time="0.681">
+<failure message="auth.spec.ts:289:9 should maintain session across page refreshes" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:289:9 › Authentication E2E Tests › Session Management › should maintain session across page refreshes 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-d2f25-ssion-across-page-refreshes-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-d2f25-ssion-across-page-refreshes-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-d2f25-ssion-across-page-refreshes-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-d2f25-ssion-across-page-refreshes-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should maintain session across navigation" classname="auth.spec.ts" time="0.672">
+<failure message="auth.spec.ts:303:9 should maintain session across navigation" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:303:9 › Authentication E2E Tests › Session Management › should maintain session across navigation 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-88809-n-session-across-navigation-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-88809-n-session-across-navigation-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-88809-n-session-across-navigation-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-88809-n-session-across-navigation-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should handle session expiry" classname="auth.spec.ts" time="0.684">
+<failure message="auth.spec.ts:323:9 should handle session expiry" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:323:9 › Authentication E2E Tests › Session Management › should handle session expiry 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-5e7c1-hould-handle-session-expiry-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-5e7c1-hould-handle-session-expiry-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-5e7c1-hould-handle-session-expiry-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-5e7c1-hould-handle-session-expiry-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should handle corrupted session data" classname="auth.spec.ts" time="0.684">
+<failure message="auth.spec.ts:342:9 should handle corrupted session data" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:342:9 › Authentication E2E Tests › Session Management › should handle corrupted session data 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-65755-ndle-corrupted-session-data-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-65755-ndle-corrupted-session-data-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-65755-ndle-corrupted-session-data-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-65755-ndle-corrupted-session-data-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Cross-Tab Authentication › should sync authentication across tabs" classname="auth.spec.ts" time="0.677">
+<failure message="auth.spec.ts:361:9 should sync authentication across tabs" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:361:9 › Authentication E2E Tests › Cross-Tab Authentication › should sync authentication across tabs 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-9017f--authentication-across-tabs-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-9017f--authentication-across-tabs-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-9017f--authentication-across-tabs-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-9017f--authentication-across-tabs-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Cross-Tab Authentication › should sync logout across tabs" classname="auth.spec.ts" time="0.478">
+<failure message="auth.spec.ts:388:9 should sync logout across tabs" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:388:9 › Authentication E2E Tests › Cross-Tab Authentication › should sync logout across tabs 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-8c7c9-uld-sync-logout-across-tabs-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-8c7c9-uld-sync-logout-across-tabs-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-8c7c9-uld-sync-logout-across-tabs-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-8c7c9-uld-sync-logout-across-tabs-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should call auth API endpoints correctly" classname="auth.spec.ts" time="0.522">
+<failure message="auth.spec.ts:415:9 should call auth API endpoints correctly" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:415:9 › Authentication E2E Tests › API Integration › should call auth API endpoints correctly 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-53c93-uth-API-endpoints-correctly-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-53c93-uth-API-endpoints-correctly-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-53c93-uth-API-endpoints-correctly-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-53c93-uth-API-endpoints-correctly-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should handle API errors gracefully" classname="auth.spec.ts" time="0.543">
+<failure message="auth.spec.ts:434:9 should handle API errors gracefully" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:434:9 › Authentication E2E Tests › API Integration › should handle API errors gracefully 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-256be-andle-API-errors-gracefully-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-256be-andle-API-errors-gracefully-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-256be-andle-API-errors-gracefully-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-256be-andle-API-errors-gracefully-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should handle network failures" classname="auth.spec.ts" time="0.44">
+<failure message="auth.spec.ts:451:9 should handle network failures" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:451:9 › Authentication E2E Tests › API Integration › should handle network failures 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-926a6-uld-handle-network-failures-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-926a6-uld-handle-network-failures-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-926a6-uld-handle-network-failures-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-926a6-uld-handle-network-failures-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should prevent access to admin routes for regular users" classname="auth.spec.ts" time="0.422">
+<failure message="auth.spec.ts:469:9 should prevent access to admin routes for regular users" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:469:9 › Authentication E2E Tests › Security Tests › should prevent access to admin routes for regular users 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-59e88-in-routes-for-regular-users-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-59e88-in-routes-for-regular-users-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-59e88-in-routes-for-regular-users-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-59e88-in-routes-for-regular-users-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should not expose sensitive auth data in client" classname="auth.spec.ts" time="0.41">
+<failure message="auth.spec.ts:487:9 should not expose sensitive auth data in client" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:487:9 › Authentication E2E Tests › Security Tests › should not expose sensitive auth data in client 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-030d9-nsitive-auth-data-in-client-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-030d9-nsitive-auth-data-in-client-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-030d9-nsitive-auth-data-in-client-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-030d9-nsitive-auth-data-in-client-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should handle XSS attempts in auth data" classname="auth.spec.ts" time="0.485">
+<failure message="auth.spec.ts:511:9 should handle XSS attempts in auth data" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:511:9 › Authentication E2E Tests › Security Tests › should handle XSS attempts in auth data 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-361d1-e-XSS-attempts-in-auth-data-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-361d1-e-XSS-attempts-in-auth-data-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-361d1-e-XSS-attempts-in-auth-data-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-361d1-e-XSS-attempts-in-auth-data-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should load authenticated pages quickly" classname="auth.spec.ts" time="0.429">
+<failure message="auth.spec.ts:540:9 should load authenticated pages quickly" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:540:9 › Authentication E2E Tests › Performance Tests › should load authenticated pages quickly 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-79c2d-authenticated-pages-quickly-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-79c2d-authenticated-pages-quickly-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-79c2d-authenticated-pages-quickly-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-79c2d-authenticated-pages-quickly-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should handle rapid navigation without issues" classname="auth.spec.ts" time="0.586">
+<failure message="auth.spec.ts:552:9 should handle rapid navigation without issues" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:552:9 › Authentication E2E Tests › Performance Tests › should handle rapid navigation without issues 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-08eb1-d-navigation-without-issues-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-08eb1-d-navigation-without-issues-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-08eb1-d-navigation-without-issues-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-08eb1-d-navigation-without-issues-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should not cause memory leaks with repeated auth operations" classname="auth.spec.ts" time="0.608">
+<failure message="auth.spec.ts:569:9 should not cause memory leaks with repeated auth operations" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:569:9 › Authentication E2E Tests › Performance Tests › should not cause memory leaks with repeated auth operations 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-371ed-th-repeated-auth-operations-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-371ed-th-repeated-auth-operations-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-371ed-th-repeated-auth-operations-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-371ed-th-repeated-auth-operations-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Mobile and Responsive Tests › should work on mobile devices" classname="auth.spec.ts" time="0.606">
+<failure message="auth.spec.ts:585:9 should work on mobile devices" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:585:9 › Authentication E2E Tests › Mobile and Responsive Tests › should work on mobile devices 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-cb7f5-ould-work-on-mobile-devices-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-cb7f5-ould-work-on-mobile-devices-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-cb7f5-ould-work-on-mobile-devices-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-cb7f5-ould-work-on-mobile-devices-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Mobile and Responsive Tests › should work on tablet devices" classname="auth.spec.ts" time="0.547">
+<failure message="auth.spec.ts:604:9 should work on tablet devices" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:604:9 › Authentication E2E Tests › Mobile and Responsive Tests › should work on tablet devices 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-1e85e-ould-work-on-tablet-devices-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-1e85e-ould-work-on-tablet-devices-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-1e85e-ould-work-on-tablet-devices-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-1e85e-ould-work-on-tablet-devices-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Accessibility Tests › should be accessible with keyboard navigation" classname="auth.spec.ts" time="0.443">
+<failure message="auth.spec.ts:622:9 should be accessible with keyboard navigation" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:622:9 › Authentication E2E Tests › Accessibility Tests › should be accessible with keyboard navigation 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-049c4-le-with-keyboard-navigation-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-049c4-le-with-keyboard-navigation-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-049c4-le-with-keyboard-navigation-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-049c4-le-with-keyboard-navigation-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Accessibility Tests › should have proper ARIA labels and roles" classname="auth.spec.ts" time="0.458">
+<failure message="auth.spec.ts:642:9 should have proper ARIA labels and roles" type="FAILURE">
+<![CDATA[  [auth-tests-chromium] › auth.spec.ts:642:9 › Authentication E2E Tests › Accessibility Tests › should have proper ARIA labels and roles 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-797a3-roper-ARIA-labels-and-roles-auth-tests-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-797a3-roper-ARIA-labels-and-roles-auth-tests-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-797a3-roper-ARIA-labels-and-roles-auth-tests-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-797a3-roper-ARIA-labels-and-roles-auth-tests-chromium\video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="auth.spec.ts" timestamp="2025-10-01T23:47:53.207Z" hostname="auth-tests-firefox" tests="29" failures="29" skipped="0" time="31.468" errors="0">
+<testcase name="Authentication E2E Tests › Public Route Access › should allow access to home page without authentication" classname="auth.spec.ts" time="1.08">
+<failure message="auth.spec.ts:147:9 should allow access to home page without authentication" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:147:9 › Authentication E2E Tests › Public Route Access › should allow access to home page without authentication 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-ace2d-page-without-authentication-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-ace2d-page-without-authentication-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-ace2d-page-without-authentication-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-ace2d-page-without-authentication-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Public Route Access › should allow access to login page without authentication" classname="auth.spec.ts" time="0.869">
+<failure message="auth.spec.ts:156:9 should allow access to login page without authentication" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:156:9 › Authentication E2E Tests › Public Route Access › should allow access to login page without authentication 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-efe1c-page-without-authentication-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-efe1c-page-without-authentication-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-efe1c-page-without-authentication-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-efe1c-page-without-authentication-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Public Route Access › should show appropriate UI for unauthenticated users" classname="auth.spec.ts" time="1.484">
+<failure message="auth.spec.ts:164:9 should show appropriate UI for unauthenticated users" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:164:9 › Authentication E2E Tests › Public Route Access › should show appropriate UI for unauthenticated users 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-b3e85-I-for-unauthenticated-users-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-b3e85-I-for-unauthenticated-users-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-b3e85-I-for-unauthenticated-users-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-b3e85-I-for-unauthenticated-users-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should redirect to login when accessing dashboard without auth" classname="auth.spec.ts" time="1.034">
+<failure message="auth.spec.ts:176:9 should redirect to login when accessing dashboard without auth" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:176:9 › Authentication E2E Tests › Protected Route Access › should redirect to login when accessing dashboard without auth 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-cef62-sing-dashboard-without-auth-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-cef62-sing-dashboard-without-auth-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-cef62-sing-dashboard-without-auth-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-cef62-sing-dashboard-without-auth-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should redirect to login when accessing protected routes" classname="auth.spec.ts" time="1.121">
+<failure message="auth.spec.ts:184:9 should redirect to login when accessing protected routes" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:184:9 › Authentication E2E Tests › Protected Route Access › should redirect to login when accessing protected routes 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-bc6ba--accessing-protected-routes-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-bc6ba--accessing-protected-routes-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-bc6ba--accessing-protected-routes-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-bc6ba--accessing-protected-routes-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Protected Route Access › should preserve intended destination after login" classname="auth.spec.ts" time="1.299">
+<failure message="auth.spec.ts:193:9 should preserve intended destination after login" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:193:9 › Authentication E2E Tests › Protected Route Access › should preserve intended destination after login 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-1d460-ded-destination-after-login-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-1d460-ded-destination-after-login-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-1d460-ded-destination-after-login-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-1d460-ded-destination-after-login-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should successfully login demo user" classname="auth.spec.ts" time="0.991">
+<failure message="auth.spec.ts:208:9 should successfully login demo user" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:208:9 › Authentication E2E Tests › Authentication Flow › should successfully login demo user 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-f7389-uccessfully-login-demo-user-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-f7389-uccessfully-login-demo-user-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-f7389-uccessfully-login-demo-user-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-f7389-uccessfully-login-demo-user-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should redirect authenticated user away from login page" classname="auth.spec.ts" time="0.998">
+<failure message="auth.spec.ts:228:9 should redirect authenticated user away from login page" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:228:9 › Authentication E2E Tests › Authentication Flow › should redirect authenticated user away from login page 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-150b3-d-user-away-from-login-page-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-150b3-d-user-away-from-login-page-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-150b3-d-user-away-from-login-page-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-150b3-d-user-away-from-login-page-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should successfully logout user" classname="auth.spec.ts" time="1.526">
+<failure message="auth.spec.ts:239:9 should successfully logout user" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:239:9 › Authentication E2E Tests › Authentication Flow › should successfully logout user 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-41504-ld-successfully-logout-user-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-41504-ld-successfully-logout-user-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-41504-ld-successfully-logout-user-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-41504-ld-successfully-logout-user-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Authentication Flow › should clear all user data on logout" classname="auth.spec.ts" time="0.978">
+<failure message="auth.spec.ts:257:9 should clear all user data on logout" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:257:9 › Authentication E2E Tests › Authentication Flow › should clear all user data on logout 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-aa194-ear-all-user-data-on-logout-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-aa194-ear-all-user-data-on-logout-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-aa194-ear-all-user-data-on-logout-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-aa194-ear-all-user-data-on-logout-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should maintain session across page refreshes" classname="auth.spec.ts" time="1.014">
+<failure message="auth.spec.ts:289:9 should maintain session across page refreshes" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:289:9 › Authentication E2E Tests › Session Management › should maintain session across page refreshes 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-d2f25-ssion-across-page-refreshes-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-d2f25-ssion-across-page-refreshes-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-d2f25-ssion-across-page-refreshes-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-d2f25-ssion-across-page-refreshes-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should maintain session across navigation" classname="auth.spec.ts" time="1.466">
+<failure message="auth.spec.ts:303:9 should maintain session across navigation" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:303:9 › Authentication E2E Tests › Session Management › should maintain session across navigation 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-88809-n-session-across-navigation-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-88809-n-session-across-navigation-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-88809-n-session-across-navigation-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-88809-n-session-across-navigation-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should handle session expiry" classname="auth.spec.ts" time="1.484">
+<failure message="auth.spec.ts:323:9 should handle session expiry" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:323:9 › Authentication E2E Tests › Session Management › should handle session expiry 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-5e7c1-hould-handle-session-expiry-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-5e7c1-hould-handle-session-expiry-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-5e7c1-hould-handle-session-expiry-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-5e7c1-hould-handle-session-expiry-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Session Management › should handle corrupted session data" classname="auth.spec.ts" time="0.946">
+<failure message="auth.spec.ts:342:9 should handle corrupted session data" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:342:9 › Authentication E2E Tests › Session Management › should handle corrupted session data 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-65755-ndle-corrupted-session-data-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-65755-ndle-corrupted-session-data-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-65755-ndle-corrupted-session-data-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-65755-ndle-corrupted-session-data-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Cross-Tab Authentication › should sync authentication across tabs" classname="auth.spec.ts" time="1.025">
+<failure message="auth.spec.ts:361:9 should sync authentication across tabs" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:361:9 › Authentication E2E Tests › Cross-Tab Authentication › should sync authentication across tabs 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-9017f--authentication-across-tabs-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-9017f--authentication-across-tabs-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-9017f--authentication-across-tabs-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-9017f--authentication-across-tabs-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Cross-Tab Authentication › should sync logout across tabs" classname="auth.spec.ts" time="1.001">
+<failure message="auth.spec.ts:388:9 should sync logout across tabs" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:388:9 › Authentication E2E Tests › Cross-Tab Authentication › should sync logout across tabs 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-8c7c9-uld-sync-logout-across-tabs-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-8c7c9-uld-sync-logout-across-tabs-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-8c7c9-uld-sync-logout-across-tabs-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-8c7c9-uld-sync-logout-across-tabs-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should call auth API endpoints correctly" classname="auth.spec.ts" time="0.77">
+<failure message="auth.spec.ts:415:9 should call auth API endpoints correctly" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:415:9 › Authentication E2E Tests › API Integration › should call auth API endpoints correctly 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-53c93-uth-API-endpoints-correctly-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-53c93-uth-API-endpoints-correctly-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-53c93-uth-API-endpoints-correctly-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-53c93-uth-API-endpoints-correctly-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should handle API errors gracefully" classname="auth.spec.ts" time="1.445">
+<failure message="auth.spec.ts:434:9 should handle API errors gracefully" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:434:9 › Authentication E2E Tests › API Integration › should handle API errors gracefully 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-256be-andle-API-errors-gracefully-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-256be-andle-API-errors-gracefully-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-256be-andle-API-errors-gracefully-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-256be-andle-API-errors-gracefully-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › API Integration › should handle network failures" classname="auth.spec.ts" time="0.92">
+<failure message="auth.spec.ts:451:9 should handle network failures" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:451:9 › Authentication E2E Tests › API Integration › should handle network failures 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-926a6-uld-handle-network-failures-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-926a6-uld-handle-network-failures-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-926a6-uld-handle-network-failures-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-926a6-uld-handle-network-failures-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should prevent access to admin routes for regular users" classname="auth.spec.ts" time="1.472">
+<failure message="auth.spec.ts:469:9 should prevent access to admin routes for regular users" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:469:9 › Authentication E2E Tests › Security Tests › should prevent access to admin routes for regular users 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-59e88-in-routes-for-regular-users-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-59e88-in-routes-for-regular-users-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-59e88-in-routes-for-regular-users-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-59e88-in-routes-for-regular-users-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should not expose sensitive auth data in client" classname="auth.spec.ts" time="1.215">
+<failure message="auth.spec.ts:487:9 should not expose sensitive auth data in client" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:487:9 › Authentication E2E Tests › Security Tests › should not expose sensitive auth data in client 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-030d9-nsitive-auth-data-in-client-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-030d9-nsitive-auth-data-in-client-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-030d9-nsitive-auth-data-in-client-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-030d9-nsitive-auth-data-in-client-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Security Tests › should handle XSS attempts in auth data" classname="auth.spec.ts" time="1.381">
+<failure message="auth.spec.ts:511:9 should handle XSS attempts in auth data" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:511:9 › Authentication E2E Tests › Security Tests › should handle XSS attempts in auth data 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-361d1-e-XSS-attempts-in-auth-data-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-361d1-e-XSS-attempts-in-auth-data-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-361d1-e-XSS-attempts-in-auth-data-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-361d1-e-XSS-attempts-in-auth-data-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should load authenticated pages quickly" classname="auth.spec.ts" time="1.281">
+<failure message="auth.spec.ts:540:9 should load authenticated pages quickly" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:540:9 › Authentication E2E Tests › Performance Tests › should load authenticated pages quickly 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-79c2d-authenticated-pages-quickly-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-79c2d-authenticated-pages-quickly-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-79c2d-authenticated-pages-quickly-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-79c2d-authenticated-pages-quickly-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should handle rapid navigation without issues" classname="auth.spec.ts" time="0.706">
+<failure message="auth.spec.ts:552:9 should handle rapid navigation without issues" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:552:9 › Authentication E2E Tests › Performance Tests › should handle rapid navigation without issues 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-08eb1-d-navigation-without-issues-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-08eb1-d-navigation-without-issues-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-08eb1-d-navigation-without-issues-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-08eb1-d-navigation-without-issues-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Performance Tests › should not cause memory leaks with repeated auth operations" classname="auth.spec.ts" time="0.662">
+<failure message="auth.spec.ts:569:9 should not cause memory leaks with repeated auth operations" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:569:9 › Authentication E2E Tests › Performance Tests › should not cause memory leaks with repeated auth operations 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-371ed-th-repeated-auth-operations-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-371ed-th-repeated-auth-operations-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-371ed-th-repeated-auth-operations-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-371ed-th-repeated-auth-operations-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Mobile and Responsive Tests › should work on mobile devices" classname="auth.spec.ts" time="1.042">
+<failure message="auth.spec.ts:585:9 should work on mobile devices" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:585:9 › Authentication E2E Tests › Mobile and Responsive Tests › should work on mobile devices 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-cb7f5-ould-work-on-mobile-devices-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-cb7f5-ould-work-on-mobile-devices-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-cb7f5-ould-work-on-mobile-devices-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-cb7f5-ould-work-on-mobile-devices-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Mobile and Responsive Tests › should work on tablet devices" classname="auth.spec.ts" time="0.8">
+<failure message="auth.spec.ts:604:9 should work on tablet devices" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:604:9 › Authentication E2E Tests › Mobile and Responsive Tests › should work on tablet devices 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-1e85e-ould-work-on-tablet-devices-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-1e85e-ould-work-on-tablet-devices-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-1e85e-ould-work-on-tablet-devices-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-1e85e-ould-work-on-tablet-devices-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Accessibility Tests › should be accessible with keyboard navigation" classname="auth.spec.ts" time="0.72">
+<failure message="auth.spec.ts:622:9 should be accessible with keyboard navigation" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:622:9 › Authentication E2E Tests › Accessibility Tests › should be accessible with keyboard navigation 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-049c4-le-with-keyboard-navigation-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-049c4-le-with-keyboard-navigation-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-049c4-le-with-keyboard-navigation-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-049c4-le-with-keyboard-navigation-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Authentication E2E Tests › Accessibility Tests › should have proper ARIA labels and roles" classname="auth.spec.ts" time="0.738">
+<failure message="auth.spec.ts:642:9 should have proper ARIA labels and roles" type="FAILURE">
+<![CDATA[  [auth-tests-firefox] › auth.spec.ts:642:9 › Authentication E2E Tests › Accessibility Tests › should have proper ARIA labels and roles 
+
+    Error: page.evaluate: The operation is insecure.
+    @debugger eval code line 291 > eval:2:7
+    evaluate@debugger eval code:293:16
+    @debugger eval code:1:44
+
+        at @debugger eval code line 291 > eval:2:7
+        at evaluate@debugger eval code:293:16
+        at @debugger eval code:1:44
+        at AuthPage.clearAuthData (C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:94:21)
+        at C:\Users\damat\_REPOS\ASTRAL_PLANNER\tests\e2e\auth.spec.ts:143:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-797a3-roper-ARIA-labels-and-roles-auth-tests-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\e2e\auth-Authentication-E2E-Te-797a3-roper-ARIA-labels-and-roles-auth-tests-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-797a3-roper-ARIA-labels-and-roles-auth-tests-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\e2e\auth-Authentication-E2E-Te-797a3-roper-ARIA-labels-and-roles-auth-tests-firefox\video.webm]]
+]]>
+</system-out>
 </testcase>
 </testsuite>
 </testsuites>

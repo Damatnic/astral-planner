@@ -13,6 +13,6 @@ export async function register() {
 export async function onRequestError(err: any, request: any, context: any) {
   // Temporarily disabled but hook is present to prevent Sentry warnings
   if (process.env.NODE_ENV === 'development') {
-    console.warn('Request error captured:', err.message);
+    // TODO: Replace with proper logging - console.warn('Request error captured:', err.message);
   }
 }

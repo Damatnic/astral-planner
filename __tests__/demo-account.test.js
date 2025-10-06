@@ -96,14 +96,14 @@ describe('Demo Account Authentication System', () => {
       const demoData = getAccountData('demo-user');
       
       demoData.habits.forEach((habit, index) => {
-        expect(habit.id, `Habit ${index} missing id`).toBeDefined();
-        expect(habit.name, `Habit ${index} missing name`).toBeDefined();
-        expect(habit.category, `Habit ${index} missing category`).toBeDefined();
-        expect(habit.frequency, `Habit ${index} missing frequency`).toBeDefined();
-        expect(habit.targetCount, `Habit ${index} missing targetCount`).toBeDefined();
-        expect(habit.unit, `Habit ${index} missing unit`).toBeDefined();
-        expect(habit.currentStreak, `Habit ${index} missing currentStreak`).toBeDefined();
-        expect(habit.isActive, `Habit ${index} missing isActive`).toBeDefined();
+        expect(habit.id).toBeDefined();
+        expect(habit.name).toBeDefined();
+        expect(habit.category).toBeDefined();
+        expect(habit.frequency).toBeDefined();
+        expect(habit.targetCount).toBeDefined();
+        expect(habit.unit).toBeDefined();
+        expect(habit.currentStreak).toBeDefined();
+        expect(habit.isActive).toBeDefined();
       });
     });
 
@@ -111,14 +111,14 @@ describe('Demo Account Authentication System', () => {
       const demoData = getAccountData('demo-user');
       
       demoData.goals.forEach((goal, index) => {
-        expect(goal.id, `Goal ${index} missing id`).toBeDefined();
-        expect(goal.title, `Goal ${index} missing title`).toBeDefined();
-        expect(goal.category, `Goal ${index} missing category`).toBeDefined();
-        expect(goal.targetValue, `Goal ${index} missing targetValue`).toBeDefined();
-        expect(goal.currentValue, `Goal ${index} missing currentValue`).toBeDefined();
-        expect(goal.progress, `Goal ${index} missing progress`).toBeDefined();
-        expect(goal.status, `Goal ${index} missing status`).toBeDefined();
-        expect(goal.userId, `Goal ${index} missing userId`).toBe(demoData.id);
+        expect(goal.id).toBeDefined();
+        expect(goal.title).toBeDefined();
+        expect(goal.category).toBeDefined();
+        expect(goal.targetValue).toBeDefined();
+        expect(goal.currentValue).toBeDefined();
+        expect(goal.progress).toBeDefined();
+        expect(goal.status).toBeDefined();
+        expect(goal.userId).toBe(demoData.id);
       });
     });
 
@@ -126,11 +126,11 @@ describe('Demo Account Authentication System', () => {
       const demoData = getAccountData('demo-user');
       
       demoData.tasks.forEach((task, index) => {
-        expect(task.id, `Task ${index} missing id`).toBeDefined();
-        expect(task.title, `Task ${index} missing title`).toBeDefined();
-        expect(task.status, `Task ${index} missing status`).toBeDefined();
-        expect(task.priority, `Task ${index} missing priority`).toBeDefined();
-        expect(task.userId, `Task ${index} missing userId`).toBe(demoData.id);
+        expect(task.id).toBeDefined();
+        expect(task.title).toBeDefined();
+        expect(task.status).toBeDefined();
+        expect(task.priority).toBeDefined();
+        expect(task.userId).toBe(demoData.id);
       });
     });
   });

@@ -32,7 +32,7 @@ const getSecretKey = (): Uint8Array => {
     
     if (process.env.NODE_ENV === 'production' && process.env.VERCEL) {
       // On Vercel, JWT_SECRET should be in environment variables
-      // TODO: Replace with proper logging - console.warn('JWT_SECRET not found during build - JWT features will be disabled');
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('JWT_SECRET not found during build - JWT features will be disabled');
       cachedSecretKey = new TextEncoder().encode('build-time-fallback-not-for-runtime-use');
       return cachedSecretKey;
     } else if (process.env.NODE_ENV === 'production') {

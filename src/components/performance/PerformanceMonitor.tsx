@@ -296,12 +296,12 @@ export const PerformanceMonitor: React.FC<{
             return updated.slice(-20);
           });
         } catch (error) {
-          // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Error collecting metrics:', error);
+          // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Error collecting metrics:', error);
         }
       }, updateInterval);
       
     } catch (error) {
-      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Error starting performance monitoring:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Error starting performance monitoring:', error);
       setIsCollecting(false);
     }
   }, [collectMetrics, checkAlerts, updateInterval]);

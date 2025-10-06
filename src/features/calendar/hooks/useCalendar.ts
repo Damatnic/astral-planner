@@ -632,7 +632,7 @@ export function useCalendar(options: UseCalendarOptions = {}) {
       try {
         localStorage.setItem('calendar-config', JSON.stringify(config));
       } catch (error) {
-        // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to save calendar config:', error);
+        // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to save calendar config:', error);
       }
     };
     
@@ -653,7 +653,7 @@ export function useCalendar(options: UseCalendarOptions = {}) {
         }));
       }
     } catch (error) {
-      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to load saved calendar config:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Failed to load saved calendar config:', error);
     }
   }, [initialDate]);
 

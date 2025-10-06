@@ -25,7 +25,7 @@ async function getUserRoleFromDB(userId: string): Promise<Role> {
     // All users get FREE tier features (which include all previous premium features)
     return 'FREE';
   } catch (error) {
-    console.error('Error fetching user role:', error);
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Error fetching user role:', error);
     return 'FREE'; // Default fallback
   }
 }
@@ -148,7 +148,7 @@ export async function isWorkspaceMember(req: NextRequest, workspaceId: string): 
     
     return membership.length > 0;
   } catch (error) {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Error checking workspace membership:', error);
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Error checking workspace membership:', error);
     return false;
   }
 }
@@ -183,7 +183,7 @@ export async function isWorkspaceAdmin(req: NextRequest, workspaceId: string): P
     
     return membership.length > 0;
   } catch (error) {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Error checking workspace admin status:', error);
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Error checking workspace admin status:', error);
     return false;
   }
 }
@@ -256,7 +256,7 @@ export async function checkUsageLimits(req: NextRequest, resource: string): Prom
         return { allowed: true, limit: Infinity, current: 0, remaining: Infinity };
     }
   } catch (error) {
-    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Error checking usage limits:', error);
+    // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Error checking usage limits:', error);
     // Return conservative limits on error
     return { allowed: false, limit: 0, current: 0, remaining: 0 };
   }

@@ -179,7 +179,7 @@ export function QuickCapture({
       setShowCommands(false);
       setAiSuggestion('');
     } catch (error) {
-      // TODO: Replace with proper logging - console.error('Failed to process input:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to process input:', error);
     } finally {
       setIsProcessing(false);
     }

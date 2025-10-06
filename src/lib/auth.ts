@@ -19,7 +19,7 @@ const isStackAuthConfigured = !!(
 );
 
 if (!isStackAuthConfigured) {
-  // TODO: Replace with proper logging - console.warn('Stack Auth temporarily disabled for production deployment');
+  // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('Stack Auth temporarily disabled for production deployment');
 }
 
 export interface User {

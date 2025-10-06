@@ -5,41 +5,41 @@
   - generic [ref=e4]:
     - generic [ref=e5]:
       - img [ref=e7]
-      - heading "Astral Chronos" [level=1] [ref=e9]
-      - paragraph [ref=e10]: Sign in to your digital planner
-    - generic [ref=e11]:
-      - generic [ref=e12]:
-        - heading "Choose Your Account" [level=3] [ref=e13]:
-          - img [ref=e14]
+      - heading "Astral Chronos" [level=1] [ref=e10]
+      - paragraph [ref=e11]: Sign in to your digital planner
+    - generic [ref=e12]:
+      - generic [ref=e13]:
+        - heading "Choose Your Account" [level=3] [ref=e14]:
+          - img [ref=e15]
           - text: Choose Your Account
-        - paragraph [ref=e17]: Select your planner account to continue
-      - generic [ref=e18]:
-        - generic [ref=e20] [cursor=pointer]:
-          - generic [ref=e21] [cursor=pointer]: 👨‍💼
-          - generic [ref=e22] [cursor=pointer]:
-            - heading "Nick's Personal Planner" [level=3] [ref=e23] [cursor=pointer]
-            - paragraph [ref=e24] [cursor=pointer]: Personal planner for Nick
-        - generic [ref=e26] [cursor=pointer]:
-          - generic [ref=e27] [cursor=pointer]: 🎯
-          - generic [ref=e28] [cursor=pointer]:
-            - heading "Demo Experience" [level=3] [ref=e29] [cursor=pointer]
-            - paragraph [ref=e30] [cursor=pointer]: Demo Account - Try the planner
-          - generic [ref=e31] [cursor=pointer]: Demo
-        - alert [ref=e33]:
-          - img [ref=e34]
-          - generic [ref=e36]:
-            - strong [ref=e37]: "Demo Account:"
+        - paragraph [ref=e18]: Select your planner account to continue
+      - generic [ref=e19]:
+        - generic [ref=e21] [cursor=pointer]:
+          - generic [ref=e22] [cursor=pointer]: 👨‍💼
+          - generic [ref=e23] [cursor=pointer]:
+            - heading "Nick's Personal Planner" [level=3] [ref=e24] [cursor=pointer]
+            - paragraph [ref=e25] [cursor=pointer]: Personal planner for Nick
+        - generic [ref=e27] [cursor=pointer]:
+          - generic [ref=e28] [cursor=pointer]: 🎯
+          - generic [ref=e29] [cursor=pointer]:
+            - heading "Demo Experience" [level=3] [ref=e30] [cursor=pointer]
+            - paragraph [ref=e31] [cursor=pointer]: Demo Account - Try the planner
+          - generic [ref=e32] [cursor=pointer]: Demo
+        - alert [ref=e34]:
+          - img [ref=e35]
+          - generic [ref=e37]:
+            - strong [ref=e38]: "Demo Account:"
             - text: PIN auto-fills to 0000 for easy testing
-            - strong [ref=e38]: "Nick's Planner:"
+            - strong [ref=e39]: "Nick's Planner:"
             - text: Use your personal PIN to access your data
-    - paragraph [ref=e40]: Secure PIN-based authentication for your personal planner
+    - paragraph [ref=e41]: Secure PIN-based authentication for your personal planner
   - region "Notifications alt+T"
-  - img [ref=e42]
-  - generic [ref=e46]:
-    - img [ref=e48]
-    - button "Open Tanstack query devtools" [ref=e96] [cursor=pointer]:
-      - img [ref=e97] [cursor=pointer]
-  - button "Open Next.js Dev Tools" [ref=e150] [cursor=pointer]:
-    - img [ref=e151] [cursor=pointer]
-  - alert [ref=e154]
+  - img [ref=e43]
+  - generic [ref=e47]:
+    - img [ref=e49]
+    - button "Open Tanstack query devtools" [ref=e97] [cursor=pointer]:
+      - img [ref=e98] [cursor=pointer]
+  - button "Open Next.js Dev Tools" [ref=e151] [cursor=pointer]:
+    - img [ref=e152] [cursor=pointer]
+  - alert [ref=e155]
 ```

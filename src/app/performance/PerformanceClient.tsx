@@ -77,7 +77,7 @@ export default function PerformancePage() {
         timing,
       })
     } catch (error) {
-      // TODO: Replace with proper logging - console.error('Error collecting performance metrics:', error)
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Error collecting performance metrics:', error)
     } finally {
       setLoading(false)
     }

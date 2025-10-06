@@ -142,7 +142,7 @@ export function ActivityFeed({
 
       setActivities(mockActivities);
     } catch (error) {
-      // TODO: Replace with proper logging - console.error('Failed to load activities:', error);
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('Failed to load activities:', error);
     } finally {
       setLoading(false);
     }

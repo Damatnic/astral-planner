@@ -13,6 +13,8 @@ const withPWA = require('next-pwa')({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Simplified configuration for successful deployment
+  outputFileTracingRoot: require('path').join(__dirname, '../'),
+  
   serverExternalPackages: [
     '@neondatabase/serverless',
     'winston',

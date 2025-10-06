@@ -36,12 +36,12 @@ const timingSafeEqual = (a: Buffer | string, b: Buffer | string) => {
 const Logger = {
   warn: (message: string, meta?: any) => {
     if (typeof console !== 'undefined') {
-      console.warn('[Security]', message, meta ? JSON.stringify(meta) : '');
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.warn('[Security]', message, meta ? JSON.stringify(meta) : '');
     }
   },
   error: (message: string, meta?: any) => {
     if (typeof console !== 'undefined') {
-      console.error('[Security]', message, meta ? JSON.stringify(meta) : '');
+      // TODO: Replace with proper logging - // TODO: Replace with proper logging - console.error('[Security]', message, meta ? JSON.stringify(meta) : '');
     }
   },
   info: (message: string, meta?: any) => {
