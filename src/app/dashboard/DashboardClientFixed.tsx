@@ -165,48 +165,55 @@ export default function DashboardClientFixed() {
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Something went wrong. Please refresh the page.</p>
+            <p className="text-purple-300/70">Something went wrong. Please refresh the page.</p>
           </div>
         </div>
       }
     >
-      <AppHeader />
-      <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      <div className="min-h-screen bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950 relative overflow-hidden">
+        {/* Animated background orbs */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse [animation-delay:1s]"></div>
+          <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl animate-pulse [animation-delay:0.5s]"></div>
+        </div>
+
+        <AppHeader />
         {showLoadingState ? (
-          <div className="container mx-auto px-4 py-8">
+          <div className="container mx-auto px-4 py-8 relative z-10">
             {/* Loading skeleton */}
             <div className="mb-8">
-              <div className="h-4 bg-gray-200 rounded w-48 mb-2 animate-pulse"></div>
-              <div className="h-8 bg-gray-200 rounded w-96 animate-pulse"></div>
+              <div className="h-4 bg-purple-800/30 rounded w-48 mb-2 animate-pulse"></div>
+              <div className="h-8 bg-purple-800/30 rounded w-96 animate-pulse"></div>
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
               {[1, 2, 3, 4].map(i => (
-                <div key={i} className="h-32 bg-gray-200 rounded-lg animate-pulse"></div>
+                <div key={i} className="h-32 bg-purple-800/30 rounded-lg animate-pulse"></div>
               ))}
             </div>
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading...</p>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400 mx-auto mb-4"></div>
+              <p className="text-purple-300/70">Loading your cosmic dashboard...</p>
             </div>
           </div>
         ) : (
-          <main className="container mx-auto px-4 py-8">
+          <main className="container mx-auto px-4 py-8 relative z-10">
             {/* Welcome Section */}
             <div className="mb-8">
               <div className="mb-4">
-                <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
-                  <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+                <nav className="flex items-center space-x-2 text-sm text-purple-300/70">
+                  <Link href="/" className="hover:text-purple-200 transition-colors">Home</Link>
                   <span>/</span>
-                  <span className="text-foreground font-medium">Dashboard</span>
+                  <span className="text-purple-100 font-medium">Dashboard</span>
                 </nav>
               </div>
               
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
                     {getGreeting()}, {user?.firstName || 'there'}! {getEmoji()}
                   </h1>
-                  <p className="text-gray-600 dark:text-gray-300">
+                  <p className="text-purple-300/70">
                     Here's what's happening with your goals today
                   </p>
                 </div>
@@ -215,49 +222,49 @@ export default function DashboardClientFixed() {
 
             {/* Stats Cards */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-              <Card className="border-l-4 border-l-blue-500">
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 border-l-4 border-l-purple-500 backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Tasks Completed</CardTitle>
-                  <CheckCircle className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium text-purple-200">Tasks Completed</CardTitle>
+                  <CheckCircle className="h-4 w-4 text-purple-400" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{data.stats?.tasksCompleted || 0}</div>
-                  <p className="text-xs text-muted-foreground">+20% from last week</p>
+                  <p className="text-xs text-purple-300/70">+20% from last week</p>
                 </CardContent>
               </Card>
 
-              <Card className="border-l-4 border-l-green-500">
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 border-l-4 border-l-green-500">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Goals Achieved</CardTitle>
-                  <Target className="h-4 w-4 text-muted-foreground" />
+                  <Target className="h-4 w-4 text-purple-300/70" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{data.stats?.goalsAchieved || 0}</div>
-                  <p className="text-xs text-muted-foreground">+1 from last month</p>
+                  <p className="text-xs text-purple-300/70">+1 from last month</p>
                 </CardContent>
               </Card>
 
-              <Card className="border-l-4 border-l-purple-500">
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 border-l-4 border-l-purple-500">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Habits Tracked</CardTitle>
-                  <Activity className="h-4 w-4 text-muted-foreground" />
+                  <Activity className="h-4 w-4 text-purple-300/70" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{data.stats?.habitsTracked || 0}</div>
-                  <p className="text-xs text-muted-foreground">Active habits</p>
+                  <p className="text-xs text-purple-300/70">Active habits</p>
                 </CardContent>
               </Card>
 
-              <Card className="border-l-4 border-l-orange-500">
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 border-l-4 border-l-orange-500">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Focus Time</CardTitle>
-                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <Clock className="h-4 w-4 text-purple-300/70" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
                     {`${Math.floor((data.stats?.focusTime || 0) / 60)}h ${(data.stats?.focusTime || 0) % 60}m`}
                   </div>
-                  <p className="text-xs text-muted-foreground">This week</p>
+                  <p className="text-xs text-purple-300/70">This week</p>
                 </CardContent>
               </Card>
             </div>
@@ -284,14 +291,14 @@ export default function DashboardClientFixed() {
                     <CardContent>
                       <div className="space-y-3">
                         {data.upcomingTasks?.map(task => (
-                          <div key={task.id} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                          <div key={task.id} className="flex items-center gap-3 p-3 rounded-lg bg-purple-950/50">
                             <div className={`w-2 h-2 rounded-full ${
                               task.priority === 'high' ? 'bg-red-500' :
                               task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
                             }`} />
                             <div className="flex-1">
                               <p className="font-medium">{task.title}</p>
-                              <p className="text-sm text-muted-foreground">{task.time}</p>
+                              <p className="text-sm text-purple-300/70">{task.time}</p>
                             </div>
                           </div>
                         ))}
@@ -310,7 +317,7 @@ export default function DashboardClientFixed() {
                     <CardContent>
                       <div className="space-y-3">
                         {data.recentAchievements?.map(achievement => (
-                          <div key={achievement.id} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+                          <div key={achievement.id} className="flex items-start gap-3 p-3 rounded-lg bg-purple-950/50">
                             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                               <Target className="h-4 w-4 text-primary" />
                             </div>
@@ -332,7 +339,7 @@ export default function DashboardClientFixed() {
                     <CardTitle>Task Management</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground">Task management functionality coming soon...</p>
+                    <p className="text-purple-300/70">Task management functionality coming soon...</p>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -343,7 +350,7 @@ export default function DashboardClientFixed() {
                     <CardTitle>Calendar View</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground">Calendar functionality coming soon...</p>
+                    <p className="text-purple-300/70">Calendar functionality coming soon...</p>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -354,7 +361,7 @@ export default function DashboardClientFixed() {
                     <CardTitle>Analytics Dashboard</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground">Analytics functionality coming soon...</p>
+                    <p className="text-purple-300/70">Analytics functionality coming soon...</p>
                   </CardContent>
                 </Card>
               </TabsContent>
