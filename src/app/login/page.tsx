@@ -1,4 +1,4 @@
-import LoginClient from './LoginClient';
+import EnhancedLoginClient from './EnhancedLoginClient';
 
 export const metadata = {
   title: 'Sign In - Astral Chronos',
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function LoginPage() {
-  return <LoginClient />;
+  return <EnhancedLoginClient />;
 }
