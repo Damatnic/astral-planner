@@ -130,31 +130,38 @@ export default function GoalsClientFixed() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-700 border-green-300';
-      case 'active': return 'bg-blue-100 text-blue-700 border-blue-300';
-      case 'paused': return 'bg-yellow-100 text-yellow-700 border-yellow-300';
-      default: return 'bg-gray-100 text-gray-700 border-gray-300';
+      case 'completed': return 'bg-green-500/20 text-green-300 border-green-500/30';
+      case 'active': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+      case 'paused': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
+      default: return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-700 border-red-300';
-      case 'medium': return 'bg-orange-100 text-orange-700 border-orange-300';
-      case 'low': return 'bg-green-100 text-green-700 border-green-300';
-      default: return 'bg-gray-100 text-gray-700 border-gray-300';
+      case 'high': return 'bg-red-500/20 text-red-300 border-red-500/30';
+      case 'medium': return 'bg-orange-500/20 text-orange-300 border-orange-500/30';
+      case 'low': return 'bg-green-500/20 text-green-300 border-green-500/30';
+      default: return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950 relative overflow-hidden">
+      {/* Animated background orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse [animation-delay:1s]"></div>
+        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl animate-pulse [animation-delay:0.5s]"></div>
+      </div>
+
       {/* Header */}
-      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur">
+      <header className="sticky top-0 z-40 w-full border-b border-purple-800/30 backdrop-blur-xl bg-slate-900/80 shadow-lg shadow-purple-900/20">
         <div className="container flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <Target className="h-6 w-6 text-primary" />
-              <span className="text-lg font-bold">Goals</span>
+            <Link href="/dashboard" className="flex items-center gap-2 group">
+              <Target className="h-6 w-6 text-purple-400 group-hover:text-pink-400 transition-colors" />
+              <span className="text-lg font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">Goals</span>
             </Link>
           </div>
           
@@ -167,74 +174,74 @@ export default function GoalsClientFixed() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 relative z-10">
         {/* Stats Overview */}
         <div className="grid gap-4 md:grid-cols-4 mb-8">
-          <Card>
+          <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Goals</p>
-                  <p className="text-3xl font-bold">{goals.length}</p>
+                  <p className="text-sm font-medium text-purple-300/70">Total Goals</p>
+                  <p className="text-3xl font-bold text-purple-100">{goals.length}</p>
                 </div>
-                <Target className="h-8 w-8 text-muted-foreground" />
+                <Target className="h-8 w-8 text-purple-400" />
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Active</p>
-                  <p className="text-3xl font-bold text-blue-600">
+                  <p className="text-sm font-medium text-purple-300/70">Active</p>
+                  <p className="text-3xl font-bold text-blue-400">
                     {goals.filter(g => g.status === 'active').length}
                   </p>
                 </div>
-                <TrendingUp className="h-8 w-8 text-muted-foreground" />
+                <TrendingUp className="h-8 w-8 text-blue-400" />
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Completed</p>
-                  <p className="text-3xl font-bold text-green-600">
+                  <p className="text-sm font-medium text-purple-300/70">Completed</p>
+                  <p className="text-3xl font-bold text-green-400">
                     {goals.filter(g => g.status === 'completed').length}
                   </p>
                 </div>
-                <CheckCircle2 className="h-8 w-8 text-muted-foreground" />
+                <CheckCircle2 className="h-8 w-8 text-green-400" />
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Avg Progress</p>
-                  <p className="text-3xl font-bold text-purple-600">
+                  <p className="text-sm font-medium text-purple-300/70">Avg Progress</p>
+                  <p className="text-3xl font-bold text-purple-400">
                     {Math.round(goals.reduce((acc, g) => acc + g.completionPercentage, 0) / goals.length)}%
                   </p>
                 </div>
-                <BarChart3 className="h-8 w-8 text-muted-foreground" />
+                <BarChart3 className="h-8 w-8 text-purple-400" />
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Search and Filters */}
-        <Card className="mb-6">
+        <Card className="mb-6 backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-4 h-4" />
                 <input
                   type="text"
                   placeholder="Search goals..."
-                  className="pl-10 pr-4 py-2 w-full border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 pr-4 py-2 w-full bg-purple-950/50 border border-purple-800/30 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-200 placeholder:text-purple-400/50"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -243,7 +250,7 @@ export default function GoalsClientFixed() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-2 bg-purple-950/50 border border-purple-800/30 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-200"
               >
                 {statuses.map(status => (
                   <option key={status} value={status}>
@@ -255,7 +262,7 @@ export default function GoalsClientFixed() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-2 bg-purple-950/50 border border-purple-800/30 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-200"
               >
                 {categories.map(category => (
                   <option key={category} value={category}>
@@ -285,12 +292,12 @@ export default function GoalsClientFixed() {
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+                  <Card className="cursor-pointer hover:shadow-lg hover:shadow-purple-900/50 transition-all backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <CardTitle className="text-lg">{goal.title}</CardTitle>
-                          <CardDescription className="mt-2">
+                          <CardTitle className="text-lg text-purple-200">{goal.title}</CardTitle>
+                          <CardDescription className="mt-2 text-slate-300">
                             {goal.description}
                           </CardDescription>
                         </div>
@@ -309,30 +316,30 @@ export default function GoalsClientFixed() {
                         {/* Progress */}
                         <div>
                           <div className="flex justify-between items-center mb-2">
-                            <span className="text-sm text-gray-600">Progress</span>
-                            <span className="text-sm font-medium">{goal.completionPercentage}%</span>
+                            <span className="text-sm text-purple-300/70">Progress</span>
+                            <span className="text-sm font-medium text-purple-200">{goal.completionPercentage}%</span>
                           </div>
                           <Progress value={goal.completionPercentage} className="h-2" />
                         </div>
 
                         {/* Current vs Target */}
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">
+                          <span className="text-slate-300">
                             Current: {goal.currentValue} {goal.unit}
                           </span>
-                          <span className="text-gray-600">
+                          <span className="text-slate-300">
                             Target: {goal.targetValue} {goal.unit}
                           </span>
                         </div>
 
                         {/* Due Date */}
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-2 text-sm text-purple-300/70">
                           <Calendar className="w-4 h-4" />
                           <span>Due: {new Date(goal.dueDate).toLocaleDateString()}</span>
                         </div>
 
                         {/* Category */}
-                        <Badge variant="outline" className="w-fit">
+                        <Badge variant="outline" className="w-fit border-purple-700/50 text-purple-300">
                           {goal.category}
                         </Badge>
                       </div>
@@ -346,25 +353,25 @@ export default function GoalsClientFixed() {
           <TabsContent value="list" className="space-y-4">
             <div className="space-y-4">
               {filteredGoals.map(goal => (
-                <Card key={goal.id}>
+                <Card key={goal.id} className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 hover:shadow-lg hover:shadow-purple-900/50 transition-all">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-4 mb-2">
-                          <h3 className="text-lg font-medium">{goal.title}</h3>
+                          <h3 className="text-lg font-medium text-purple-200">{goal.title}</h3>
                           <Badge className={getStatusColor(goal.status)}>
                             {goal.status}
                           </Badge>
                           <Badge className={getPriorityColor(goal.priority)}>
                             {goal.priority}
                           </Badge>
-                          <Badge variant="outline">
+                          <Badge variant="outline" className="border-purple-700/50 text-purple-300">
                             {goal.category}
                           </Badge>
                         </div>
-                        <p className="text-gray-600 text-sm mb-3">{goal.description}</p>
+                        <p className="text-slate-300 text-sm mb-3">{goal.description}</p>
                         
-                        <div className="flex items-center gap-6 text-sm text-gray-500">
+                        <div className="flex items-center gap-6 text-sm text-purple-300/70">
                           <span>{goal.currentValue} / {goal.targetValue} {goal.unit}</span>
                           <span>Due: {new Date(goal.dueDate).toLocaleDateString()}</span>
                         </div>
@@ -372,7 +379,7 @@ export default function GoalsClientFixed() {
                       
                       <div className="ml-6">
                         <div className="text-right mb-2">
-                          <span className="text-2xl font-bold text-blue-600">
+                          <span className="text-2xl font-bold text-purple-200">
                             {goal.completionPercentage}%
                           </span>
                         </div>
@@ -393,38 +400,38 @@ export default function GoalsClientFixed() {
                 <div key={goal.id} className="flex gap-4">
                   {/* Timeline indicator */}
                   <div className="flex flex-col items-center">
-                    <div className={`w-4 h-4 rounded-full ${
-                      goal.completionPercentage === 100 ? 'bg-green-500' : 
-                      goal.completionPercentage > 50 ? 'bg-blue-500' : 'bg-gray-400'
+                    <div className={`w-4 h-4 rounded-full shadow-lg ${
+                      goal.completionPercentage === 100 ? 'bg-green-500 shadow-green-500/50' : 
+                      goal.completionPercentage > 50 ? 'bg-purple-500 shadow-purple-500/50' : 'bg-purple-700 shadow-purple-700/50'
                     }`} />
                     {index < filteredGoals.length - 1 && (
-                      <div className="w-0.5 h-16 bg-gray-200 mt-2" />
+                      <div className="w-0.5 h-16 bg-purple-800/30 mt-2" />
                     )}
                   </div>
 
                   {/* Goal card */}
-                  <Card className="flex-1">
+                  <Card className="flex-1 backdrop-blur-xl bg-slate-900/80 border-purple-800/30 hover:shadow-lg hover:shadow-purple-900/50 transition-all">
                     <CardContent className="p-4">
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-medium">{goal.title}</h3>
-                        <span className="text-sm text-gray-500">
+                        <h3 className="font-medium text-purple-200">{goal.title}</h3>
+                        <span className="text-sm text-purple-300/70">
                           {new Date(goal.dueDate).toLocaleDateString()}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600 mb-3">{goal.description}</p>
+                      <p className="text-sm text-slate-300 mb-3">{goal.description}</p>
                       
                       <div className="flex items-center justify-between">
                         <div className="flex gap-2">
                           <Badge className={getStatusColor(goal.status)}>
                             {goal.status}
                           </Badge>
-                          <Badge variant="outline">
+                          <Badge variant="outline" className="border-purple-700/50 text-purple-300">
                             {goal.category}
                           </Badge>
                         </div>
                         
                         <div className="text-right">
-                          <div className="text-sm font-medium">{goal.completionPercentage}%</div>
+                          <div className="text-sm font-medium text-purple-200">{goal.completionPercentage}%</div>
                           <Progress value={goal.completionPercentage} className="w-20 h-1" />
                         </div>
                       </div>
@@ -439,37 +446,37 @@ export default function GoalsClientFixed() {
 
       {/* Create Goal Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto backdrop-blur-xl bg-slate-900/95 border-purple-800/30 shadow-2xl shadow-purple-900/50">
             <CardHeader>
-              <CardTitle>Create New Goal</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-purple-200">Create New Goal</CardTitle>
+              <CardDescription className="text-slate-300">
                 Set a new goal and track your progress towards achieving it
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Goal Title</label>
+                <label className="block text-sm font-medium mb-2 text-purple-200">Goal Title</label>
                 <input
                   type="text"
                   placeholder="What do you want to achieve?"
-                  className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-purple-950/50 border border-purple-800/30 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-200 placeholder:text-purple-400/50"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Description</label>
+                <label className="block text-sm font-medium mb-2 text-purple-200">Description</label>
                 <textarea
                   placeholder="Describe your goal in detail..."
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full px-3 py-2 bg-purple-950/50 border border-purple-800/30 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none text-slate-200 placeholder:text-purple-400/50"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Category</label>
-                  <select className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <label className="block text-sm font-medium mb-2 text-purple-200">Category</label>
+                  <select className="w-full px-3 py-2 bg-purple-950/50 border border-purple-800/30 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-200">
                     <option value="Career">Career</option>
                     <option value="Learning">Learning</option>
                     <option value="Finance">Finance</option>
@@ -479,8 +486,8 @@ export default function GoalsClientFixed() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Priority</label>
-                  <select className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <label className="block text-sm font-medium mb-2 text-purple-200">Priority</label>
+                  <select className="w-full px-3 py-2 bg-purple-950/50 border border-purple-800/30 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-200">
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
                     <option value="high">High</option>
@@ -490,47 +497,47 @@ export default function GoalsClientFixed() {
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Target Value</label>
+                  <label className="block text-sm font-medium mb-2 text-purple-200">Target Value</label>
                   <input
                     type="number"
                     placeholder="100"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 bg-purple-950/50 border border-purple-800/30 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-200 placeholder:text-purple-400/50"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Current Value</label>
+                  <label className="block text-sm font-medium mb-2 text-purple-200">Current Value</label>
                   <input
                     type="number"
                     placeholder="0"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 bg-purple-950/50 border border-purple-800/30 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-200 placeholder:text-purple-400/50"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Unit</label>
+                  <label className="block text-sm font-medium mb-2 text-purple-200">Unit</label>
                   <input
                     type="text"
                     placeholder="customers"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 bg-purple-950/50 border border-purple-800/30 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-200 placeholder:text-purple-400/50"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Due Date</label>
+                <label className="block text-sm font-medium mb-2 text-purple-200">Due Date</label>
                 <input
                   type="date"
-                  className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-purple-950/50 border border-purple-800/30 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-200"
                 />
               </div>
             </CardContent>
             
-            <div className="flex justify-end gap-3 p-6 border-t">
-              <Button variant="outline" onClick={() => setShowCreateModal(false)}>
+            <div className="flex justify-end gap-3 p-6 border-t border-purple-800/30">
+              <Button variant="outline" onClick={() => setShowCreateModal(false)} className="border-purple-700/50 text-purple-200 hover:bg-purple-950/50">
                 Cancel
               </Button>
-              <Button onClick={() => setShowCreateModal(false)}>
+              <Button onClick={() => setShowCreateModal(false)} className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
                 Create Goal
               </Button>
             </div>
