@@ -311,8 +311,13 @@ export default function AnalyticsClient() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto p-6 space-y-8">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950">
+      {/* Animated cosmic orbs */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+      
+      <div className="container mx-auto p-6 space-y-8 relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -320,12 +325,12 @@ export default function AnalyticsClient() {
           className="text-center space-y-4"
         >
           <div className="flex items-center justify-center space-x-2">
-            <BarChart3 className="h-8 w-8 text-blue-600" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <BarChart3 className="h-8 w-8 text-purple-400" />
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
               Analytics & Insights
             </h1>
           </div>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-purple-300/70 max-w-2xl mx-auto">
             Deep insights into your productivity patterns, goal progress, and performance metrics.
           </p>
         </motion.div>
@@ -339,7 +344,7 @@ export default function AnalyticsClient() {
         >
           <div className="flex items-center space-x-4">
             <Select value={selectedTimeRange} onValueChange={setSelectedTimeRange}>
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-40 bg-purple-950/50 border-purple-800/30 text-slate-200">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -350,12 +355,12 @@ export default function AnalyticsClient() {
                 <SelectItem value="year">This Year</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="border-purple-700/50 text-purple-200 hover:bg-purple-950/50">
               <Filter className="h-4 w-4 mr-2" />
               Filters
             </Button>
           </div>
-          <Button>
+          <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
             <Download className="h-4 w-4 mr-2" />
             Export Report
           </Button>
@@ -369,12 +374,12 @@ export default function AnalyticsClient() {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
         >
           {stats.map((stat, index) => (
-            <Card key={index} className="relative overflow-hidden">
+            <Card key={index} className="relative overflow-hidden backdrop-blur-xl bg-slate-900/80 border-purple-800/30 shadow-2xl shadow-purple-900/50">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                    <p className="text-2xl font-bold">{stat.value}</p>
+                    <p className="text-sm font-medium text-purple-300/70">{stat.title}</p>
+                    <p className="text-2xl font-bold text-slate-200">{stat.value}</p>
                     <p className={`text-sm ${stat.color} flex items-center`}>
                       {stat.trend === 'up' ? <TrendingUp className="h-3 w-3 mr-1" /> : null}
                       {stat.change} from last week
@@ -411,10 +416,10 @@ export default function AnalyticsClient() {
             <TabsContent value="overview" className="space-y-6">
               <div className="grid gap-6 lg:grid-cols-2">
                 {/* Productivity Trend */}
-                <Card>
+                <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 shadow-2xl shadow-purple-900/50">
                   <CardHeader>
-                    <CardTitle>Productivity Trend</CardTitle>
-                    <CardDescription>Your productivity score over time</CardDescription>
+                    <CardTitle className="text-purple-200">Productivity Trend</CardTitle>
+                    <CardDescription className="text-purple-300/70">Your productivity score over time</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <SmartChart 
@@ -427,10 +432,10 @@ export default function AnalyticsClient() {
                 </Card>
 
                 {/* Time Distribution */}
-                <Card>
+                <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 shadow-2xl shadow-purple-900/50">
                   <CardHeader>
-                    <CardTitle>Time Distribution</CardTitle>
-                    <CardDescription>How you spend your time</CardDescription>
+                    <CardTitle className="text-purple-200">Time Distribution</CardTitle>
+                    <CardDescription className="text-purple-300/70">How you spend your time</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <SmartChart type="pie" data={timeDistribution} config={{}} height={300} />
@@ -439,10 +444,10 @@ export default function AnalyticsClient() {
               </div>
 
               {/* Focus Patterns */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 shadow-2xl shadow-purple-900/50">
                 <CardHeader>
-                  <CardTitle>Daily Focus Patterns</CardTitle>
-                  <CardDescription>Your productivity throughout the day</CardDescription>
+                  <CardTitle className="text-purple-200">Daily Focus Patterns</CardTitle>
+                  <CardDescription className="text-purple-300/70">Your productivity throughout the day</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <SmartChart 
@@ -457,10 +462,10 @@ export default function AnalyticsClient() {
 
             <TabsContent value="productivity" className="space-y-6">
               {/* Skills Radar */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 shadow-2xl shadow-purple-900/50">
                 <CardHeader>
-                  <CardTitle>Productivity Skills</CardTitle>
-                  <CardDescription>Your strengths and areas for improvement</CardDescription>
+                  <CardTitle className="text-purple-200">Productivity Skills</CardTitle>
+                  <CardDescription className="text-purple-300/70">Your strengths and areas for improvement</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <SmartChart type="radar" data={skillsRadar} config={{}} height={400} />
@@ -469,18 +474,18 @@ export default function AnalyticsClient() {
             </TabsContent>
 
             <TabsContent value="goals" className="space-y-6">
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 shadow-2xl shadow-purple-900/50">
                 <CardHeader>
-                  <CardTitle>Goal Progress</CardTitle>
-                  <CardDescription>Track your progress towards your goals</CardDescription>
+                  <CardTitle className="text-purple-200">Goal Progress</CardTitle>
+                  <CardDescription className="text-purple-300/70">Track your progress towards your goals</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     {goalProgress.map((goal) => (
                       <div key={goal.goal}>
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium">{goal.goal}</span>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-sm font-medium text-purple-200">{goal.goal}</span>
+                          <span className="text-sm text-purple-300/70">
                             {goal.current}% / {goal.target}%
                           </span>
                         </div>
@@ -493,24 +498,24 @@ export default function AnalyticsClient() {
             </TabsContent>
 
             <TabsContent value="habits" className="space-y-6">
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 shadow-2xl shadow-purple-900/50">
                 <CardHeader>
-                  <CardTitle>Habit Streaks</CardTitle>
-                  <CardDescription>Your current streaks and consistency</CardDescription>
+                  <CardTitle className="text-purple-200">Habit Streaks</CardTitle>
+                  <CardDescription className="text-purple-300/70">Your current streaks and consistency</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     {habitStreaks.map((habit) => (
-                      <div key={habit.habit} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div key={habit.habit} className="flex items-center justify-between p-4 border border-purple-800/30 rounded-lg bg-purple-950/30">
                         <div>
-                          <h4 className="font-medium">{habit.habit}</h4>
-                          <p className="text-sm text-muted-foreground">
+                          <h4 className="font-medium text-purple-200">{habit.habit}</h4>
+                          <p className="text-sm text-purple-300/70">
                             Current streak: {habit.streak} days
                           </p>
                         </div>
                         <div className="text-right">
-                          <div className="text-lg font-bold text-green-600">{habit.consistency}%</div>
-                          <div className="text-xs text-muted-foreground">Consistency</div>
+                          <div className="text-lg font-bold text-green-400">{habit.consistency}%</div>
+                          <div className="text-xs text-purple-300/70">Consistency</div>
                         </div>
                       </div>
                     ))}
