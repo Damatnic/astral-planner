@@ -423,32 +423,32 @@ export default function EnhancedLoginClient() {
               exit={{ opacity: 0, x: 20 }}
               transition={{ duration: 0.3 }}
             >
-              <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-2xl">
+              <Card className="backdrop-blur-xl bg-purple-900/30 border border-purple-500/20 shadow-2xl shadow-purple-900/50">
                 <CardHeader className="text-center">
-                  <CardTitle className="flex items-center gap-2 justify-center">
-                    <Lock className="w-5 h-5" />
+                  <CardTitle className="flex items-center gap-2 justify-center text-purple-100">
+                    <Lock className="w-5 h-5 text-purple-400" />
                     Enter PIN
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-purple-300/70">
                     Welcome back, {selectedAccount.displayName}!
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Selected Account Display */}
-                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-3 p-3 bg-purple-950/50 border border-purple-500/20 rounded-lg">
                     <div className="text-xl">{selectedAccount.avatar}</div>
                     <div className="flex-1">
-                      <p className="font-medium text-gray-900">{selectedAccount.name}</p>
-                      <p className="text-sm text-gray-600">Account selected</p>
+                      <p className="font-medium text-purple-100">{selectedAccount.name}</p>
+                      <p className="text-sm text-purple-300/70">Account selected</p>
                     </div>
                     {selectedAccount.isPremium && (
-                      <Zap className="w-5 h-5 text-yellow-500" />
+                      <Zap className="w-5 h-5 text-yellow-400" />
                     )}
                   </div>
 
                   {/* PIN Input */}
                   <div className="space-y-2">
-                    <Label htmlFor="pin" className="text-sm font-medium">
+                    <Label htmlFor="pin" className="text-sm font-medium text-purple-200">
                       4-Digit PIN
                     </Label>
                     <div className="relative">
@@ -460,7 +460,7 @@ export default function EnhancedLoginClient() {
                         onChange={(e) => handlePinChange(e.target.value)}
                         onKeyPress={handleKeyPress}
                         placeholder="Enter your PIN"
-                        className="text-center text-lg tracking-widest pr-12"
+                        className="text-center text-lg tracking-widest pr-12 bg-purple-950/50 border-purple-500/30 text-purple-100 placeholder:text-purple-400/50 focus:border-purple-400/50"
                         maxLength={4}
                         autoFocus
                         disabled={!!lockoutTime}
@@ -480,7 +480,7 @@ export default function EnhancedLoginClient() {
                     {/* Security Score */}
                     {pin.length > 0 && !selectedAccount.isDemo && (
                       <div className="space-y-1">
-                        <div className="flex justify-between text-xs">
+                        <div className="flex justify-between text-xs text-purple-300/70">
                           <span>PIN Security</span>
                           <span className={getSecurityScoreColor(securityScore)}>
                             {getSecurityScoreLabel(securityScore)} ({securityScore}%)
@@ -491,7 +491,7 @@ export default function EnhancedLoginClient() {
                     )}
                     
                     {selectedAccount.isDemo && (
-                      <p className="text-xs text-green-600 flex items-center gap-1">
+                      <p className="text-xs text-green-400 flex items-center gap-1">
                         <CheckCircle2 className="w-3 h-3" />
                         Demo PIN auto-filled for easy access
                       </p>
@@ -532,14 +532,14 @@ export default function EnhancedLoginClient() {
                       type="button"
                       variant="outline"
                       onClick={goBack}
-                      className="flex-1"
+                      className="flex-1 bg-purple-950/50 border-purple-500/30 text-purple-200 hover:bg-purple-900/50 hover:text-purple-100"
                       disabled={isLoading}
                     >
                       Back
                     </Button>
                     <Button
                       onClick={handleLogin}
-                      className="flex-1"
+                      className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg shadow-purple-500/30"
                       disabled={pin.length !== 4 || isLoading || !!lockoutTime}
                     >
                       {isLoading ? (
@@ -566,24 +566,24 @@ export default function EnhancedLoginClient() {
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.3 }}
             >
-              <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-2xl">
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 shadow-2xl shadow-purple-500/20">
                 <CardContent className="p-8 text-center space-y-6">
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                    className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto"
+                    className="w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-purple-500/50"
                   >
                     <Shield className="w-8 h-8 text-white" />
                   </motion.div>
                   
                   <div className="space-y-2">
-                    <h3 className="text-lg font-semibold">Verifying Credentials</h3>
-                    <p className="text-gray-600">Authenticating with secure servers...</p>
+                    <h3 className="text-lg font-semibold text-purple-100">Verifying Credentials</h3>
+                    <p className="text-purple-300/70">Authenticating with secure servers...</p>
                   </div>
                   
                   <div className="space-y-2">
-                    <Progress value={loginProgress} className="h-2" />
-                    <p className="text-sm text-gray-500">{loginProgress}%</p>
+                    <Progress value={loginProgress} className="h-2 bg-purple-950/50" />
+                    <p className="text-sm text-purple-300/70">{loginProgress}%</p>
                   </div>
                 </CardContent>
               </Card>
@@ -599,20 +599,20 @@ export default function EnhancedLoginClient() {
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.3 }}
             >
-              <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-2xl">
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 shadow-2xl shadow-purple-500/20">
                 <CardContent className="p-8 text-center space-y-6">
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.2, duration: 0.3 }}
-                    className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto"
+                    className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-green-500/50"
                   >
                     <CheckCircle2 className="w-8 h-8 text-white" />
                   </motion.div>
                   
                   <div className="space-y-2">
-                    <h3 className="text-lg font-semibold text-green-600">Welcome Back!</h3>
-                    <p className="text-gray-600">Redirecting to your dashboard...</p>
+                    <h3 className="text-lg font-semibold text-green-400">Welcome Back!</h3>
+                    <p className="text-purple-300/70">Redirecting to your dashboard...</p>
                   </div>
                 </CardContent>
               </Card>
@@ -622,10 +622,10 @@ export default function EnhancedLoginClient() {
 
         {/* Footer */}
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-purple-300/70">
             🔒 Secured with enterprise-grade encryption
           </p>
-          <div className="flex items-center justify-center gap-4 mt-2 text-xs text-gray-400">
+          <div className="flex items-center justify-center gap-4 mt-2 text-xs text-purple-400/60">
             <span>Multi-factor ready</span>
             <span>•</span>
             <span>Session monitoring</span>
