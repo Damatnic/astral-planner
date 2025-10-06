@@ -148,18 +148,27 @@ const mockGoals: Goal[] = [
 ];
 
 const categoryColors = {
-  work: 'bg-blue-500 text-white border-blue-600',
-  personal: 'bg-green-500 text-white border-green-600',
-  health: 'bg-red-500 text-white border-red-600',
-  social: 'bg-purple-500 text-white border-purple-600',
-  focus: 'bg-orange-500 text-white border-orange-600',
-  habit: 'bg-teal-500 text-white border-teal-600'
+  work: 'bg-blue-600 text-white border-blue-700',
+  personal: 'bg-green-600 text-white border-green-700',
+  health: 'bg-red-600 text-white border-red-700',
+  social: 'bg-purple-600 text-white border-purple-700',
+  focus: 'bg-orange-600 text-white border-orange-700',
+  habit: 'bg-teal-600 text-white border-teal-700'
 };
 
 const priorityColors = {
-  low: 'border-l-4 border-l-gray-400',
-  medium: 'border-l-4 border-l-yellow-400',
+  low: 'border-l-4 border-l-slate-400',
+  medium: 'border-l-4 border-l-yellow-500',
   high: 'border-l-4 border-l-red-500'
+};
+
+const categoryBgColors = {
+  work: 'bg-blue-500/10',
+  personal: 'bg-green-500/10',
+  health: 'bg-red-500/10',
+  social: 'bg-purple-500/10',
+  focus: 'bg-orange-500/10',
+  habit: 'bg-teal-500/10'
 };
 
 export default function EnhancedCalendarView() {
@@ -294,18 +303,18 @@ export default function EnhancedCalendarView() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4"
+          className="backdrop-blur-xl bg-gradient-to-r from-purple-900/60 to-indigo-900/60 border border-purple-700/50 rounded-lg p-4"
         >
           <div className="flex items-center gap-2 mb-3">
-            <Brain className="w-5 h-5 text-blue-600" />
-            <span className="font-medium text-blue-800">AI Productivity Insights</span>
+            <Brain className="w-5 h-5 text-purple-400" />
+            <span className="font-medium text-purple-100">AI Productivity Insights</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {aiInsights.slice(0, 2).map((insight, index) => (
-              <div key={index} className="bg-white rounded-md p-3 border border-blue-100">
-                <div className="text-sm font-medium text-gray-800">{insight.title}</div>
-                <div className="text-xs text-gray-600 mt-1">{insight.message}</div>
-                <div className="text-xs text-blue-600 mt-2">
+              <div key={index} className="backdrop-blur-xl bg-slate-900/80 rounded-md p-3 border border-purple-800/30">
+                <div className="text-sm font-medium text-purple-200">{insight.title}</div>
+                <div className="text-xs text-slate-300 mt-1">{insight.message}</div>
+                <div className="text-xs text-purple-400 mt-2">
                   {insight.confidence}% confidence
                 </div>
               </div>
@@ -319,7 +328,7 @@ export default function EnhancedCalendarView() {
         {/* Week Headers */}
         <div className="grid grid-cols-7 gap-1 mb-2">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-            <div key={day} className="p-2 text-center font-medium text-gray-500 text-sm">
+            <div key={day} className="p-2 text-center font-medium text-purple-300/70 text-sm">
               {day}
             </div>
           ))}
@@ -338,10 +347,11 @@ export default function EnhancedCalendarView() {
             return (
               <motion.div
                 key={index}
-                className={`min-h-[140px] p-2 border border-gray-200 cursor-pointer transition-all hover:bg-gray-50 ${
-                  !isCurrentMonth ? 'bg-gray-50 text-gray-400' : 'bg-white'
-                } ${isSelected ? 'ring-2 ring-blue-500 bg-blue-50' : ''} ${
-                  isToday(day) ? 'bg-blue-100 border-blue-300' : ''
+                className={`min-h-[140px] p-2 border border-purple-800/20 cursor-pointer transition-all hover:bg-purple-950/30 ${
+                  !isCurrentMonth ? 'bg-purple-950/20 text-purple-400/50' : 'bg-slate-900/50'
+                } ${
+isSelected ? 'ring-2 ring-purple-500 bg-purple-900/40' : ''} ${
+                  isToday(day) ? 'bg-purple-900/50 border-purple-500/50' : ''
                 }`}
                 onClick={() => setSelectedDate(day)}
                 whileHover={{ scale: 1.02 }}
@@ -349,18 +359,18 @@ export default function EnhancedCalendarView() {
               >
                 <div className="flex justify-between items-start mb-2">
                   <span className={`text-sm font-medium ${
-                    isToday(day) ? 'text-blue-600 font-bold' : ''
+                    isToday(day) ? 'text-purple-300 font-bold' : isCurrentMonth ? 'text-slate-200' : 'text-purple-400/50'
                   }`}>
                     {format(day, 'd')}
                   </span>
                   <div className="flex gap-1">
                     {dayEvents.length > 0 && (
-                      <span className="text-xs bg-blue-100 text-blue-600 px-1 rounded">
+                      <span className="text-xs bg-blue-500/20 text-blue-300 px-1 rounded">
                         {dayEvents.length}
                       </span>
                     )}
                     {dayHabits.length > 0 && (
-                      <span className="text-xs bg-green-100 text-green-600 px-1 rounded">
+                      <span className="text-xs bg-green-500/20 text-green-300 px-1 rounded">
                         {completedHabitsCount}/{dayHabits.length}
                       </span>
                     )}
@@ -385,7 +395,7 @@ export default function EnhancedCalendarView() {
                     </div>
                   ))}
                   {dayEvents.length > 2 && (
-                    <div className="text-xs text-gray-500 px-1">
+                    <div className="text-xs text-purple-300/70 px-1">
                       +{dayEvents.length - 2} more
                     </div>
                   )}
@@ -420,11 +430,11 @@ export default function EnhancedCalendarView() {
             ) : [];
             
             return (
-              <div key={i} className="flex border-b border-gray-100 min-h-[60px]">
-                <div className="w-20 text-xs text-gray-500 py-2 pr-4 text-right">
+              <div key={i} className="flex border-b border-purple-800/20 min-h-[60px]">
+                <div className="w-20 text-xs text-purple-300/70 py-2 pr-4 text-right">
                   {format(new Date().setHours(hour, 0), 'h:mm a')}
                 </div>
-                <div className="flex-1 p-2 hover:bg-gray-50 relative">
+                <div className="flex-1 p-2 hover:bg-purple-950/30 relative">
                   {hourEvents.map((event) => (
                     <motion.div
                       key={event.id}
@@ -461,52 +471,52 @@ export default function EnhancedCalendarView() {
       {/* Sidebar */}
       <div className="space-y-4">
         {/* Today's Stats */}
-        <Card>
+        <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <TrendingUp className="w-4 h-4" />
+            <CardTitle className="text-base flex items-center gap-2 text-purple-200">
+              <TrendingUp className="w-4 h-4 text-purple-400" />
               Today's Progress
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Productivity Score</span>
-                <span className="font-medium">{getTodayStats.productivityScore}%</span>
+                <span className="text-slate-200">Productivity Score</span>
+                <span className="font-medium text-purple-100">{getTodayStats.productivityScore}%</span>
               </div>
               <Progress value={getTodayStats.productivityScore} className="h-2" />
             </div>
             
             <div className="grid grid-cols-2 gap-2 text-center">
-              <div className="bg-blue-50 rounded p-2">
-                <div className="text-lg font-bold text-blue-600">{getTodayStats.focusTime}</div>
-                <div className="text-xs text-blue-500">Focus mins</div>
+              <div className="bg-blue-500/20 border border-blue-500/30 rounded p-2">
+                <div className="text-lg font-bold text-blue-300">{getTodayStats.focusTime}</div>
+                <div className="text-xs text-blue-400">Focus mins</div>
               </div>
-              <div className="bg-green-50 rounded p-2">
-                <div className="text-lg font-bold text-green-600">
+              <div className="bg-green-500/20 border border-green-500/30 rounded p-2">
+                <div className="text-lg font-bold text-green-300">
                   {getTodayStats.habitsCompleted}/{getTodayStats.habitsTotal}
                 </div>
-                <div className="text-xs text-green-500">Habits</div>
+                <div className="text-xs text-green-400">Habits</div>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Time Block Suggestions */}
-        <Card>
+        <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <Zap className="w-4 h-4" />
+            <CardTitle className="text-base flex items-center gap-2 text-purple-200">
+              <Zap className="w-4 h-4 text-orange-400" />
               AI Suggestions
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               {suggestedTimeBlocks.map((block, index) => (
-                <div key={index} className="p-2 bg-orange-50 border border-orange-200 rounded text-sm">
-                  <div className="font-medium text-orange-800">{block.time}</div>
-                  <div className="text-orange-600">{block.activity}</div>
-                  <div className="text-xs text-orange-500">{block.reasoning}</div>
+                <div key={index} className="p-2 bg-orange-500/20 border border-orange-500/30 rounded text-sm">
+                  <div className="font-medium text-orange-300">{block.time}</div>
+                  <div className="text-orange-200">{block.activity}</div>
+                  <div className="text-xs text-orange-400/70">{block.reasoning}</div>
                 </div>
               ))}
             </div>
@@ -514,20 +524,20 @@ export default function EnhancedCalendarView() {
         </Card>
 
         {/* Active Goals */}
-        <Card>
+        <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
           <CardHeader>
-            <CardTitle className="text-base">Active Goals</CardTitle>
+            <CardTitle className="text-base text-purple-200">Active Goals</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {goals.map((goal) => (
                 <div key={goal.id} className="space-y-1">
                   <div className="flex justify-between text-sm">
-                    <span className="font-medium">{goal.title}</span>
-                    <span className="text-gray-500">{goal.progress}%</span>
+                    <span className="font-medium text-slate-200">{goal.title}</span>
+                    <span className="text-purple-300/70">{goal.progress}%</span>
                   </div>
                   <Progress value={goal.progress} className="h-1" />
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-purple-300/70">
                     Due: {format(goal.deadline, 'MMM d')}
                   </div>
                 </div>
@@ -540,10 +550,17 @@ export default function EnhancedCalendarView() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950 relative overflow-hidden p-4">
+      {/* Animated background orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse [animation-delay:1s]"></div>
+        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl animate-pulse [animation-delay:0.5s]"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Enhanced Header */}
-        <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-6">
+        <div className="backdrop-blur-xl bg-slate-900/80 border border-purple-800/30 rounded-lg shadow-2xl shadow-purple-900/50 p-4 sm:p-6 mb-6">
           <div className="flex flex-col gap-4">
             {/* Top Row: Title and Date Navigation */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -563,8 +580,8 @@ export default function EnhancedCalendarView() {
                   </Link>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-6 h-6 text-blue-600" />
-                  <h1 className="text-2xl font-bold text-gray-800">Smart Calendar</h1>
+                  <Calendar className="w-6 h-6 text-purple-400" />
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">Smart Calendar</h1>
                 </div>
               </div>
               
@@ -577,7 +594,7 @@ export default function EnhancedCalendarView() {
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
                 
-                <div className="text-lg font-semibold min-w-[180px] text-center text-gray-800">
+                <div className="text-lg font-semibold min-w-[180px] text-center text-purple-100">
                   {currentView === 'month' && (currentDate ? format(currentDate, 'MMMM yyyy') : 'Loading...')}
                   {currentView === 'week' && (currentDate ? `Week of ${format(startOfWeek(currentDate), 'MMM d')}` : 'Loading...')}
                   {currentView === 'day' && (currentDate ? format(currentDate, 'MMMM d, yyyy') : 'Loading...')}
@@ -710,11 +727,11 @@ export default function EnhancedCalendarView() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-lg shadow-sm p-6 mt-6"
+            className="backdrop-blur-xl bg-slate-900/80 border border-purple-800/30 rounded-lg shadow-2xl shadow-purple-900/50 p-6 mt-6"
           >
             <Tabs defaultValue="events" className="w-full">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">
+                <h3 className="text-lg font-semibold text-purple-100">
                   {format(selectedDate, 'EEEE, MMMM d, yyyy')}
                 </h3>
                 <TabsList>
@@ -726,13 +743,13 @@ export default function EnhancedCalendarView() {
               
               <TabsContent value="events">
                 {getEventsForDate(selectedDate).length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">No events scheduled for this day.</p>
+                  <p className="text-purple-300/70 text-center py-8">No events scheduled for this day.</p>
                 ) : (
                   <div className="space-y-3">
                     {getEventsForDate(selectedDate).map((event) => (
                       <motion.div
                         key={event.id}
-                        className={`p-4 rounded-lg border-l-4 ${priorityColors[event.priority]} bg-gray-50 cursor-pointer transition-all hover:bg-gray-100`}
+                        className={`p-4 rounded-lg border-l-4 ${priorityColors[event.priority]} bg-purple-950/30 border border-purple-800/20 cursor-pointer transition-all hover:bg-purple-950/50`}
                         onClick={() => toggleEventCompletion(event.id)}
                         whileHover={{ scale: 1.01 }}
                       >
@@ -742,21 +759,21 @@ export default function EnhancedCalendarView() {
                               {event.category}
                             </Badge>
                             <div className="flex-1">
-                              <div className="font-medium flex items-center gap-2">
-                                {event.isCompleted && <CheckCircle className="w-4 h-4 text-green-500" />}
-                                <span className={event.isCompleted ? 'line-through text-gray-500' : ''}>
+                              <div className="font-medium flex items-center gap-2 text-slate-200">
+                                {event.isCompleted && <CheckCircle className="w-4 h-4 text-green-400" />}
+                                <span className={event.isCompleted ? 'line-through text-purple-400/70' : ''}>
                                   {event.title}
                                 </span>
-                                {event.isTimeBlock && <Focus className="w-4 h-4 text-orange-500" />}
-                                {event.isRecurring && <Timer className="w-4 h-4 text-blue-500" />}
+                                {event.isTimeBlock && <Focus className="w-4 h-4 text-orange-400" />}
+                                {event.isRecurring && <Timer className="w-4 h-4 text-blue-400" />}
                               </div>
                               {event.startTime && (
-                                <div className="text-sm text-gray-500 mt-1">
+                                <div className="text-sm text-purple-300/70 mt-1">
                                   {event.startTime} {event.endTime && `- ${event.endTime}`}
                                 </div>
                               )}
                               {event.description && (
-                                <div className="text-sm text-gray-600 mt-1">{event.description}</div>
+                                <div className="text-sm text-slate-300 mt-1">{event.description}</div>
                               )}
                             </div>
                           </div>
@@ -778,18 +795,18 @@ export default function EnhancedCalendarView() {
               <TabsContent value="habits">
                 <div className="space-y-3">
                   {getHabitsForDate(selectedDate).map((habit) => (
-                    <div key={habit.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div key={habit.id} className="flex items-center justify-between p-4 bg-purple-950/30 border border-purple-800/20 rounded-lg">
                       <div className="flex items-center gap-3">
-                        <Star className="w-5 h-5 text-teal-500" />
+                        <Star className="w-5 h-5 text-teal-400" />
                         <div>
-                          <div className="font-medium">{habit.name}</div>
-                          <div className="text-sm text-gray-500">
+                          <div className="font-medium text-slate-200">{habit.name}</div>
+                          <div className="text-sm text-purple-300/70">
                             {habit.streak} day streak • {habit.timeOfDay || 'Anytime'}
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        {habit.completedToday && <CheckCircle className="w-5 h-5 text-green-500" />}
+                        {habit.completedToday && <CheckCircle className="w-5 h-5 text-green-400" />}
                         <Badge variant={habit.completedToday ? 'default' : 'outline'}>
                           {habit.completedToday ? 'Completed' : 'Pending'}
                         </Badge>
@@ -802,10 +819,10 @@ export default function EnhancedCalendarView() {
               <TabsContent value="insights">
                 <div className="space-y-3">
                   {aiInsights.map((insight, index) => (
-                    <div key={index} className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg">
-                      <div className="font-medium text-blue-800 mb-2">{insight.title}</div>
-                      <div className="text-sm text-blue-600">{insight.message}</div>
-                      <div className="text-xs text-blue-500 mt-2">
+                    <div key={index} className="p-4 backdrop-blur-xl bg-gradient-to-r from-purple-900/60 to-indigo-900/60 border border-purple-700/50 rounded-lg">
+                      <div className="font-medium text-purple-100 mb-2">{insight.title}</div>
+                      <div className="text-sm text-purple-200">{insight.message}</div>
+                      <div className="text-xs text-purple-400 mt-2">
                         AI Confidence: {insight.confidence}%
                       </div>
                     </div>
