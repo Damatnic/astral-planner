@@ -289,11 +289,11 @@ export default function HabitsPage() {
 
   // Get completion rate color
   function getCompletionRateColor(rate: number) {
-    if (rate >= 90) return 'text-green-600';
-    if (rate >= 75) return 'text-blue-600';
-    if (rate >= 60) return 'text-yellow-600';
-    if (rate >= 40) return 'text-orange-600';
-    return 'text-red-600';
+    if (rate >= 90) return 'text-green-400';
+    if (rate >= 75) return 'text-purple-400';
+    if (rate >= 60) return 'text-yellow-400';
+    if (rate >= 40) return 'text-orange-400';
+    return 'text-red-400';
   }
 
   // Render habit card
@@ -302,10 +302,10 @@ export default function HabitsPage() {
     const completionRate = habit.stats?.completionRate || 0;
 
     return (
-      <Card key={habit.id} className={`group relative overflow-hidden transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+      <Card key={habit.id} className={`group relative overflow-hidden transition-all duration-200 hover:shadow-lg hover:shadow-purple-900/50 hover:scale-[1.02] backdrop-blur-xl border-purple-800/30 ${
         completedToday 
-          ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200' 
-          : 'bg-white hover:bg-gray-50/80'
+          ? 'bg-gradient-to-br from-green-900/40 to-emerald-900/40 border-green-700/50' 
+          : 'bg-slate-900/80 hover:bg-slate-800/80'
       }`}>
         <CardContent className="p-6">
           {/* Header with Icon, Name, and Menu */}
@@ -322,13 +322,13 @@ export default function HabitsPage() {
                 {habit.icon || '⭐'}
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg text-gray-900 mb-1 truncate">{habit.name}</h3>
+                <h3 className="font-semibold text-lg text-purple-200 mb-1 truncate">{habit.name}</h3>
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-gray-100 text-gray-700">
+                  <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-purple-950/50 text-purple-300 border-purple-700/50">
                     {habit.category}
                   </Badge>
                   {habit.timeOfDay && habit.timeOfDay !== 'anytime' && (
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                    <div className="flex items-center gap-1 text-xs text-purple-300/70">
                       <Clock className="h-3 w-3" />
                       {timeOptions.find(t => t.value === habit.timeOfDay)?.icon} {timeOptions.find(t => t.value === habit.timeOfDay)?.label}
                     </div>
@@ -339,7 +339,7 @@ export default function HabitsPage() {
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity text-purple-300 hover:text-purple-100 hover:bg-purple-900/30">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -379,19 +379,19 @@ export default function HabitsPage() {
 
           {/* Description */}
           {habit.description && (
-            <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">{habit.description}</p>
+            <p className="text-sm text-slate-300 mb-4 line-clamp-2 leading-relaxed">{habit.description}</p>
           )}
 
           {/* Progress Section */}
           <div className="mb-5">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-medium text-gray-700">Today's Goal: {habit.targetCount} {habit.unit}</span>
+              <span className="text-sm font-medium text-purple-300/70">Today's Goal: {habit.targetCount} {habit.unit}</span>
               <button
                 onClick={() => handleToggleHabit(habit.id, completedToday)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
                   completedToday 
-                    ? 'bg-green-500 text-white shadow-md hover:bg-green-600 hover:shadow-lg' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
+                    ? 'bg-green-500 text-white shadow-md shadow-green-500/30 hover:bg-green-600 hover:shadow-lg' 
+                    : 'bg-purple-950/50 text-purple-200 hover:bg-purple-900/50 border border-purple-700/50'
                 }`}
               >
                 {completedToday ? (
@@ -411,18 +411,18 @@ export default function HabitsPage() {
             {/* Completion Rate Bar */}
             <div className="space-y-1">
               <div className="flex justify-between items-center">
-                <span className="text-xs font-medium text-gray-600">Success Rate</span>
+                <span className="text-xs font-medium text-purple-300/70">Success Rate</span>
                 <span className={`text-sm font-bold ${getCompletionRateColor(completionRate)}`}>
                   {Math.round(completionRate)}%
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+              <div className="w-full bg-purple-950/50 rounded-full h-2.5 overflow-hidden border border-purple-800/30">
                 <div 
                   className="h-full rounded-full transition-all duration-500 ease-out"
                   style={{ 
                     width: `${completionRate}%`,
                     background: completionRate >= 80 ? 'linear-gradient(90deg, #10b981, #059669)' :
-                              completionRate >= 60 ? 'linear-gradient(90deg, #3b82f6, #1d4ed8)' :
+                              completionRate >= 60 ? 'linear-gradient(90deg, #8b5cf6, #7c3aed)' :
                               completionRate >= 40 ? 'linear-gradient(90deg, #f59e0b, #d97706)' :
                               'linear-gradient(90deg, #ef4444, #dc2626)'
                   }}
@@ -432,20 +432,20 @@ export default function HabitsPage() {
           </div>
 
           {/* Stats Row */}
-          <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+          <div className="flex items-center justify-between pt-4 border-t border-purple-800/30">
             <div className="flex items-center gap-1">
-              <Flame className="h-4 w-4 text-orange-500" />
-              <span className="text-sm font-semibold text-gray-900">{habit.currentStreak}</span>
-              <span className="text-xs text-gray-500">day streak</span>
+              <Flame className="h-4 w-4 text-orange-400" />
+              <span className="text-sm font-semibold text-purple-200">{habit.currentStreak}</span>
+              <span className="text-xs text-purple-300/70">day streak</span>
               {habit.currentStreak > 0 && (
                 <span className="text-sm ml-1">{getStreakEmoji(habit.currentStreak)}</span>
               )}
             </div>
             
             <div className="flex items-center gap-1">
-              <Star className="h-4 w-4 text-yellow-500" />
-              <span className="text-sm font-semibold text-gray-900">{habit.bestStreak}</span>
-              <span className="text-xs text-gray-500">best</span>
+              <Star className="h-4 w-4 text-yellow-400" />
+              <span className="text-sm font-semibold text-purple-200">{habit.bestStreak}</span>
+              <span className="text-xs text-purple-300/70">best</span>
             </div>
           </div>
         </CardContent>
@@ -547,59 +547,66 @@ export default function HabitsPage() {
     <>
       <AppHeader />
       <MobileNavigation />
-      <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-        <main className="container mx-auto px-4 py-8 pt-20 pb-24">
+      <div className="min-h-screen bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950 relative overflow-hidden">
+        {/* Animated cosmic orbs */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse [animation-delay:1s]"></div>
+          <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl animate-pulse [animation-delay:0.5s]"></div>
+        </div>
+
+        <main className="container mx-auto px-4 py-8 pt-20 pb-24 relative z-10">
         {/* Stats Overview */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5 mb-8">
-          <Card>
+          <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-2">
-                <Target className="h-4 w-4 text-blue-600" />
-                <span className="text-sm font-medium">Total Habits</span>
+                <Target className="h-4 w-4 text-purple-400" />
+                <span className="text-sm font-medium text-purple-300/70">Total Habits</span>
               </div>
-              <div className="text-2xl font-bold">{data.loading ? '...' : data.stats.totalHabits}</div>
+              <div className="text-2xl font-bold text-purple-100">{data.loading ? '...' : data.stats.totalHabits}</div>
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-2">
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
-                <span className="text-sm font-medium">Active Today</span>
+                <CheckCircle2 className="h-4 w-4 text-green-400" />
+                <span className="text-sm font-medium text-purple-300/70">Active Today</span>
               </div>
-              <div className="text-2xl font-bold">{data.loading ? '...' : data.stats.activeToday}</div>
+              <div className="text-2xl font-bold text-purple-100">{data.loading ? '...' : data.stats.activeToday}</div>
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-2">
-                <Zap className="h-4 w-4 text-yellow-600" />
-                <span className="text-sm font-medium">Completions</span>
+                <Zap className="h-4 w-4 text-yellow-400" />
+                <span className="text-sm font-medium text-purple-300/70">Completions</span>
               </div>
-              <div className="text-2xl font-bold">{data.loading ? '...' : data.stats.totalCompletions}</div>
+              <div className="text-2xl font-bold text-purple-100">{data.loading ? '...' : data.stats.totalCompletions}</div>
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="h-4 w-4 text-purple-600" />
-                <span className="text-sm font-medium">Avg Rate</span>
+                <TrendingUp className="h-4 w-4 text-purple-400" />
+                <span className="text-sm font-medium text-purple-300/70">Avg Rate</span>
               </div>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold text-purple-100">
                 {data.loading ? '...' : `${Math.round(data.stats.averageCompletionRate)}%`}
               </div>
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-2">
-                <Flame className="h-4 w-4 text-orange-600" />
-                <span className="text-sm font-medium">Best Streak</span>
+                <Flame className="h-4 w-4 text-orange-400" />
+                <span className="text-sm font-medium text-purple-300/70">Best Streak</span>
               </div>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold text-purple-100">
                 {data.loading ? '...' : data.stats.longestStreak}
               </div>
             </CardContent>
@@ -610,18 +617,18 @@ export default function HabitsPage() {
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex-1">
             <div className="relative">
-              <Search className="h-4 w-4 absolute left-3 top-3 text-muted-foreground" />
+              <Search className="h-4 w-4 absolute left-3 top-3 text-purple-400" />
               <Input
                 placeholder="Search habits..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 bg-purple-950/50 border-purple-800/30 text-slate-200 placeholder:text-purple-400/50"
               />
             </div>
           </div>
           
           <Select value={filter} onValueChange={setFilter}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px] bg-purple-950/50 border-purple-800/30 text-slate-200">
               <SelectValue placeholder="Filter habits" />
             </SelectTrigger>
             <SelectContent>
@@ -633,7 +640,7 @@ export default function HabitsPage() {
           </Select>
           
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px] bg-purple-950/50 border-purple-800/30 text-slate-200">
               <SelectValue placeholder="Filter by category" />
             </SelectTrigger>
             <SelectContent>
@@ -657,13 +664,13 @@ export default function HabitsPage() {
             {data.loading ? (
               <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="h-80 bg-muted rounded-lg animate-pulse" />
+                  <div key={i} className="h-80 bg-purple-950/30 rounded-lg animate-pulse border border-purple-800/30" />
                 ))}
               </div>
             ) : data.error ? (
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardContent className="p-8 text-center">
-                  <p className="text-muted-foreground">{data.error}</p>
+                  <p className="text-purple-300/70">{data.error}</p>
                 </CardContent>
               </Card>
             ) : filteredHabits.length > 0 ? (
@@ -671,14 +678,14 @@ export default function HabitsPage() {
                 {filteredHabits.map(habit => renderHabitCard(habit))}
               </div>
             ) : (
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardContent className="p-8 text-center">
-                  <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No habits yet</h3>
-                  <p className="text-muted-foreground mb-4">
+                  <Activity className="h-12 w-12 text-purple-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium mb-2 text-purple-200">No habits yet</h3>
+                  <p className="text-purple-300/70 mb-4">
                     Start building better habits today. What would you like to improve?
                   </p>
-                  <Button onClick={() => setShowCreateDialog(true)}>
+                  <Button onClick={() => setShowCreateDialog(true)} className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
                     <Plus className="h-4 w-4 mr-2" />
                     Create Your First Habit
                   </Button>
@@ -689,23 +696,23 @@ export default function HabitsPage() {
 
           <TabsContent value="week" className="space-y-4">
             {data.loading ? (
-              <div className="h-64 bg-muted rounded animate-pulse" />
+              <div className="h-64 bg-purple-950/30 rounded animate-pulse border border-purple-800/30" />
             ) : (
               renderWeekView()
             )}
           </TabsContent>
 
           <TabsContent value="list" className="space-y-4">
-            <Card>
+            <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle>All Habits</CardTitle>
-                    <CardDescription>Detailed view of all your habits with progress and statistics</CardDescription>
+                    <CardTitle className="text-purple-200">All Habits</CardTitle>
+                    <CardDescription className="text-purple-300/70">Detailed view of all your habits with progress and statistics</CardDescription>
                   </div>
                   <div className="flex items-center gap-2">
                     <Select value={sortBy} onValueChange={setSortBy}>
-                      <SelectTrigger className="w-40">
+                      <SelectTrigger className="w-40 bg-purple-950/50 border-purple-800/30 text-slate-200">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -728,7 +735,7 @@ export default function HabitsPage() {
                     const completedToday = todaysEntry?.completed || false;
                     
                     return (
-                      <div key={habit.id} className="border rounded-lg p-4 hover:shadow-sm transition-shadow">
+                      <div key={habit.id} className="border border-purple-800/30 rounded-lg p-4 hover:shadow-sm hover:shadow-purple-900/30 transition-shadow backdrop-blur-sm bg-slate-900/50">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-start justify-between mb-3">
@@ -737,8 +744,8 @@ export default function HabitsPage() {
                                   {habit.icon && (
                                     <span className="text-lg">{habit.icon}</span>
                                   )}
-                                  <h4 className="text-lg font-medium">{habit.name}</h4>
-                                  <Badge variant="outline" className="text-xs">
+                                  <h4 className="text-lg font-medium text-purple-200">{habit.name}</h4>
+                                  <Badge variant="outline" className="text-xs border-purple-700/50 text-purple-300">
                                     {habit.category}
                                   </Badge>
                                 </div>
@@ -885,40 +892,42 @@ export default function HabitsPage() {
 
         {/* Create/Edit Habit Dialog */}
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-          <DialogContent className="sm:max-w-[525px]">
+          <DialogContent className="sm:max-w-[525px] backdrop-blur-xl bg-slate-900/95 border-purple-800/30">
             <DialogHeader>
-              <DialogTitle>{editingHabit ? 'Edit Habit' : 'Create New Habit'}</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-purple-200">{editingHabit ? 'Edit Habit' : 'Create New Habit'}</DialogTitle>
+              <DialogDescription className="text-purple-300/70">
                 {editingHabit ? 'Update your habit details' : 'Build a new positive habit'}
               </DialogDescription>
             </DialogHeader>
             
             <div className="space-y-4 py-4">
               <div>
-                <Label htmlFor="name">Habit Name *</Label>
+                <Label htmlFor="name" className="text-purple-200">Habit Name *</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="What habit do you want to build?"
+                  className="bg-purple-950/50 border-purple-800/30 text-slate-200 placeholder:text-purple-400/50"
                 />
               </div>
               
               <div>
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description" className="text-purple-200">Description</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="Why is this habit important to you?"
+                  className="bg-purple-950/50 border-purple-800/30 text-slate-200 placeholder:text-purple-400/50"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="category">Category</Label>
+                  <Label htmlFor="category" className="text-purple-200">Category</Label>
                   <Select value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}>
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-purple-950/50 border-purple-800/30 text-slate-200">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -930,9 +939,9 @@ export default function HabitsPage() {
                 </div>
                 
                 <div>
-                  <Label htmlFor="frequency">Frequency</Label>
+                  <Label htmlFor="frequency" className="text-purple-200">Frequency</Label>
                   <Select value={formData.frequency} onValueChange={(value) => setFormData(prev => ({ ...prev, frequency: value as Habit['frequency'] }))}>
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-purple-950/50 border-purple-800/30 text-slate-200">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -946,31 +955,33 @@ export default function HabitsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="targetCount">Target Count</Label>
+                  <Label htmlFor="targetCount" className="text-purple-200">Target Count</Label>
                   <Input
                     id="targetCount"
                     type="number"
                     value={formData.targetCount}
                     onChange={(e) => setFormData(prev => ({ ...prev, targetCount: parseInt(e.target.value) || 1 }))}
+                    className="bg-purple-950/50 border-purple-800/30 text-slate-200"
                   />
                 </div>
                 
                 <div>
-                  <Label htmlFor="unit">Unit</Label>
+                  <Label htmlFor="unit" className="text-purple-200">Unit</Label>
                   <Input
                     id="unit"
                     value={formData.unit}
                     onChange={(e) => setFormData(prev => ({ ...prev, unit: e.target.value }))}
                     placeholder="e.g., minutes, pages, cups"
+                    className="bg-purple-950/50 border-purple-800/30 text-slate-200 placeholder:text-purple-400/50"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="timeOfDay">Time of Day</Label>
+                  <Label htmlFor="timeOfDay" className="text-purple-200">Time of Day</Label>
                   <Select value={formData.timeOfDay} onValueChange={(value) => setFormData(prev => ({ ...prev, timeOfDay: value as Habit['timeOfDay'] }))}>
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-purple-950/50 border-purple-800/30 text-slate-200">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -984,12 +995,13 @@ export default function HabitsPage() {
                 </div>
                 
                 <div>
-                  <Label htmlFor="reminderTime">Reminder Time</Label>
+                  <Label htmlFor="reminderTime" className="text-purple-200">Reminder Time</Label>
                   <Input
                     id="reminderTime"
                     type="time"
                     value={formData.reminderTime}
                     onChange={(e) => setFormData(prev => ({ ...prev, reminderTime: e.target.value }))}
+                    className="bg-purple-950/50 border-purple-800/30 text-slate-200"
                   />
                 </div>
               </div>
