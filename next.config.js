@@ -12,8 +12,7 @@ const withPWA = require('next-pwa')({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Simplified configuration for successful deployment
-  outputFileTracingRoot: require('path').join(__dirname, '../'),
+  // Removed outputFileTracingRoot to fix Vercel deployment path issue
   
   serverExternalPackages: [
     '@neondatabase/serverless',
