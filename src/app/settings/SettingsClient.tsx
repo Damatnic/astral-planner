@@ -1013,7 +1013,7 @@ export default function SettingsPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="summary-frequency">Summary Reports</Label>
+                      <Label htmlFor="summary-frequency" className="text-purple-200">Summary Reports</Label>
                       <Select
                         value={settings.notifications.frequency.summaries}
                         onValueChange={(value) => setSettings({
@@ -1024,7 +1024,7 @@ export default function SettingsPage() {
                           }
                         })}
                       >
-                        <SelectTrigger id="summary-frequency">
+                        <SelectTrigger id="summary-frequency" className="bg-purple-950/50 border-purple-800/30 text-slate-200">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -1044,6 +1044,7 @@ export default function SettingsPage() {
                   onClick={() => handleSave('notifications', settings.notifications)} 
                   disabled={isSaving}
                   size="lg"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                 >
                   {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                   {!isSaving && <Save className="h-4 w-4 mr-2" />}
