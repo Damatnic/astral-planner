@@ -148,27 +148,27 @@ const mockGoals: Goal[] = [
 ];
 
 const categoryColors = {
-  work: 'bg-blue-600 text-white border-blue-700',
-  personal: 'bg-green-600 text-white border-green-700',
-  health: 'bg-red-600 text-white border-red-700',
-  social: 'bg-purple-600 text-white border-purple-700',
-  focus: 'bg-orange-600 text-white border-orange-700',
-  habit: 'bg-teal-600 text-white border-teal-700'
+  work: 'bg-blue-500/80 text-white border-blue-600/50',
+  personal: 'bg-emerald-500/80 text-white border-emerald-600/50',
+  health: 'bg-rose-500/80 text-white border-rose-600/50',
+  social: 'bg-purple-500/80 text-white border-purple-600/50',
+  focus: 'bg-amber-500/80 text-white border-amber-600/50',
+  habit: 'bg-cyan-500/80 text-white border-cyan-600/50'
 };
 
 const priorityColors = {
   low: 'border-l-4 border-l-slate-400',
-  medium: 'border-l-4 border-l-yellow-500',
-  high: 'border-l-4 border-l-red-500'
+  medium: 'border-l-4 border-l-amber-400',
+  high: 'border-l-4 border-l-rose-400'
 };
 
 const categoryBgColors = {
   work: 'bg-blue-500/10',
-  personal: 'bg-green-500/10',
-  health: 'bg-red-500/10',
+  personal: 'bg-emerald-500/10',
+  health: 'bg-rose-500/10',
   social: 'bg-purple-500/10',
-  focus: 'bg-orange-500/10',
-  habit: 'bg-teal-500/10'
+  focus: 'bg-amber-500/10',
+  habit: 'bg-cyan-500/10'
 };
 
 export default function EnhancedCalendarView() {
@@ -365,12 +365,12 @@ isSelected ? 'ring-2 ring-purple-500 bg-purple-900/40' : ''} ${
                   </span>
                   <div className="flex gap-1">
                     {dayEvents.length > 0 && (
-                      <span className="text-xs bg-blue-500/20 text-blue-300 px-1 rounded">
+                      <span className="text-xs bg-blue-500/20 text-blue-200 px-1 rounded">
                         {dayEvents.length}
                       </span>
                     )}
                     {dayHabits.length > 0 && (
-                      <span className="text-xs bg-green-500/20 text-green-300 px-1 rounded">
+                      <span className="text-xs bg-emerald-500/20 text-emerald-200 px-1 rounded">
                         {completedHabitsCount}/{dayHabits.length}
                       </span>
                     )}
@@ -489,14 +489,14 @@ isSelected ? 'ring-2 ring-purple-500 bg-purple-900/40' : ''} ${
             
             <div className="grid grid-cols-2 gap-2 text-center">
               <div className="bg-blue-500/20 border border-blue-500/30 rounded p-2">
-                <div className="text-lg font-bold text-blue-300">{getTodayStats.focusTime}</div>
-                <div className="text-xs text-blue-400">Focus mins</div>
+                <div className="text-lg font-bold text-blue-200">{getTodayStats.focusTime}</div>
+                <div className="text-xs text-blue-300/70">Focus mins</div>
               </div>
-              <div className="bg-green-500/20 border border-green-500/30 rounded p-2">
-                <div className="text-lg font-bold text-green-300">
+              <div className="bg-emerald-500/20 border border-emerald-500/30 rounded p-2">
+                <div className="text-lg font-bold text-emerald-200">
                   {getTodayStats.habitsCompleted}/{getTodayStats.habitsTotal}
                 </div>
-                <div className="text-xs text-green-400">Habits</div>
+                <div className="text-xs text-emerald-300/70">Habits</div>
               </div>
             </div>
           </CardContent>
@@ -616,7 +616,7 @@ isSelected ? 'ring-2 ring-purple-500 bg-purple-900/40' : ''} ${
               {/* Search and Filter */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full lg:w-auto">
                 <div className="relative w-full sm:w-auto">
-                  <Search className="w-4 h-4 absolute left-2 top-2.5 text-gray-400" />
+                  <Search className="w-4 h-4 absolute left-2 top-2.5 text-purple-400" />
                   <Input
                     placeholder="Search events..."
                     value={searchTerm}
@@ -760,7 +760,7 @@ isSelected ? 'ring-2 ring-purple-500 bg-purple-900/40' : ''} ${
                             </Badge>
                             <div className="flex-1">
                               <div className="font-medium flex items-center gap-2 text-slate-200">
-                                {event.isCompleted && <CheckCircle className="w-4 h-4 text-green-400" />}
+                                {event.isCompleted && <CheckCircle className="w-4 h-4 text-emerald-400" />}
                                 <span className={event.isCompleted ? 'line-through text-purple-400/70' : ''}>
                                   {event.title}
                                 </span>
@@ -806,7 +806,7 @@ isSelected ? 'ring-2 ring-purple-500 bg-purple-900/40' : ''} ${
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        {habit.completedToday && <CheckCircle className="w-5 h-5 text-green-400" />}
+                        {habit.completedToday && <CheckCircle className="w-5 h-5 text-emerald-400" />}
                         <Badge variant={habit.completedToday ? 'default' : 'outline'}>
                           {habit.completedToday ? 'Completed' : 'Pending'}
                         </Badge>
