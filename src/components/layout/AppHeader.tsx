@@ -34,19 +34,16 @@ export function AppHeader() {
             <Link href="/dashboard">Dashboard</Link>
           </Button>
           <Button variant="ghost" size="sm" asChild className="text-purple-200 hover:text-purple-100 hover:bg-purple-950/50">
-            <Link href="/tasks">Tasks</Link>
+            <Link href="/calendar">Calendar</Link>
           </Button>
           <Button variant="ghost" size="sm" asChild className="text-purple-200 hover:text-purple-100 hover:bg-purple-950/50">
-            <Link href="/calendar">Calendar</Link>
+            <Link href="/planner">Planner</Link>
           </Button>
           <Button variant="ghost" size="sm" asChild className="text-purple-200 hover:text-purple-100 hover:bg-purple-950/50">
             <Link href="/goals">Goals</Link>
           </Button>
           <Button variant="ghost" size="sm" asChild className="text-purple-200 hover:text-purple-100 hover:bg-purple-950/50">
             <Link href="/habits">Habits</Link>
-          </Button>
-          <Button variant="ghost" size="sm" asChild className="text-purple-200 hover:text-purple-100 hover:bg-purple-950/50">
-            <Link href="/planner">Planner</Link>
           </Button>
           <Button variant="ghost" size="sm" asChild className="text-purple-200 hover:text-purple-100 hover:bg-purple-950/50">
             <Link href="/analytics">Analytics</Link>

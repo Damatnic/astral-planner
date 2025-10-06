@@ -20,6 +20,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import { AppHeader } from '@/components/layout/AppHeader';
 
 interface Goal {
   id: string;
@@ -147,34 +148,29 @@ export default function GoalsClientFixed() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950 relative overflow-hidden">
-      {/* Animated background orbs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse [animation-delay:1s]"></div>
-        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl animate-pulse [animation-delay:0.5s]"></div>
-      </div>
-
-      {/* Header */}
-      <header className="sticky top-0 z-40 w-full border-b border-purple-800/30 backdrop-blur-xl bg-slate-900/80 shadow-lg shadow-purple-900/20">
-        <div className="container flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="flex items-center gap-2 group">
-              <Target className="h-6 w-6 text-purple-400 group-hover:text-pink-400 transition-colors" />
-              <span className="text-lg font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">Goals</span>
-            </Link>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <Button onClick={() => setShowCreateModal(true)}>
-              <Plus className="w-4 h-4 mr-2" />
-              New Goal
-            </Button>
-          </div>
+    <>
+      <AppHeader />
+      <div className="min-h-screen bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950 relative overflow-hidden">
+        {/* Animated background orbs */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse [animation-delay:1s]"></div>
+          <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl animate-pulse [animation-delay:0.5s]"></div>
         </div>
-      </header>
 
-      <main className="container mx-auto px-4 py-8 relative z-10">
+        <main className="container mx-auto px-4 py-8 relative z-10">\n          {/* Page Header */}
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent mb-2">
+              Goals
+            </h1>
+            <p className="text-purple-300/70">Track and achieve your life goals</p>
+            <div className="mt-4 flex justify-end">
+              <Button onClick={() => setShowCreateModal(true)} className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                <Plus className="w-4 h-4 mr-2" />
+                New Goal
+              </Button>
+            </div>
+          </div>
         {/* Stats Overview */}
         <div className="grid gap-4 md:grid-cols-4 mb-8">
           <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
@@ -544,6 +540,7 @@ export default function GoalsClientFixed() {
           </Card>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

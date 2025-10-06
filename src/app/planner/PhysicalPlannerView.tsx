@@ -505,7 +505,7 @@ export default function PhysicalPlannerView() {
   const renderDailyView = () => (
     <div className="flex w-full h-full">
       {/* Left Page */}
-      <div className="w-1/2 h-full relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-r-2 border-purple-800/30 shadow-inner">
+      <div className="w-1/2 h-full relative bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 border-r-2 border-purple-300/30 shadow-inner">
         {/* Paper texture */}
         {renderPaperTexture()}
         
@@ -768,7 +768,7 @@ export default function PhysicalPlannerView() {
       </div>
       
       {/* Right Page */}
-      <div className="w-1/2 h-full relative bg-gradient-to-bl from-slate-900 via-slate-800 to-slate-900 shadow-inner">
+      <div className="w-1/2 h-full relative bg-gradient-to-bl from-amber-50 via-yellow-50 to-orange-50 shadow-inner">
         {renderPaperTexture()}
         
         <div className="p-8 pl-16 h-full overflow-hidden">
