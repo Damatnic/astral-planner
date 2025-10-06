@@ -505,7 +505,7 @@ export default function PhysicalPlannerView() {
   const renderDailyView = () => (
     <div className="flex w-full h-full">
       {/* Left Page */}
-      <div className="w-1/2 h-full relative bg-gradient-to-br from-yellow-50 via-white to-yellow-50 border-r-2 border-yellow-200 shadow-inner">
+      <div className="w-1/2 h-full relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-r-2 border-purple-800/30 shadow-inner">
         {/* Paper texture */}
         {renderPaperTexture()}
         
@@ -768,7 +768,7 @@ export default function PhysicalPlannerView() {
       </div>
       
       {/* Right Page */}
-      <div className="w-1/2 h-full relative bg-gradient-to-bl from-yellow-50 via-white to-yellow-50 shadow-inner">
+      <div className="w-1/2 h-full relative bg-gradient-to-bl from-slate-900 via-slate-800 to-slate-900 shadow-inner">
         {renderPaperTexture()}
         
         <div className="p-8 pl-16 h-full overflow-hidden">
@@ -1058,13 +1058,13 @@ export default function PhysicalPlannerView() {
 
   // Don't render until currentDate is initialized to prevent hydration mismatch
   if (!currentDate) {
-    return <div className="relative w-full h-full bg-gradient-to-br from-amber-100 via-yellow-50 to-orange-100 p-4 flex items-center justify-center">
-      <div className="text-lg text-gray-600">Loading...</div>
+    return <div className="relative w-full h-full bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950 p-4 flex items-center justify-center">
+      <div className="text-lg text-purple-200">Loading...</div>
     </div>;
   }
 
   return (
-    <div className="relative w-full h-full bg-gradient-to-br from-amber-100 via-yellow-50 to-orange-100 p-4 overflow-auto">
+    <div className="relative w-full h-full bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950 p-4 overflow-auto">
       {/* Desk environment */}
       <div className="absolute inset-0 opacity-30 pointer-events-none">
         <div 
@@ -1078,21 +1078,21 @@ export default function PhysicalPlannerView() {
       
       {/* Desk accessories */}
       <div className="absolute top-8 left-8 opacity-60">
-        <Coffee className="w-12 h-12 text-amber-800" />
+        <Coffee className="w-12 h-12 text-purple-400" />
       </div>
       <div className="absolute top-12 right-12 opacity-40 transform rotate-12">
-        <Bookmark className="w-8 h-8 text-red-600" />
+        <Bookmark className="w-8 h-8 text-pink-500" />
       </div>
       
       {/* Integrated Control Bar */}
-      <div className="absolute top-4 left-4 right-4 z-20 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border max-w-full">
+      <div className="absolute top-4 left-4 right-4 z-20 backdrop-blur-xl bg-slate-900/80 border-purple-800/30 border rounded-lg shadow-2xl shadow-purple-900/50 max-w-full">
         {/* Top Row - Main Navigation and Weather */}
-        <div className="flex items-center justify-between p-3 border-b border-gray-200 flex-wrap gap-3">
+        <div className="flex items-center justify-between p-3 border-b border-purple-800/30 flex-wrap gap-3">
           {/* Date Navigation */}
           <div className="flex items-center gap-3">
             <motion.button
               onClick={() => handlePageTurn('prev')}
-              className="flex items-center gap-2 px-3 py-2 bg-amber-100 hover:bg-amber-200 rounded-lg shadow-sm transition-all font-medium text-amber-800"
+              className="flex items-center gap-2 px-3 py-2 bg-purple-950/50 hover:bg-purple-900/50 border border-purple-700/50 rounded-lg shadow-sm transition-all font-medium text-purple-200"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -1101,17 +1101,17 @@ export default function PhysicalPlannerView() {
             </motion.button>
             
             <div className="text-center">
-              <div className="text-lg font-semibold text-gray-800">
+              <div className="text-lg font-semibold text-purple-200">
                 {currentDate ? format(currentDate, 'MMMM d, yyyy') : ''}
               </div>
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-purple-300/70">
                 {currentDate ? format(currentDate, 'EEEE') : ''}
               </div>
             </div>
             
             <motion.button
               onClick={() => handlePageTurn('next')}
-              className="flex items-center gap-2 px-3 py-2 bg-amber-100 hover:bg-amber-200 rounded-lg shadow-sm transition-all font-medium text-amber-800"
+              className="flex items-center gap-2 px-3 py-2 bg-purple-950/50 hover:bg-purple-900/50 border border-purple-700/50 rounded-lg shadow-sm transition-all font-medium text-purple-200"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -1399,7 +1399,7 @@ export default function PhysicalPlannerView() {
         </div>
         
         {/* Planner cover/binding */}
-        <div className="relative bg-gradient-to-r from-amber-900 via-yellow-900 to-amber-900 rounded-xl p-3 shadow-2xl h-full">
+        <div className="relative bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-900 rounded-xl p-3 shadow-2xl h-full">
           <div className="absolute left-1/2 top-0 bottom-0 w-12 -ml-6 bg-gradient-to-r from-black/30 via-transparent to-black/30 pointer-events-none z-10 rounded-lg" />
           
           {/* Page flip animation container */}
