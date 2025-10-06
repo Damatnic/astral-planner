@@ -1058,20 +1058,20 @@ export default function SettingsPage() {
           <TabsContent value="appearance">
             <div className="space-y-6">
               {/* Theme Selection */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-purple-200">
                     <Palette className="h-5 w-5" />
                     Theme & Colors
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-purple-300/70">
                     Customize the overall look and color scheme
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Theme Selection */}
                   <div>
-                    <Label className="text-base mb-4 block">Color Theme</Label>
+                    <Label className="text-base mb-4 block text-purple-200">Color Theme</Label>
                     <RadioGroup
                       value={settings.appearance.theme}
                       onValueChange={(value) => setSettings({
@@ -1118,7 +1118,7 @@ export default function SettingsPage() {
 
                   {/* Accent Color */}
                   <div>
-                    <Label className="text-base mb-4 block">Accent Color</Label>
+                    <Label className="text-base mb-4 block text-purple-200">Accent Color</Label>
                     <div className="grid grid-cols-6 gap-3">
                       {[
                         { name: 'blue', color: '#3b82f6', label: 'Blue' },
@@ -1155,7 +1155,7 @@ export default function SettingsPage() {
 
                   {/* Custom Primary Color */}
                   <div>
-                    <Label htmlFor="custom-color" className="text-base mb-2 block">Custom Primary Color</Label>
+                    <Label htmlFor="custom-color" className="text-base mb-2 block text-purple-200">Custom Primary Color</Label>
                     <div className="flex gap-3 items-center">
                       <Input
                         id="custom-color"
@@ -1165,7 +1165,7 @@ export default function SettingsPage() {
                           ...settings,
                           appearance: { ...settings.appearance, primaryColor: e.target.value }
                         })}
-                        className="w-16 h-10 rounded-md cursor-pointer"
+                        className="w-16 h-10 rounded-md cursor-pointer bg-purple-950/50 border-purple-800/30"
                       />
                       <Input
                         value={settings.appearance.primaryColor}
@@ -1174,7 +1174,7 @@ export default function SettingsPage() {
                           appearance: { ...settings.appearance, primaryColor: e.target.value }
                         })}
                         placeholder="#3b82f6"
-                        className="font-mono"
+                        className="font-mono bg-purple-950/50 border-purple-800/30 text-slate-200 placeholder:text-purple-400/50"
                       />
                     </div>
                   </div>
@@ -1182,20 +1182,20 @@ export default function SettingsPage() {
               </Card>
 
               {/* Typography */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-purple-200">
                     <Type className="h-5 w-5" />
                     Typography
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-purple-300/70">
                     Customize fonts and text appearance
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <Label htmlFor="fontFamily">Font Family</Label>
+                      <Label htmlFor="fontFamily" className="text-purple-200">Font Family</Label>
                       <Select
                         value={settings.appearance.fontFamily}
                         onValueChange={(value) => setSettings({
@@ -1203,7 +1203,7 @@ export default function SettingsPage() {
                           appearance: { ...settings.appearance, fontFamily: value }
                         })}
                       >
-                        <SelectTrigger id="fontFamily">
+                        <SelectTrigger id="fontFamily" className="bg-purple-950/50 border-purple-800/30 text-slate-200">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -1219,7 +1219,7 @@ export default function SettingsPage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="fontSize">Font Size</Label>
+                      <Label htmlFor="fontSize" className="text-purple-200">Font Size</Label>
                       <Select
                         value={settings.appearance.fontSize}
                         onValueChange={(value) => setSettings({
@@ -1227,7 +1227,7 @@ export default function SettingsPage() {
                           appearance: { ...settings.appearance, fontSize: value }
                         })}
                       >
-                        <SelectTrigger id="fontSize">
+                        <SelectTrigger id="fontSize" className="bg-purple-950/50 border-purple-800/30 text-slate-200">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -1243,20 +1243,20 @@ export default function SettingsPage() {
               </Card>
 
               {/* Layout & Spacing */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-purple-200">
                     <Layout className="h-5 w-5" />
                     Layout & Spacing
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-purple-300/70">
                     Control interface density and spacing
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <Label htmlFor="density">Interface Density</Label>
+                      <Label htmlFor="density" className="text-purple-200">Interface Density</Label>
                       <Select
                         value={settings.appearance.density}
                         onValueChange={(value) => setSettings({
@@ -1264,7 +1264,7 @@ export default function SettingsPage() {
                           appearance: { ...settings.appearance, density: value }
                         })}
                       >
-                        <SelectTrigger id="density">
+                        <SelectTrigger id="density" className="bg-purple-950/50 border-purple-800/30 text-slate-200">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -1273,13 +1273,13 @@ export default function SettingsPage() {
                           <SelectItem value="spacious">Spacious</SelectItem>
                         </SelectContent>
                       </Select>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-xs text-purple-300/70 mt-1">
                         Controls padding and spacing throughout the app
                       </p>
                     </div>
 
                     <div>
-                      <Label htmlFor="borderRadius">Border Radius</Label>
+                      <Label htmlFor="borderRadius" className="text-purple-200">Border Radius</Label>
                       <Select
                         value={settings.appearance.borderRadius}
                         onValueChange={(value) => setSettings({
@@ -1287,7 +1287,7 @@ export default function SettingsPage() {
                           appearance: { ...settings.appearance, borderRadius: value }
                         })}
                       >
-                        <SelectTrigger id="borderRadius">
+                        <SelectTrigger id="borderRadius" className="bg-purple-950/50 border-purple-800/30 text-slate-200">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -1298,7 +1298,7 @@ export default function SettingsPage() {
                           <SelectItem value="extra-large">Extra Large (16px)</SelectItem>
                         </SelectContent>
                       </Select>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-xs text-purple-300/70 mt-1">
                         Roundness of buttons, cards, and other elements
                       </p>
                     </div>
@@ -1307,23 +1307,23 @@ export default function SettingsPage() {
               </Card>
 
               {/* Animation & Motion */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-purple-200">
                     <Zap className="h-5 w-5" />
                     Animation & Motion
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-purple-300/70">
                     Control animations and visual effects
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between p-3 rounded-lg border">
+                  <div className="flex items-center justify-between p-3 rounded-lg border border-purple-800/30 bg-purple-950/30">
                     <div>
-                      <Label htmlFor="animations" className="text-base font-medium">
+                      <Label htmlFor="animations" className="text-base font-medium text-purple-200">
                         Enable Animations
                       </Label>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-purple-300/70">
                         Smooth transitions and micro-interactions
                       </p>
                     </div>
@@ -1337,12 +1337,12 @@ export default function SettingsPage() {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-3 rounded-lg border">
+                  <div className="flex items-center justify-between p-3 rounded-lg border border-purple-800/30 bg-purple-950/30">
                     <div>
-                      <Label htmlFor="reduced-motion" className="text-base font-medium">
+                      <Label htmlFor="reduced-motion" className="text-base font-medium text-purple-200">
                         Reduced Motion
                       </Label>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-purple-300/70">
                         Minimize animations for better accessibility
                       </p>
                     </div>
@@ -1359,23 +1359,23 @@ export default function SettingsPage() {
               </Card>
 
               {/* Accessibility */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-purple-200">
                     <EyeIcon className="h-5 w-5" />
                     Accessibility
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-purple-300/70">
                     Visual accessibility and readability options
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between p-3 rounded-lg border">
+                  <div className="flex items-center justify-between p-3 rounded-lg border border-purple-800/30 bg-purple-950/30">
                     <div>
-                      <Label htmlFor="high-contrast" className="text-base font-medium">
+                      <Label htmlFor="high-contrast" className="text-base font-medium text-purple-200">
                         High Contrast Mode
                       </Label>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-purple-300/70">
                         Increase contrast for better readability
                       </p>
                     </div>
@@ -1389,12 +1389,12 @@ export default function SettingsPage() {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-3 rounded-lg border">
+                  <div className="flex items-center justify-between p-3 rounded-lg border border-purple-800/30 bg-purple-950/30">
                     <div>
-                      <Label htmlFor="colorblind-friendly" className="text-base font-medium">
+                      <Label htmlFor="colorblind-friendly" className="text-base font-medium text-purple-200">
                         Color Blind Friendly
                       </Label>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-purple-300/70">
                         Adjust colors for color vision deficiency
                       </p>
                     </div>
