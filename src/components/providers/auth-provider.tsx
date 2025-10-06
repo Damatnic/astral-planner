@@ -14,6 +14,7 @@ interface User {
   theme: string;
   loginTime: string;
   isDemo?: boolean;
+  isPremium?: boolean;
   role?: string;
 }
 
@@ -158,11 +159,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             name: data.user.firstName ? `${data.user.firstName} ${data.user.lastName || ''}`.trim() : data.user.username,
             displayName: data.user.firstName || data.user.username,
             email: data.user.emailAddress || data.user.email,
-            avatar: data.user.imageUrl || (data.user.isDemo ? '🎯' : '👤'),
-            theme: data.user.isDemo ? 'green' : 'blue',
+            avatar: data.user.imageUrl || (data.user.isDemo ? '🎯' : '�‍💼'),
+            theme: data.user.settings?.theme || (data.user.isDemo ? 'green' : 'blue'),
             loginTime: new Date().toISOString(),
             isDemo: data.user.isDemo,
-            role: data.user.role
+            role: data.user.role,
+            isPremium: data.user.isPremium || false
           };
 
           setUser(enhancedUser);

@@ -20,7 +20,8 @@ const DEMO_ACCOUNTS = [
     lastName: 'User',
     email: 'demo@astralplanner.com',
     isDemo: true,
-    role: 'user'
+    isPremium: false,
+    role: 'user' as const
   },
   {
     id: 'nick-planner',
@@ -28,10 +29,11 @@ const DEMO_ACCOUNTS = [
     pin: '7347',
     username: 'nick',
     firstName: 'Nick',
-    lastName: null,
+    lastName: '',
     email: 'nick@astralplanner.com',
     isDemo: false,
-    role: 'user'
+    isPremium: true,
+    role: 'premium' as const
   }
 ];
 
@@ -77,12 +79,15 @@ export async function POST(req: NextRequest) {
 
     // Verify PIN
     if (account.pin !== pin) {
-      apiLogger.warn('Login attempt with incorrect PIN', { accountId });
+      apiLogger.warn('Login attempt with incorrect PIN', { accountId, username: account.username });
+      
+      // In production, track failed attempts per account
+      // For now, return a generic error with mock attempt tracking
       return NextResponse.json(
         { 
           success: false, 
-          error: 'Invalid account or PIN',
-          attemptsRemaining: 3 // Mock rate limiting
+          error: `Invalid PIN for ${account.firstName}'s account. Please check your PIN and try again.`,
+          attemptsRemaining: 4 // Mock rate limiting - in production, track this per user
         },
         { status: 401 }
       );
@@ -112,8 +117,15 @@ export async function POST(req: NextRequest) {
           lastName: account.lastName,
           email: account.email,
           isDemo: account.isDemo,
+          isPremium: account.isPremium,
           role: account.role,
-          imageUrl: account.isDemo ? '🎯' : '👤'
+          imageUrl: account.isDemo ? '🎯' : '�‍💼',
+          onboardingCompleted: !account.isDemo, // Demo completes onboarding, Nick doesn't need it
+          onboardingStep: account.isDemo ? 4 : 0,
+          settings: {
+            theme: account.isDemo ? 'green' : 'blue',
+            notifications: true
+          }
         },
         tokens: {
           accessToken,

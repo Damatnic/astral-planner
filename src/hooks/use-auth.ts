@@ -245,21 +245,28 @@ export function useAuth(): UseAuthReturn {
           localStorage.setItem('refresh_token', data.tokens.refreshToken);
         }
 
-        // Store user session for client-side state
+        // Store user session for client-side state with all necessary data
         const userSession = {
           id: data.user.id,
           name: data.user.firstName ? `${data.user.firstName} ${data.user.lastName || ''}`.trim() : data.user.username,
           displayName: data.user.firstName || data.user.username,
-          avatar: data.user.imageUrl || (data.user.isDemo ? '🎯' : '👤'),
-          theme: data.user.isDemo ? 'green' : 'blue',
+          avatar: data.user.imageUrl || (data.user.isDemo ? '🎯' : '�‍💼'),
+          theme: data.user.settings?.theme || (data.user.isDemo ? 'green' : 'blue'),
           loginTime: new Date().toISOString(),
-          isDemo: data.user.isDemo
+          isDemo: data.user.isDemo,
+          isPremium: data.user.isPremium || false,
+          role: data.user.role || 'user',
+          email: data.user.email,
+          onboardingCompleted: data.user.onboardingCompleted !== false,
+          onboardingStep: data.user.onboardingStep || 0
         };
 
         localStorage.setItem('current-user', JSON.stringify(userSession));
 
         if (data.user.isDemo) {
           localStorage.setItem('demo-auth', 'true');
+        } else {
+          localStorage.removeItem('demo-auth');
         }
 
         updateState({

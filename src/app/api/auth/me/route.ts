@@ -47,18 +47,32 @@ export async function GET(req: NextRequest) {
           lastName: 'User',
           email: 'demo@astralplanner.com',
           isDemo: true,
+          isPremium: false,
           role: 'user',
-          imageUrl: '🎯'
+          imageUrl: '🎯',
+          onboardingCompleted: true,
+          onboardingStep: 4,
+          settings: {
+            theme: 'green',
+            notifications: true
+          }
         },
         'nick-planner': {
           id: 'nick-planner',
           username: 'nick',
           firstName: 'Nick',
-          lastName: null,
+          lastName: '',
           email: 'nick@astralplanner.com',
           isDemo: false,
-          role: 'user',
-          imageUrl: '👤'
+          isPremium: true,
+          role: 'premium',
+          imageUrl: '�‍💼',
+          onboardingCompleted: true,
+          onboardingStep: 4,
+          settings: {
+            theme: 'blue',
+            notifications: true
+          }
         }
       };
 
