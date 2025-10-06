@@ -222,46 +222,46 @@ export default function DashboardClientFixed() {
 
             {/* Stats Cards */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 border-l-4 border-l-purple-500 backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 border-l-4 border-l-purple-500">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-purple-200">Tasks Completed</CardTitle>
                   <CheckCircle className="h-4 w-4 text-purple-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{data.stats?.tasksCompleted || 0}</div>
+                  <div className="text-2xl font-bold text-purple-100">{data.stats?.tasksCompleted || 0}</div>
                   <p className="text-xs text-purple-300/70">+20% from last week</p>
                 </CardContent>
               </Card>
 
               <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 border-l-4 border-l-green-500">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Goals Achieved</CardTitle>
-                  <Target className="h-4 w-4 text-purple-300/70" />
+                  <CardTitle className="text-sm font-medium text-purple-200">Goals Achieved</CardTitle>
+                  <Target className="h-4 w-4 text-green-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{data.stats?.goalsAchieved || 0}</div>
+                  <div className="text-2xl font-bold text-purple-100">{data.stats?.goalsAchieved || 0}</div>
                   <p className="text-xs text-purple-300/70">+1 from last month</p>
                 </CardContent>
               </Card>
 
               <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 border-l-4 border-l-purple-500">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Habits Tracked</CardTitle>
-                  <Activity className="h-4 w-4 text-purple-300/70" />
+                  <CardTitle className="text-sm font-medium text-purple-200">Habits Tracked</CardTitle>
+                  <Activity className="h-4 w-4 text-purple-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{data.stats?.habitsTracked || 0}</div>
+                  <div className="text-2xl font-bold text-purple-100">{data.stats?.habitsTracked || 0}</div>
                   <p className="text-xs text-purple-300/70">Active habits</p>
                 </CardContent>
               </Card>
 
               <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30 border-l-4 border-l-orange-500">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Focus Time</CardTitle>
-                  <Clock className="h-4 w-4 text-purple-300/70" />
+                  <CardTitle className="text-sm font-medium text-purple-200">Focus Time</CardTitle>
+                  <Clock className="h-4 w-4 text-orange-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
+                  <div className="text-2xl font-bold text-purple-100">
                     {`${Math.floor((data.stats?.focusTime || 0) / 60)}h ${(data.stats?.focusTime || 0) % 60}m`}
                   </div>
                   <p className="text-xs text-purple-300/70">This week</p>
@@ -281,23 +281,23 @@ export default function DashboardClientFixed() {
               <TabsContent value="overview" className="space-y-6">
                 <div className="grid gap-6 md:grid-cols-2">
                   {/* Upcoming Tasks */}
-                  <Card>
+                  <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <CheckCircle className="h-5 w-5" />
+                      <CardTitle className="flex items-center gap-2 text-purple-100">
+                        <CheckCircle className="h-5 w-5 text-purple-400" />
                         Upcoming Tasks
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
                         {data.upcomingTasks?.map(task => (
-                          <div key={task.id} className="flex items-center gap-3 p-3 rounded-lg bg-purple-950/50">
+                          <div key={task.id} className="flex items-center gap-3 p-3 rounded-lg bg-purple-950/50 border border-purple-800/20">
                             <div className={`w-2 h-2 rounded-full ${
                               task.priority === 'high' ? 'bg-red-500' :
                               task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
                             }`} />
                             <div className="flex-1">
-                              <p className="font-medium">{task.title}</p>
+                              <p className="font-medium text-slate-200">{task.title}</p>
                               <p className="text-sm text-purple-300/70">{task.time}</p>
                             </div>
                           </div>
@@ -307,23 +307,23 @@ export default function DashboardClientFixed() {
                   </Card>
 
                   {/* Recent Achievements */}
-                  <Card>
+                  <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <TrendingUp className="h-5 w-5" />
+                      <CardTitle className="flex items-center gap-2 text-purple-100">
+                        <TrendingUp className="h-5 w-5 text-purple-400" />
                         Recent Achievements
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
                         {data.recentAchievements?.map(achievement => (
-                          <div key={achievement.id} className="flex items-start gap-3 p-3 rounded-lg bg-purple-950/50">
-                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                              <Target className="h-4 w-4 text-primary" />
+                          <div key={achievement.id} className="flex items-start gap-3 p-3 rounded-lg bg-purple-950/50 border border-purple-800/20">
+                            <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
+                              <Target className="h-4 w-4 text-purple-400" />
                             </div>
                             <div className="flex-1">
-                              <p className="font-medium">{achievement.title}</p>
-                              <div className="text-xs text-gray-500">{achievement.date}</div>
+                              <p className="font-medium text-slate-200">{achievement.title}</p>
+                              <div className="text-xs text-purple-300/70">{achievement.date}</div>
                             </div>
                           </div>
                         ))}
@@ -334,9 +334,9 @@ export default function DashboardClientFixed() {
               </TabsContent>
 
               <TabsContent value="tasks">
-                <Card>
+                <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                   <CardHeader>
-                    <CardTitle>Task Management</CardTitle>
+                    <CardTitle className="text-purple-100">Task Management</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-purple-300/70">Task management functionality coming soon...</p>
@@ -345,9 +345,9 @@ export default function DashboardClientFixed() {
               </TabsContent>
 
               <TabsContent value="calendar">
-                <Card>
+                <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                   <CardHeader>
-                    <CardTitle>Calendar View</CardTitle>
+                    <CardTitle className="text-purple-100">Calendar View</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-purple-300/70">Calendar functionality coming soon...</p>
@@ -356,9 +356,9 @@ export default function DashboardClientFixed() {
               </TabsContent>
 
               <TabsContent value="analytics">
-                <Card>
+                <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                   <CardHeader>
-                    <CardTitle>Analytics Dashboard</CardTitle>
+                    <CardTitle className="text-purple-100">Analytics Dashboard</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-purple-300/70">Analytics functionality coming soon...</p>
@@ -379,48 +379,48 @@ export default function DashboardClientFixed() {
             />
             
             {/* Modal */}
-            <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6">
-              <h3 className="text-xl font-bold mb-6">Add New Event</h3>
+            <div className="relative backdrop-blur-xl bg-slate-900/95 border border-purple-800/30 rounded-2xl shadow-2xl shadow-purple-900/50 max-w-md w-full mx-4 p-6">
+              <h3 className="text-xl font-bold mb-6 text-purple-100">Add New Event</h3>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Event Title</label>
+                  <label className="block text-sm font-medium mb-2 text-purple-200">Event Title</label>
                   <input
                     type="text"
                     value={eventForm.title}
                     onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
                     placeholder="Enter event title..."
-                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 bg-purple-950/50 border border-purple-800/30 rounded-lg focus:ring-2 focus:ring-purple-500 text-slate-200 placeholder:text-purple-400/50"
                   />
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Date</label>
+                    <label className="block text-sm font-medium mb-2 text-purple-200">Date</label>
                     <input
                       type="date"
                       value={eventForm.date}
                       onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })}
-                      className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-3 bg-purple-950/50 border border-purple-800/30 rounded-lg focus:ring-2 focus:ring-purple-500 text-slate-200"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Time</label>
+                    <label className="block text-sm font-medium mb-2 text-purple-200">Time</label>
                     <input
                       type="time"
                       value={eventForm.time}
                       onChange={(e) => setEventForm({ ...eventForm, time: e.target.value })}
-                      className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-3 bg-purple-950/50 border border-purple-800/30 rounded-lg focus:ring-2 focus:ring-purple-500 text-slate-200"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="flex gap-3 justify-end mt-6">
-                <Button variant="outline" onClick={closeAddEventModal}>
+                <Button variant="outline" onClick={closeAddEventModal} className="border-purple-800/50 text-purple-200 hover:bg-purple-950/50">
                   Cancel
                 </Button>
-                <Button onClick={handleCreateEvent}>
+                <Button onClick={handleCreateEvent} className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg shadow-purple-500/30">
                   Create Event
                 </Button>
               </div>
