@@ -1484,32 +1484,32 @@ export default function SettingsPage() {
                 if (categoryIntegrations.length === 0) return null;
                 
                 return (
-                  <Card key={category}>
+                  <Card key={category} className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2 capitalize">
+                      <CardTitle className="flex items-center gap-2 capitalize text-purple-200">
                         <Link className="h-5 w-5" />
                         {category} Integrations
                       </CardTitle>
-                      <CardDescription>
+                      <CardDescription className="text-purple-300/70">
                         Connect with your favorite {category} tools
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="grid gap-4 sm:grid-cols-2">
                         {categoryIntegrations.map((integration) => (
-                          <div key={integration.id} className="p-4 border rounded-lg hover:border-accent transition-colors">
+                          <div key={integration.id} className="p-4 border border-purple-800/30 rounded-lg hover:border-purple-600/50 bg-purple-950/30 transition-colors">
                             <div className="flex items-start justify-between mb-3">
                               <div className="flex items-center gap-3">
                                 <span className="text-2xl">{integration.icon}</span>
                                 <div>
-                                  <h4 className="font-medium">{integration.name}</h4>
-                                  <p className="text-sm text-muted-foreground">
+                                  <h4 className="font-medium text-purple-200">{integration.name}</h4>
+                                  <p className="text-sm text-purple-300/70">
                                     {integration.description}
                                   </p>
                                 </div>
                               </div>
                               {integration.connected && (
-                                <Badge variant="default" className="text-xs">
+                                <Badge variant="default" className="text-xs bg-green-500/20 text-green-400 border-green-500/30">
                                   Connected
                                 </Badge>
                               )}
@@ -1566,35 +1566,35 @@ export default function SettingsPage() {
               })}
 
               {/* Integration Management */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-purple-200">
                     <Globe className="h-5 w-5" />
                     Integration Management
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-purple-300/70">
                     Manage your connected services and data sync
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="p-4 border rounded-lg">
-                      <h4 className="font-medium mb-2 flex items-center gap-2">
+                    <div className="p-4 border border-purple-800/30 rounded-lg bg-purple-950/30">
+                      <h4 className="font-medium mb-2 flex items-center gap-2 text-purple-200">
                         <Zap className="h-4 w-4" />
                         Auto-Sync
                       </h4>
-                      <p className="text-sm text-muted-foreground mb-3">
+                      <p className="text-sm text-purple-300/70 mb-3">
                         Automatically sync data every 15 minutes
                       </p>
                       <Switch defaultChecked />
                     </div>
                     
-                    <div className="p-4 border rounded-lg">
-                      <h4 className="font-medium mb-2 flex items-center gap-2">
+                    <div className="p-4 border border-purple-800/30 rounded-lg bg-purple-950/30">
+                      <h4 className="font-medium mb-2 flex items-center gap-2 text-purple-200">
                         <Shield className="h-4 w-4" />
                         Data Privacy
                       </h4>
-                      <p className="text-sm text-muted-foreground mb-3">
+                      <p className="text-sm text-purple-300/70 mb-3">
                         Encrypt all integration data
                       </p>
                       <Switch defaultChecked />
@@ -1621,25 +1621,25 @@ export default function SettingsPage() {
               </Card>
 
               {/* API Keys and Webhooks */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-purple-200">
                     <Database className="h-5 w-5" />
                     API & Webhooks
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-purple-300/70">
                     Manage API access and webhook configurations
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="p-4 border rounded-lg bg-muted/50">
-                    <h4 className="font-medium mb-2">API Key</h4>
+                  <div className="p-4 border border-purple-800/30 rounded-lg bg-purple-950/30">
+                    <h4 className="font-medium mb-2 text-purple-200">API Key</h4>
                     <div className="flex gap-2">
                       <Input 
                         type="password" 
                         value="ap1_xxxxx...xxxxx" 
                         readOnly 
-                        className="font-mono text-sm"
+                        className="font-mono text-sm bg-purple-950/50 border-purple-800/30 text-slate-200"
                       />
                       <Button variant="outline" size="sm">
                         Copy
@@ -1648,18 +1648,18 @@ export default function SettingsPage() {
                         Regenerate
                       </Button>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2">
+                    <p className="text-xs text-purple-300/70 mt-2">
                       Use this API key to access your data programmatically
                     </p>
                   </div>
 
                   <div className="space-y-3">
-                    <h4 className="font-medium">Webhook Endpoints</h4>
+                    <h4 className="font-medium text-purple-200">Webhook Endpoints</h4>
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center justify-between p-3 border border-purple-800/30 rounded-lg bg-purple-950/30">
                         <div>
-                          <p className="font-mono text-sm">https://your-app.com/webhook/tasks</p>
-                          <p className="text-xs text-muted-foreground">Task completion events</p>
+                          <p className="font-mono text-sm text-purple-200">https://your-app.com/webhook/tasks</p>
+                          <p className="text-xs text-purple-300/70">Task completion events</p>
                         </div>
                         <Button variant="outline" size="sm">
                           Edit
@@ -1679,19 +1679,19 @@ export default function SettingsPage() {
           <TabsContent value="privacy">
             <div className="space-y-6">
               {/* Profile Privacy */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-purple-200">
                     <Shield className="h-5 w-5" />
                     Profile Privacy
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-purple-300/70">
                     Control who can see your profile and personal information
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div>
-                    <Label htmlFor="visibility" className="text-base mb-2 block">Profile Visibility</Label>
+                    <Label htmlFor="visibility" className="text-base mb-2 block text-purple-200">Profile Visibility</Label>
                     <Select
                       value={settings.privacy.profileVisibility}
                       onValueChange={(value) => setSettings({
@@ -1699,7 +1699,7 @@ export default function SettingsPage() {
                         privacy: { ...settings.privacy, profileVisibility: value }
                       })}
                     >
-                      <SelectTrigger id="visibility">
+                      <SelectTrigger id="visibility" className="bg-purple-950/50 border-purple-800/30 text-slate-200">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -1733,12 +1733,12 @@ export default function SettingsPage() {
                       { key: 'shareProgressPublicly', label: 'Public Progress Sharing', desc: 'Allow others to see your task completion stats' },
                       { key: 'allowDirectMessages', label: 'Allow Direct Messages', desc: 'Let team members send you direct messages' }
                     ].map(({ key, label, desc }) => (
-                      <div key={key} className="flex items-center justify-between p-3 rounded-lg border">
+                      <div key={key} className="flex items-center justify-between p-3 rounded-lg border border-purple-800/30 bg-purple-950/30">
                         <div>
-                          <Label htmlFor={key} className="text-base font-medium">
+                          <Label htmlFor={key} className="text-base font-medium text-purple-200">
                             {label}
                           </Label>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-purple-300/70">
                             {desc}
                           </p>
                         </div>
@@ -1757,13 +1757,13 @@ export default function SettingsPage() {
               </Card>
 
               {/* Data & Analytics */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-purple-200">
                     <Database className="h-5 w-5" />
                     Data & Analytics
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-purple-300/70">
                     Manage how your data is used and shared
                   </CardDescription>
                 </CardHeader>
@@ -1773,12 +1773,12 @@ export default function SettingsPage() {
                     { key: 'searchEngineIndexing', label: 'Search Engine Indexing', desc: 'Allow search engines to index your public profile' },
                     { key: 'downloadableData', label: 'Data Export', desc: 'Allow downloading your data in standard formats' }
                   ].map(({ key, label, desc }) => (
-                    <div key={key} className="flex items-center justify-between p-3 rounded-lg border">
+                    <div key={key} className="flex items-center justify-between p-3 rounded-lg border border-purple-800/30 bg-purple-950/30">
                       <div>
-                        <Label htmlFor={key} className="text-base font-medium">
+                        <Label htmlFor={key} className="text-base font-medium text-purple-200">
                           {label}
                         </Label>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-purple-300/70">
                           {desc}
                         </p>
                       </div>
@@ -1794,7 +1794,7 @@ export default function SettingsPage() {
                   ))}
 
                   <div className="space-y-2">
-                    <Label htmlFor="data-retention" className="text-base">Data Retention Period</Label>
+                    <Label htmlFor="data-retention" className="text-base text-purple-200">Data Retention Period</Label>
                     <Select
                       value={settings.privacy.dataRetention}
                       onValueChange={(value) => setSettings({
@@ -1802,7 +1802,7 @@ export default function SettingsPage() {
                         privacy: { ...settings.privacy, dataRetention: value }
                       })}
                     >
-                      <SelectTrigger id="data-retention">
+                      <SelectTrigger id="data-retention" className="bg-purple-950/50 border-purple-800/30 text-slate-200">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -1812,7 +1812,7 @@ export default function SettingsPage() {
                         <SelectItem value="forever">Forever</SelectItem>
                       </SelectContent>
                     </Select>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-purple-300/70">
                       How long to keep your inactive data before automatic deletion
                     </p>
                   </div>
@@ -1820,24 +1820,24 @@ export default function SettingsPage() {
               </Card>
 
               {/* Security Settings */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-purple-200">
                     <Lock className="h-5 w-5" />
                     Security Settings
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-purple-300/70">
                     Enhance your account security
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 rounded-lg border">
+                    <div className="flex items-center justify-between p-3 rounded-lg border border-purple-800/30 bg-purple-950/30">
                       <div>
-                        <Label htmlFor="two-factor" className="text-base font-medium">
+                        <Label htmlFor="two-factor" className="text-base font-medium text-purple-200">
                           Two-Factor Authentication
                         </Label>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-purple-300/70">
                           Add an extra layer of security to your account
                         </p>
                       </div>
@@ -1858,12 +1858,12 @@ export default function SettingsPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between p-3 rounded-lg border">
+                    <div className="flex items-center justify-between p-3 rounded-lg border border-purple-800/30 bg-purple-950/30">
                       <div>
-                        <Label htmlFor="login-notifications" className="text-base font-medium">
+                        <Label htmlFor="login-notifications" className="text-base font-medium text-purple-200">
                           Login Notifications
                         </Label>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-purple-300/70">
                           Get notified of new login attempts
                         </p>
                       </div>
@@ -1879,7 +1879,7 @@ export default function SettingsPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="session-timeout" className="text-base">Session Timeout</Label>
+                    <Label htmlFor="session-timeout" className="text-base text-purple-200">Session Timeout</Label>
                     <Select
                       value={settings.privacy.sessionTimeout.toString()}
                       onValueChange={(value) => setSettings({
@@ -1887,7 +1887,7 @@ export default function SettingsPage() {
                         privacy: { ...settings.privacy, sessionTimeout: parseInt(value) }
                       })}
                     >
-                      <SelectTrigger id="session-timeout">
+                      <SelectTrigger id="session-timeout" className="bg-purple-950/50 border-purple-800/30 text-slate-200">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -1898,7 +1898,7 @@ export default function SettingsPage() {
                         <SelectItem value="1440">24 hours</SelectItem>
                       </SelectContent>
                     </Select>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-purple-300/70">
                       Automatically log out after this period of inactivity
                     </p>
                   </div>
@@ -1906,24 +1906,24 @@ export default function SettingsPage() {
               </Card>
 
               {/* Account Management */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-slate-900/80 border-purple-800/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-purple-200">
                     <User className="h-5 w-5" />
                     Account Management
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-purple-300/70">
                     Export your data and manage account deletion
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="p-4 border rounded-lg">
-                      <h4 className="font-medium mb-2 flex items-center gap-2">
+                    <div className="p-4 border border-purple-800/30 rounded-lg bg-purple-950/30">
+                      <h4 className="font-medium mb-2 flex items-center gap-2 text-purple-200">
                         <Download className="h-4 w-4" />
                         Data Export
                       </h4>
-                      <p className="text-sm text-muted-foreground mb-3">
+                      <p className="text-sm text-purple-300/70 mb-3">
                         Download all your data in JSON format
                       </p>
                       <Button variant="outline" size="sm" className="w-full">
@@ -1931,12 +1931,12 @@ export default function SettingsPage() {
                       </Button>
                     </div>
                     
-                    <div className="p-4 border rounded-lg">
-                      <h4 className="font-medium mb-2 flex items-center gap-2">
+                    <div className="p-4 border border-purple-800/30 rounded-lg bg-purple-950/30">
+                      <h4 className="font-medium mb-2 flex items-center gap-2 text-purple-200">
                         <Shield className="h-4 w-4" />
                         Privacy Report
                       </h4>
-                      <p className="text-sm text-muted-foreground mb-3">
+                      <p className="text-sm text-purple-300/70 mb-3">
                         See what data we collect about you
                       </p>
                       <Button variant="outline" size="sm" className="w-full">
